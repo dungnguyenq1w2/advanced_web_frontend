@@ -7,6 +7,7 @@ import { logout } from 'apis/auth.api'
 import CLoading from './CLoading'
 
 import { Avatar, Button, Dropdown, Navbar } from 'flowbite-react'
+import { HomeIcon, RectangleGroupIcon } from '@heroicons/react/24/outline'
 
 function CHeader() {
     //#region data
@@ -30,7 +31,7 @@ function CHeader() {
     //#endregion
 
     return (
-        <div className="z-20 shadow">
+        <div className="z-20 shadow-lg">
             <Navbar fluid={true} rounded={true}>
                 <Navbar.Brand>
                     <Link to="/">
@@ -63,7 +64,7 @@ function CHeader() {
                             <Dropdown.Item>Settings</Dropdown.Item>
                             <Dropdown.Item>Earnings</Dropdown.Item>
                             <Dropdown.Divider />
-                            <Dropdown.Item onClick={handleLogout}>Log out</Dropdown.Item>
+                            <Dropdown.Item onClick={handleLogout}>Logout</Dropdown.Item>
                         </Dropdown>
                     ) : (
                         <div className="flex items-center justify-center">
@@ -89,21 +90,24 @@ function CHeader() {
                         <NavLink
                             to="/"
                             className={({ isActive }) =>
-                                isActive ? 'block border-blue-600 font-bold text-blue-700' : 'block'
+                                `flex items-center text-base ${
+                                    isActive && 'border-blue-600 text-blue-700'
+                                } `
                             }
                         >
-                            Home
+                            <HomeIcon className="mr-2 h-5 w-5" /> Home
                         </NavLink>
                     </Navbar.Link>
-
                     <Navbar.Link>
                         <NavLink
                             to="group"
                             className={({ isActive }) =>
-                                isActive ? 'block border-blue-600 font-bold text-blue-700' : 'block'
+                                `flex items-center text-base ${
+                                    isActive && 'border-blue-600 text-blue-700'
+                                } `
                             }
                         >
-                            Group
+                            <RectangleGroupIcon className="mr-2 h-5 w-5" /> Group
                         </NavLink>
                     </Navbar.Link>
                 </Navbar.Collapse>

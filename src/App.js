@@ -13,7 +13,7 @@ function App() {
         <>
             <CHeader />
 
-            <div className="min-h-[84.5vh]">
+            <div className="min-h-[86.9vh] bg-slate-100">
                 <Suspense fallback={<CLoading />}>
                     <Outlet />
                 </Suspense>

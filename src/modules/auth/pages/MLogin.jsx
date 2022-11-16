@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 
 import { yupResolver } from '@hookform/resolvers/yup'
@@ -11,6 +11,7 @@ import { loginValidationSchema } from '../validation'
 
 import { Button, Label } from 'flowbite-react'
 import CLoading from 'common/components/CLoading'
+import google from 'assets/images/google.png'
 
 const formOptions = { resolver: yupResolver(loginValidationSchema) }
 
@@ -49,13 +50,17 @@ function MLogin() {
             }, 600)
         }
     }
+
+    const handleGoogleLogin = () => {
+        // Xử lí đăng nhập bằng Google
+    }
     // #endregion
 
     return (
         <div className="flex flex-col items-center pt-16">
             <form
                 onSubmit={handleSubmit(onSubmit)}
-                className="flex w-[25rem] flex-col gap-4 rounded-lg bg-slate-100 p-10 shadow-md"
+                className="flex w-[25rem] flex-col gap-4 rounded-lg bg-white p-10 shadow-md"
             >
                 <h1 className="text-center text-xl font-bold">LOGIN</h1>
                 <div>
@@ -113,7 +118,26 @@ function MLogin() {
                     </div>
                 )}
                 {isLoading && <CLoading />}
+
                 <Button type="submit">Submit</Button>
+
+                <div className="mx-auto text-sm text-gray-500">
+                    <span className="cursor-pointer hover:text-gray-800">Forget password</span> /{' '}
+                    <Link to="/auth/register">
+                        <span className="hover:text-gray-800">Register</span>
+                    </Link>
+                </div>
+                <div className="mt-3 flex flex-col items-center">
+                    <h3 className="text-sm text-gray-500"> Or Login with</h3>
+                    <div className="mt-2 flex">
+                        <img
+                            className="h-8 w-8 cursor-pointer"
+                            src={google}
+                            alt="Google icon"
+                            onClick={handleGoogleLogin}
+                        />
+                    </div>
+                </div>
             </form>
         </div>
     )

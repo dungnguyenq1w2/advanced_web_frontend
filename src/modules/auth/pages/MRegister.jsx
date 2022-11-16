@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 
 import { ErrorMessage } from '@hookform/error-message'
@@ -12,6 +12,7 @@ import CLoading from 'common/components/CLoading'
 
 import { Button, Label } from 'flowbite-react'
 import { registerValidationSchema } from '../validation'
+import google from 'assets/images/google.png'
 
 const formOptions = { resolver: yupResolver(registerValidationSchema) }
 
@@ -65,12 +66,16 @@ function MRegister() {
             }, 600)
         }
     }
+
+    const handleGoogleLogin = () => {
+        // Xử lí đăng nhập bằng Google
+    }
     //#endregion
     return (
         <div className="flex flex-col items-center pt-16">
             <form
                 onSubmit={handleSubmit(onSubmit)}
-                className="flex w-[25rem] flex-col gap-4 rounded-lg bg-slate-100 p-10 shadow-md"
+                className="flex w-[25rem] flex-col gap-4 rounded-lg bg-white p-10 shadow-md"
             >
                 <h1 className="text-center text-xl font-bold">REGISTER</h1>
 
@@ -180,6 +185,22 @@ function MRegister() {
                 {isLoading && <CLoading />}
 
                 <Button type="submit">Register</Button>
+                <div className="mx-auto text-sm text-gray-500">
+                    <Link to="/auth/login">
+                        <span className="hover:text-gray-800">Login</span>
+                    </Link>
+                </div>
+                <div className="mt-3 flex flex-col items-center">
+                    <h3 className="text-sm text-gray-500"> Or Register with</h3>
+                    <div className="mt-2 flex">
+                        <img
+                            className="h-8 w-8 cursor-pointer"
+                            src={google}
+                            alt="Google icon"
+                            onClick={handleGoogleLogin}
+                        />
+                    </div>
+                </div>
             </form>
         </div>
     )

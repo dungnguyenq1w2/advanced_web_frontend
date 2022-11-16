@@ -57,7 +57,7 @@ function CFooter() {
         //     </div>
         // </footer>
         <Footer container={true}>
-            <div className="w-full border-t">
+            <div className="w-full">
                 <div className="w-full sm:flex sm:items-center sm:justify-between">
                     <Footer.Copyright href="#" by="Flowbite™" year={2022} />
                     {/* <div className="mt-4 flex space-x-6 sm:mt-0 sm:justify-center">

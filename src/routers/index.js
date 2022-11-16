@@ -4,7 +4,7 @@ import App from 'App'
 
 import { Home } from 'modules/home/pages'
 import { Login, Register } from 'modules/auth/pages'
-import { Group, GroupList } from 'modules/group/pages'
+import { Group, GroupCreate, GroupList } from 'modules/group/pages'
 
 const router = createBrowserRouter([
     {
@@ -25,6 +25,10 @@ const router = createBrowserRouter([
                     {
                         path: ':groupId',
                         element: <Group />,
+                    },
+                    {
+                        path: 'create',
+                        element: <GroupCreate />,
                     },
                 ],
             },
