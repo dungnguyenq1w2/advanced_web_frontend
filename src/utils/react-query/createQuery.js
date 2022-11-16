@@ -9,6 +9,7 @@ const createQuery = (key, func, options = {}) => {
 
     const _data = useMemo(
         () => (data ? (options.map ? options.map(data) : data) : undefined),
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         [isLoading, data]
     )
 

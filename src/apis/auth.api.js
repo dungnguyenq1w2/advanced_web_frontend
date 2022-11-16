@@ -1,6 +1,6 @@
-import { map } from '#root/utils/axios'
-import TokenService from '#root/utils/axios/token.axios'
-import { isSuccess } from '#root/utils/func'
+import { map } from 'utils/axios'
+import TokenService from 'utils/axios/token.axios'
+import { isSuccess } from 'utils/func'
 import { AUTH } from './_contanst'
 
 export const register = (params = {}) => {
@@ -11,13 +11,14 @@ export const register = (params = {}) => {
 
 export const login = (params = {}) => {
     return map(({ data, ...rest }) => {
-        // return isSuccess(rest) ? { data: data } : { data: [] }
         if (isSuccess(rest)) {
             if (data.accessToken) {
                 TokenService.setUser(data)
             }
 
-            return data
+            return { data: data }
+        } else {
+            return { error: rest.response.data }
         }
     }).post(AUTH.LOGIN, params)
 }
@@ -28,8 +29,13 @@ export const refreshToken = (params = {}) => {
     }).post(AUTH.REFRESH_TOKEN, params)
 }
 
-export const logout = (params = {}) => {
+export const logout = (params = { refreshToken: TokenService.getLocalRefreshToken() }) => {
     return map(({ data, ...rest }) => {
-        return isSuccess(rest) ? { data: data } : { data: {} }
+        if (isSuccess(rest)) {
+            TokenService.removeUser()
+            return { data: data }
+        } else {
+            return { error: rest.response.data }
+        }
     }).post(AUTH.LOGOUT, params)
 }

@@ -1,11 +1,11 @@
 import axios from 'axios'
-import { FORM_HEADER_JSON } from './header.axios'
+import { CORS, FORM_HEADER_JSON } from './header.axios'
 import { refresh, tryLogout } from './request.axios'
 import TokenService from './token.axios'
 
 const _instance = axios.create({
     baseURL: process.env.REACT_APP_API_URL,
-    headers: { ...FORM_HEADER_JSON },
+    headers: { ...FORM_HEADER_JSON, ...CORS },
     // timeout: _timeout,
 })
 
@@ -88,8 +88,8 @@ _instance.interceptors.response.use(
                 originalConfig._retry = false
                 return handleLogout(originalConfig)
             }
-            return Promise.reject(err)
         }
+        return Promise.reject(err)
     }
 )
 

@@ -1,4 +1,5 @@
 module.exports = {
+    plugins: [require('prettier-plugin-tailwindcss')],
     arrowParens: 'always',
     bracketSameLine: false,
     bracketSpacing: true,
@@ -16,5 +17,4 @@ module.exports = {
     useTabs: false,
     vueIndentScriptAndStyle: false,
     printWidth: 100,
-    plugins: [require('prettier-plugin-tailwindcss')],
 }

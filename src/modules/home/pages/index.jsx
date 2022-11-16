@@ -1,14 +1,5 @@
-import React from 'react'
-import CHeader from '#common/components/CHeader'
-import CFooter from '#common/components/CFooter'
+import { lazy } from 'react'
 
-function MHome() {
-    return (
-        <div>
-            <CHeader />
-            <CFooter />
-        </div>
-    )
-}
+const Home = lazy(() => import('./MHome'))
 
-export default MHome
+export { Home }

@@ -1,6 +1,6 @@
-import { createQuery } from '#root/utils/react-query'
+import { createQuery } from '/utils/react-query'
 
-import * as users from '#root/apis/user.api'
+import * as users from '/apis/user.api'
 
 export function getAll(params = {}, isLoading = false, options = {}) {
     return createQuery(['users', params], ({ queryKey: [, _params] }) => users.getAll(_params), {

@@ -1,4 +1,5 @@
 export const FORM_HEADER_JSON = { 'Content-Type': 'application/json' }
+export const CORS = { 'Access-Control-Allow-Origin': '*' }
 
 // export const FORM_HEADER_FORMDATA = { "Content-Type": "multipart/form-data" };
 
