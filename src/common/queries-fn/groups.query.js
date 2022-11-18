@@ -9,8 +9,8 @@ export function getAll(params = {}, isLoading = false, options = {}) {
     })
 }
 
-export function getById(code, isLoading = false, options = {}) {
-    return createQuery(['groups', code], () => groups.getById(code), {
+export function getById(id, isLoading = false, options = {}) {
+    return createQuery(['groups', id], () => groups.getById(id), {
         enabled: !isLoading,
         ...options,
     })

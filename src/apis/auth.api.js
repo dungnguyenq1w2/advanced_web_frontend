@@ -1,7 +1,7 @@
 import { map } from 'utils/axios'
 import TokenService from 'utils/axios/token.axios'
 import { isSuccess } from 'utils/func'
-import { AUTH } from './_contanst'
+import { AUTH } from './_constant'
 
 export const register = (params = {}) => {
     return map(({ data, ...rest }) => {
