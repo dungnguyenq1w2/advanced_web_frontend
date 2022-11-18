@@ -44,7 +44,7 @@ function MLogin() {
             }, 300)
         } else {
             setLoginError(res.error.message)
-            console.log('🚀 ~ res', res)
+            // console.log('🚀 ~ res', res)
             setTimeout(() => {
                 setIsLoading(false)
             }, 600)
