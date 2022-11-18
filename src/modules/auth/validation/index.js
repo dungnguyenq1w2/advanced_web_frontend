@@ -1,15 +1,19 @@
 import * as Yup from 'yup'
 
 export const loginValidationSchema = Yup.object().shape({
-    email: Yup.string().email('Email không hợp lệ').required('Hãy nhập Email'),
-    password: Yup.string().required('Hãy nhập Mật khẩu').min(6, 'Mật khẩu phải hơn 6 kí tự'),
+    email: Yup.string().email('Email is not valid').required('Email is required'),
+    password: Yup.string()
+        .required('Password is required')
+        .min(6, 'Password must be more 6 characters'),
 })
 
 export const registerValidationSchema = Yup.object().shape({
-    name: Yup.string().required('Hãy nhập Họ tên'),
-    email: Yup.string().email('Email không hợp lệ').required('Hãy nhập Email'),
-    password: Yup.string().required('Hãy nhập Mật khẩu').min(6, 'Mật khẩu phải hơn 6 kí tự'),
+    name: Yup.string().required('Name is required'),
+    email: Yup.string().email('Email is not valid').required('Hãy nhập Email'),
+    password: Yup.string()
+        .required('Password is required')
+        .min(6, 'Password must be more 6 characters'),
     confirmPassword: Yup.string()
-        .required('Hãy nhập Mật khẩu xác nhận')
-        .oneOf([Yup.ref('password')], 'Mật khẩu không khớp'),
+        .required('Confirm password is required')
+        .oneOf([Yup.ref('password')], 'Password is not match'),
 })
