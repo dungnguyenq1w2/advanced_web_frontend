@@ -35,7 +35,7 @@ function MRegister() {
     }, [])
 
     const onSubmit = async (data) => {
-        console.log('🚀 ~ data', data)
+        // console.log('🚀 ~ data', data)
         setIsLoading(true)
         const resRegister = await accountRegister(data)
 
@@ -185,11 +185,11 @@ function MRegister() {
                 {isLoading && <CLoading />}
 
                 <Button type="submit">Register</Button>
-                <div className="mx-auto text-sm text-gray-500">
+                {/* <div className="mx-auto text-sm text-gray-500">
                     <Link to="/auth/login">
                         <span className="hover:text-gray-800">Login</span>
                     </Link>
-                </div>
+                </div> */}
                 <div className="mt-3 flex flex-col items-center">
                     <h3 className="text-sm text-gray-500"> Or Register with</h3>
                     <div className="mt-2 flex">

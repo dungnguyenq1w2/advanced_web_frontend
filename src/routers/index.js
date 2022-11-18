@@ -3,7 +3,7 @@ import { createBrowserRouter } from 'react-router-dom'
 import App from 'App'
 
 import { Home } from 'modules/home/pages'
-import { Login, Register } from 'modules/auth/pages'
+import { Login, Register, Verify } from 'modules/auth/pages'
 import { Group, GroupCreate, GroupList } from 'modules/group/pages'
 
 const router = createBrowserRouter([
@@ -37,6 +37,7 @@ const router = createBrowserRouter([
                 children: [
                     { path: 'login', element: <Login /> },
                     { path: 'register', element: <Register /> },
+                    { path: 'verify', element: <Verify /> },
                 ],
             },
         ],

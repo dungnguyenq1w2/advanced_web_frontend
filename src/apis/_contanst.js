@@ -3,6 +3,7 @@ export const AUTH = {
     REGISTER: '/auth/register',
     LOGIN: '/auth/login',
     REFRESH_TOKEN: '/auth/refresh-token',
+    VERIFY: '/auth/verify',
     LOGOUT: '/auth/logout',
 }
 //#endregion

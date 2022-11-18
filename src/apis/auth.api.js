@@ -29,6 +29,19 @@ export const refreshToken = (params = {}) => {
     }).post(AUTH.REFRESH_TOKEN, params)
 }
 
+export const verify = (params = {}) => {
+    return map(({ data, ...rest }) => {
+        if (isSuccess(rest)) {
+            if (data.accessToken) {
+                TokenService.setUser(data)
+            }
+            return { data: data }
+        } else {
+            return { error: rest.response.data }
+        }
+    }).post(AUTH.VERIFY, params)
+}
+
 export const logout = (params = { refreshToken: TokenService.getLocalRefreshToken() }) => {
     return map(({ data, ...rest }) => {
         if (isSuccess(rest)) {
