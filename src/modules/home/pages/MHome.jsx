@@ -2,15 +2,10 @@ import { Button } from 'flowbite-react'
 import poll from 'assets/images/poll.jpg'
 import group from 'assets/images/group.jpg'
 import { Link } from 'react-router-dom'
+import { getAll as getAllGroup } from 'common/queries-fn/groups.query'
 
 function MHome() {
-    // useEffect(() => {
-    //     const fetch = async () => {
-    //         const res = await getAll()
-    //         console.log(res)
-    //     }
-    //     fetch()
-    // }, [])
+    // const { data, isLoading } = getAllGroup()
 
     return (
         <div className="flex justify-center pt-20">

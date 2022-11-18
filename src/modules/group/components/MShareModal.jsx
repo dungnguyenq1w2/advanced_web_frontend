@@ -32,9 +32,11 @@ const MShareModal = forwardRef(({}, ref) => {
             emailVailation
                 .validate({ email })
                 .then((value) => {
-                    setEmails([...emails, { id: uuidv4(), email }])
-                    setEmail('')
-                    setEmailError('')
+                    if (email) {
+                        setEmails([...emails, { id: uuidv4(), email }])
+                        setEmail('')
+                        setEmailError('')
+                    }
                 })
                 .catch((error) => setEmailError(error.errors[0]))
         }

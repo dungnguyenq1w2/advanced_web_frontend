@@ -11,7 +11,11 @@ import { loginValidationSchema } from '../validation'
 
 import { Button, Label } from 'flowbite-react'
 import CLoading from 'common/components/CLoading'
-import google from 'assets/images/google.png'
+import { refreshTokenSetup } from '../../../utils/refreshTokenSetup'
+// import { GoogleLogin } from '@react-oauth/google'
+import { GoogleLogin } from 'react-google-login'
+import { gapi } from 'gapi-script'
+import axios from 'axios'
 
 const formOptions = { resolver: yupResolver(loginValidationSchema) }
 
@@ -24,6 +28,15 @@ function MLogin() {
 
     // #region event
     useEffect(() => {
+        // gapi.load('client:auth2', () => {
+        //     // gapi.client.init({
+        //     gapi.auth2.getAuthInstance({
+        //         client_id:
+        //             '433396208748-b93bnrb74g5tgenlrpmhii397a5hp8b7.apps.googleusercontent.com',
+        //         // plugin_name: 'chat',
+        //         scope: '',
+        //     })
+        // })
         if (localStorage.getItem('user')) navigate('/')
     }, [])
 
@@ -51,8 +64,44 @@ function MLogin() {
         }
     }
 
-    const handleGoogleLogin = () => {
-        // Xử lí đăng nhập bằng Google
+    // const handleGoogleLogin = () => {
+    //     // Xử lí đăng nhập bằng Google
+    // }
+    const onGoogleLoginSuccess = async (res) => {
+        console.log('LOGIN SUCCESS --> res:', res)
+        try {
+            const result = await axios.post(`${process.env.REACT_APP_API_URL}/auth/google-login`, {
+                token: res?.tokenId,
+            })
+
+            // setUser(result.data.user)
+            console.log(result)
+            console.log(result.data.user)
+            // localStorage.setItem('user', JSON.stringify(result.data.user))
+            // navigate(-1)
+            // setTimeout(() => {
+            //     navigate(0)
+            // }, 300)
+            if (result?.data) {
+                localStorage.setItem('user', JSON.stringify(result.data.user))
+                navigate(-1)
+                setTimeout(() => {
+                    navigate(0)
+                }, 300)
+            } else {
+                setLoginError(result.error.message)
+                console.log('🚀 ~ res', res)
+                setTimeout(() => {
+                    setIsLoading(false)
+                }, 600)
+            }
+        } catch (err) {
+            console.log(err)
+        }
+        refreshTokenSetup(res)
+    }
+    const onGoogleLoginError = (res) => {
+        console.log('LOGIN FAILED --> res:', res)
     }
     // #endregion
 
@@ -130,11 +179,21 @@ function MLogin() {
                 <div className="mt-3 flex flex-col items-center">
                     <h3 className="text-sm text-gray-500"> Or Login with</h3>
                     <div className="mt-2 flex">
-                        <img
+                        {/* <img
                             className="h-8 w-8 cursor-pointer"
                             src={google}
                             alt="Google icon"
                             onClick={handleGoogleLogin}
+                        /> */}
+
+                        <GoogleLogin
+                            clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID}
+                            buttonText="Log in with Google"
+                            // text="Log in with Google"
+                            onSuccess={onGoogleLoginSuccess}
+                            onFailure={onGoogleLoginError}
+                            // onError={onGoogleLoginError}
+                            cookiePolicy={'single_host_origin'}
                         />
                     </div>
                 </div>
