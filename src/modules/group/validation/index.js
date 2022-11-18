@@ -1,7 +1,7 @@
 import * as Yup from 'yup'
 
 export const groupValidationSchema = Yup.object().shape({
-    title: Yup.string().required('Title is required'),
+    name: Yup.string().required('Name is required'),
     description: Yup.string(),
 })
 
