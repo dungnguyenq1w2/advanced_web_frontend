@@ -1,4 +1,4 @@
-import { Fragment, useState } from 'react'
+import { useState } from 'react'
 
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
@@ -9,10 +9,10 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import { create } from 'apis/group.api'
 import CLoading from 'common/components/CLoading'
 
-import { Dialog, Transition } from '@headlessui/react'
+import { Dialog } from '@headlessui/react'
+import CModal from 'common/components/CModal'
 import { Button, Label } from 'flowbite-react'
 import { groupValidationSchema } from '../validation'
-import CModal from 'common/components/CModal'
 
 function MGroupCreate() {
     //#region data
@@ -37,7 +37,6 @@ function MGroupCreate() {
                 setIsLoading(false)
             }, 600)
         } else {
-            console.log('🚀 ~ res', res)
             setTimeout(() => {
                 setIsLoading(false)
             }, 600)
@@ -47,8 +46,8 @@ function MGroupCreate() {
     const closeModal = () => {
         navigate(`/group/${createdGroupId}`)
     }
-
     //#endregion
+
     return (
         <div className="flex justify-center pt-20">
             <div className="w-[40rem] rounded border bg-white p-5">
@@ -58,23 +57,23 @@ function MGroupCreate() {
                     <form onSubmit={handleSubmit(onSubmit)}>
                         <div>
                             <div className="mb-2 block">
-                                <Label htmlFor="title" value="Title *" />
+                                <Label htmlFor="name" value="Name *" />
                             </div>
                             <input
-                                type="title"
-                                name="title"
-                                {...register('title', { required: true })}
+                                type="name"
+                                name="name"
+                                {...register('name', { required: true })}
                                 className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
                             />
                             <ErrorMessage
                                 errors={errors}
-                                name="title"
+                                name="name"
                                 render={() => (
                                     <div
                                         className="mt-1 rounded-lg bg-red-100 p-2 text-sm text-red-700 dark:bg-red-200 dark:text-red-800"
                                         role="alert"
                                     >
-                                        <span className="font-medium">{errors.title?.message}</span>
+                                        <span className="font-medium">{errors.name?.message}</span>
                                     </div>
                                 )}
                             />

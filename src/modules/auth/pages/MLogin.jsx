@@ -12,6 +12,7 @@ import { loginValidationSchema } from '../validation'
 import { Button, Label } from 'flowbite-react'
 import CLoading from 'common/components/CLoading'
 import google from 'assets/images/google.png'
+import { ArrowLeftIcon } from '@heroicons/react/24/outline'
 
 const formOptions = { resolver: yupResolver(loginValidationSchema) }
 
@@ -44,7 +45,6 @@ function MLogin() {
             }, 300)
         } else {
             setLoginError(res.error.message)
-            // console.log('🚀 ~ res', res)
             setTimeout(() => {
                 setIsLoading(false)
             }, 600)
@@ -60,8 +60,13 @@ function MLogin() {
         <div className="flex flex-col items-center pt-16">
             <form
                 onSubmit={handleSubmit(onSubmit)}
-                className="flex w-[25rem] flex-col gap-4 rounded-lg bg-white p-10 shadow-md"
+                className="relative flex w-[25rem] flex-col gap-4 rounded-lg bg-white p-10 shadow-md"
             >
+                <Link to="/">
+                    <span className="absolute top-5 left-5 flex cursor-pointer">
+                        <ArrowLeftIcon className="mr-2 h-6 w-6" /> Home
+                    </span>
+                </Link>
                 <h1 className="text-center text-xl font-bold">LOGIN</h1>
                 <div>
                     <div className="mb-2 block">

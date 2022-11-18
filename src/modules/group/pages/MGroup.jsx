@@ -1,43 +1,42 @@
-import React, { useRef, useState } from 'react'
+import { useMemo, useRef } from 'react'
 
 import { useParams } from 'react-router-dom'
 
-import CLoading from 'common/components/CLoading'
 import { getById } from 'common/queries-fn/groups.query'
 
-import { Button } from 'flowbite-react'
 import {
-    UserPlusIcon,
-    FireIcon,
     Bars3BottomLeftIcon,
+    FireIcon,
     UserGroupIcon,
+    UserPlusIcon,
     ViewfinderCircleIcon,
-    CheckIcon,
 } from '@heroicons/react/24/outline'
-import CModal from 'common/components/CModal'
-import { Dialog } from '@headlessui/react'
-import MShareModal from '../components/MShareModal'
+import { Button } from 'flowbite-react'
 import MParticipantsModal from '../components/MParticipantsModal'
+import MShareModal from '../components/MShareModal'
+import CLoading from 'common/components/CLoading'
+import { ROLE } from 'common/components/constant'
 
-const data = {
-    id: 1,
-    title: 'group1',
-    description: 'test',
-    role: 'Owner',
-}
+// const data = {
+//     id: 1,
+//     title: 'group1',
+//     description: 'test',
+//     role: 'Owner',
+// }
 
 function MGroup() {
     //#region data
-    // const { groupId } = useParams()
+    const { groupId } = useParams()
     const shareModalRef = useRef()
     const participantsModalRef = useRef()
-    // const { data: _data, isLoading } = getById(groupId)
+    const { data: _data, isLoading } = getById(groupId)
+    const group = useMemo(() => _data?.data?.data ?? {}, [_data])
     //#endregion
 
     //#region event
     //#endregion
 
-    // if (isLoading) return <CLoading />
+    if (isLoading) return <CLoading />
     return (
         <div className="flex flex-col items-center pt-20">
             <div className="mb-1 w-[52rem] rounded border bg-white p-5">
@@ -53,15 +52,15 @@ function MGroup() {
                 </div>
             </div>
             <div className="w-[52rem] rounded border bg-white p-5">
-                <h1 className="mb-10 text-xl font-semibold">{data.title}</h1>
+                <h1 className="mb-10 text-xl font-semibold">{group.name}</h1>
                 <div className="">
                     <div className="my-1 flex items-center">
                         <FireIcon className="mr-2 h-5 w-5" />
-                        {data.role}
+                        {ROLE[group.role]}
                     </div>
                     <div className="my-1 flex items-center">
                         <Bars3BottomLeftIcon className="mr-2 h-5 w-5" />
-                        {data.description}
+                        {group.description}
                     </div>
                     <div className="my-1 flex items-center">
                         <UserGroupIcon className="mr-2 h-5 w-5" />

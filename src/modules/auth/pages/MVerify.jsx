@@ -12,7 +12,6 @@ function MVerify() {
     const [isFirst, setIsFirst] = useState(true)
     const [isError404, setIsError404] = useState(false)
     const navigate = useNavigate()
-    // console.log('🚀 ~ searchParams', searchParams.get('email'))
 
     useEffect(() => {
         const restApi = async () => {
@@ -33,6 +32,9 @@ function MVerify() {
                 setIsLoading(false)
                 setTimeout(() => {
                     navigate('/')
+                    setTimeout(() => {
+                        navigate(0)
+                    }, 200)
                 }, 3000)
             } else setErrorMessage(res.error?.message)
         }
@@ -41,6 +43,9 @@ function MVerify() {
 
     const handleButton = () => {
         navigate('/')
+        setTimeout(() => {
+            navigate(0)
+        }, 200)
     }
 
     return (
@@ -71,7 +76,9 @@ function MVerify() {
                         </div>
                     </div>
                 </section>
-            ) : isFirst ? (<></>) : (
+            ) : isFirst ? (
+                <></>
+            ) : (
                 <div className="flex flex-col items-center p-8">
                     <Card className="h-80 w-80 rounded-lg bg-white">
                         <h5 className="text-center text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
