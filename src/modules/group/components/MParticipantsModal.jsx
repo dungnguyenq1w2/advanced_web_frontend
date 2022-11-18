@@ -39,7 +39,7 @@ const MParticipantsModal = forwardRef(({}, ref) => {
                     onClick={handleClose}
                 />
                 <hr />
-                <div className="h-40 w-80"></div>
+                <div className="h-40 w-80">Thêm vào đây</div>
             </Dialog.Panel>
         </CModal>
     )
