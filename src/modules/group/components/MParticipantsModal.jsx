@@ -88,7 +88,10 @@ const MParticipantsModal = forwardRef(({ participants }, ref) => {
                             </div>
                         </h5>
                         {co_owners.map((co_owner, index) => (
-                            <div key={index} className="flex items-center p-2">
+                            <div
+                                key={index}
+                                className="flex items-center border-b border-neutral-700 p-2"
+                            >
                                 <div>
                                     <Avatar
                                         alt="User settings"
@@ -124,7 +127,10 @@ const MParticipantsModal = forwardRef(({ participants }, ref) => {
                             </div>
                         </h5>
                         {members.map((member, index) => (
-                            <div key={index} className="flex cursor-pointer items-center p-2">
+                            <div
+                                key={index}
+                                className="flex cursor-pointer items-center border-b border-neutral-700 p-2"
+                            >
                                 <div>
                                     <Avatar
                                         alt="User settings"
@@ -139,10 +145,6 @@ const MParticipantsModal = forwardRef(({ participants }, ref) => {
                                             onClick={() => handlePromoteUser(member?.user?.id)}
                                             className="mr-1 h-6 w-6 text-blue-700"
                                         ></ChevronDoubleUpIcon>
-                                        <ChevronDoubleDownIcon
-                                            onClick={() => handleDepromotedeUser(member?.user?.id)}
-                                            className="ml-1 h-6 w-6 text-blue-700"
-                                        ></ChevronDoubleDownIcon>
                                         <XMarkIcon
                                             onClick={() => handleDeleteUser(member?.user?.id)}
                                             className="ml-1 h-6 w-6 text-red-700"

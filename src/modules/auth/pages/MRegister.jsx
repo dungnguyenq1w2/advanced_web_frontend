@@ -94,6 +94,7 @@ function MRegister() {
                             <Label htmlFor="name" value="Your name" />
                         </div>
                         <input
+                            autoFocus
                             type="text"
                             name="name"
                             {...register('name', { required: true })}
