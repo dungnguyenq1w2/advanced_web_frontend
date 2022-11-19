@@ -15,7 +15,7 @@ import { Button } from 'flowbite-react'
 import MParticipantsModal from '../components/MParticipantsModal'
 import MShareModal from '../components/MShareModal'
 import CLoading from 'common/components/CLoading'
-import { ROLE } from 'common/components/constant'
+import { ROLE } from 'common/constant'
 
 // const data = {
 //     id: 1,
@@ -64,7 +64,7 @@ function MGroup() {
                     </div>
                     <div className="my-1 flex items-center">
                         <UserGroupIcon className="mr-2 h-5 w-5" />
-                        Participants (30)
+                        Participants ({group?.participants.length ?? 0})
                         <ViewfinderCircleIcon
                             onClick={() => participantsModalRef.current.open()}
                             className="ml-2 h-6 w-6 cursor-pointer text-blue-500"
@@ -74,7 +74,10 @@ function MGroup() {
             </div>
 
             <MShareModal ref={shareModalRef} />
-            <MParticipantsModal ref={participantsModalRef} />
+            <MParticipantsModal
+                ref={participantsModalRef}
+                participants={group.participants}
+            />
         </div>
     )
 }

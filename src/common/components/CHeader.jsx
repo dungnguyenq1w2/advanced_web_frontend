@@ -14,7 +14,7 @@ function CHeader() {
     const [user, setUser] = useState({})
     const [isLoading, setIsLoading] = useState(false)
     //#endregion
-
+   
     //#region event
     useEffect(() => {
         if (localStorage.getItem('user')) setUser(JSON.parse(localStorage.getItem('user')))
@@ -49,7 +49,7 @@ function CHeader() {
                             label={
                                 <Avatar
                                     alt="User settings"
-                                    img={user?.image ?? null}
+                                    img={user?.image}
                                     rounded={true}
                                 />
                             }
