@@ -17,7 +17,7 @@ function CHeader() {
     const [isLoading, setIsLoading] = useState(false)
     const navigate = useNavigate()
     //#endregion
-
+   
     //#region event
     useEffect(() => {
         if (localStorage.getItem('is_google_login'))
@@ -67,7 +67,7 @@ function CHeader() {
                             label={
                                 <Avatar
                                     alt="User settings"
-                                    img={user?.image ?? null}
+                                    img={user?.image}
                                     rounded={true}
                                     referrerPolicy="no-referrer"
                                 />
