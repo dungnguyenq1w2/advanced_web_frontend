@@ -5,6 +5,7 @@ export const AUTH = {
     REFRESH_TOKEN: '/auth/refresh-token',
     VERIFY: '/auth/verify',
     LOGOUT: '/auth/logout',
+    GOOGLE_LOGIN: '/auth/google-login',
 }
 //#endregion
 

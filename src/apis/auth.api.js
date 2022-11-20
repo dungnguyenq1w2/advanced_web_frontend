@@ -23,6 +23,20 @@ export const login = (params = {}) => {
     }).post(AUTH.LOGIN, params)
 }
 
+export const googleLogin = (params = {}) => {
+    return map(({ data, ...rest }) => {
+        if (isSuccess(rest)) {
+            if (data.accessToken) {
+                TokenService.setUser(data)
+            }
+
+            return { data: data }
+        } else {
+            return { error: rest.response.data }
+        }
+    }).post(AUTH.GOOGLE_LOGIN, params)
+}
+
 export const refreshToken = (params = {}) => {
     return map(({ data, ...rest }) => {
         return isSuccess(rest) ? { data: data } : { data: {} }
@@ -43,6 +57,7 @@ export const verify = (params = {}) => {
 }
 
 export const logout = (params = { refreshToken: TokenService.getLocalRefreshToken() }) => {
+    // console.log(TokenService.getLocalRefreshToken())
     return map(({ data, ...rest }) => {
         if (isSuccess(rest)) {
             TokenService.removeUser()

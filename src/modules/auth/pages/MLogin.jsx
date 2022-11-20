@@ -6,7 +6,7 @@ import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { ErrorMessage } from '@hookform/error-message'
 
-import { login } from 'apis/auth.api'
+import { googleLogin, login } from 'apis/auth.api'
 import { loginValidationSchema } from '../validation'
 
 import { Button, Label } from 'flowbite-react'
@@ -52,6 +52,7 @@ function MLogin() {
         const res = await login(data)
 
         if (res?.data) {
+            localStorage.removeItem('is_google_login')
             navigate(-1)
             setTimeout(() => {
                 navigate(0)
@@ -69,35 +70,59 @@ function MLogin() {
     // }
     const onGoogleLoginSuccess = async (res) => {
         console.log('LOGIN SUCCESS --> res:', res)
-        try {
-            const result = await axios.post(`${process.env.REACT_APP_API_URL}/auth/google-login`, {
-                token: res?.tokenId,
-            })
 
-            // setUser(result.data.user)
-            console.log(result)
-            console.log(result.data.user)
+        setIsLoading(true)
+        const result = await googleLogin({
+            token: res?.tokenId,
+        })
+
+        if (result?.data) {
             // localStorage.setItem('user', JSON.stringify(result.data.user))
+            localStorage.setItem('is_google_login', true)
             // navigate(-1)
-            // setTimeout(() => {
-            //     navigate(0)
-            // }, 300)
-            if (result?.data) {
-                localStorage.setItem('user', JSON.stringify(result.data.user))
-                navigate(-1)
-                setTimeout(() => {
-                    navigate(0)
-                }, 300)
-            } else {
-                setLoginError(result.error.message)
-                console.log('🚀 ~ res', res)
-                setTimeout(() => {
-                    setIsLoading(false)
-                }, 600)
-            }
-        } catch (err) {
-            console.log(err)
+            setTimeout(() => {
+                // navigate(0)
+                navigate('/')
+            }, 300)
+        } else {
+            setLoginError(result.error.message)
+            setTimeout(() => {
+                setIsLoading(false)
+            }, 600)
         }
+        // try {
+        //     setIsLoading(true)
+        //     const result = await axios.post(`${process.env.REACT_APP_API_URL}/auth/google-login`, {
+        //         token: res?.tokenId,
+        //     })
+
+        //     // setUser(result.data.user)
+        //     console.log(result)
+        //     console.log(result.data.user)
+        //     // localStorage.setItem('user', JSON.stringify(result.data.user))
+        //     // navigate(-1)
+        //     // setTimeout(() => {
+        //     //     navigate(0)
+        //     // }, 300)
+        //     if (result?.data) {
+        //         localStorage.setItem('user', JSON.stringify({ ...result.data }))
+
+        //         localStorage.setItem('is_google_login', true)
+        //         navigate(-1)
+        //         setTimeout(() => {
+        //             navigate(0)
+        //         }, 300)
+        //     } else {
+        //         setLoginError(result.error.message)
+        //         console.log('🚀 ~ result', result)
+        //         setTimeout(() => {
+        //             setIsLoading(false)
+        //         }, 600)
+        //     }
+        // } catch (err) {
+        //     console.log(err)
+        // }
+
         refreshTokenSetup(res)
     }
     const onGoogleLoginError = (res) => {

@@ -2,11 +2,8 @@ import { Button } from 'flowbite-react'
 import poll from 'assets/images/poll.jpg'
 import group from 'assets/images/group.jpg'
 import { Link } from 'react-router-dom'
-import { getAll as getAllGroup } from 'common/queries-fn/groups.query'
 
 function MHome() {
-    // const { data, isLoading } = getAllGroup()
-
     return (
         <div className="flex justify-center pt-20">
             <div className="rounded border bg-white p-5">
@@ -47,9 +44,9 @@ function MHome() {
                     <h1>All your invites and events will show up here once you get started.</h1>
                 </div>
             </div>
-            <div className="ml-1 rounded border bg-white p-5">
+            {/* <div className="ml-1 rounded border bg-white p-5">
                 <h1 className="text-base font-semibold">My groups</h1>
-            </div>
+            </div> */}
         </div>
     )
 }

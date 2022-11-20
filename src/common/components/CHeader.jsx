@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 
-import { Link, NavLink } from 'react-router-dom'
+import { Link, NavLink, useNavigate } from 'react-router-dom'
 
 import { logout } from 'apis/auth.api'
 
@@ -8,15 +8,20 @@ import CLoading from './CLoading'
 
 import { Avatar, Button, Dropdown, Navbar } from 'flowbite-react'
 import { HomeIcon, RectangleGroupIcon } from '@heroicons/react/24/outline'
+import { GoogleLogout } from 'react-google-login'
 
 function CHeader() {
     //#region data
     const [user, setUser] = useState({})
+    const [isGoogleLogin, setIsGoogleLoading] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
+    const navigate = useNavigate()
     //#endregion
 
     //#region event
     useEffect(() => {
+        if (localStorage.getItem('is_google_login'))
+            setIsGoogleLoading(JSON.parse(localStorage.getItem('is_google_login')))
         if (localStorage.getItem('user')) setUser(JSON.parse(localStorage.getItem('user')))
     }, [])
 
@@ -26,7 +31,20 @@ function CHeader() {
         if (res.data) {
             setUser({})
             setIsLoading(false)
+            navigate('/')
         }
+    }
+
+    const handleGoogleLogout = async () => {
+        setIsLoading(true)
+        localStorage.removeItem('user')
+        localStorage.removeItem('is_google_login')
+        // const res = await logout()
+        setTimeout(() => {
+            setUser({})
+            setIsLoading(false)
+            navigate('/')
+        }, 200)
     }
     //#endregion
 
@@ -51,6 +69,7 @@ function CHeader() {
                                     alt="User settings"
                                     img={user?.image ?? null}
                                     rounded={true}
+                                    referrerPolicy="no-referrer"
                                 />
                             }
                         >
@@ -65,6 +84,11 @@ function CHeader() {
                             <Dropdown.Item>Earnings</Dropdown.Item>
                             <Dropdown.Divider />
                             <Dropdown.Item onClick={handleLogout}>Logout</Dropdown.Item>
+                            {/* <Dropdown.Item
+                                onClick={isGoogleLogin ? handleGoogleLogout : handleLogout}
+                            >
+                                Logout
+                            </Dropdown.Item> */}
                         </Dropdown>
                     ) : (
                         <div className="flex items-center justify-center">
