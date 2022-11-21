@@ -6,7 +6,7 @@ import { useForm } from 'react-hook-form'
 import { ErrorMessage } from '@hookform/error-message'
 import { yupResolver } from '@hookform/resolvers/yup'
 
-import { register as accountRegister } from 'apis/auth.api'
+import { googleLogin, register as accountRegister } from 'apis/auth.api'
 
 import CLoading from 'common/components/CLoading'
 
@@ -14,6 +14,8 @@ import { Button, Label } from 'flowbite-react'
 import { registerValidationSchema } from '../validation'
 import google from 'assets/images/google.png'
 import { ArrowLeftIcon } from '@heroicons/react/24/outline'
+import GoogleLogin from 'react-google-login'
+import { refreshTokenSetup } from 'utils/refreshTokenSetup'
 
 const formOptions = { resolver: yupResolver(registerValidationSchema) }
 
@@ -70,8 +72,65 @@ function MRegister() {
         }
     }
 
-    const handleGoogleLogin = () => {
-        // Xử lí đăng nhập bằng Google
+    const onGoogleLoginSuccess = async (res) => {
+        console.log('LOGIN SUCCESS --> res:', res)
+
+        setIsLoading(true)
+        const result = await googleLogin({
+            token: res?.tokenId,
+        })
+
+        if (result?.data) {
+            // localStorage.setItem('user', JSON.stringify(result.data.user))
+            localStorage.setItem('is_google_login', true)
+            // navigate(-1)
+            setTimeout(() => {
+                // navigate(0)
+                navigate('/')
+            }, 300)
+        } else {
+            setRegisterError(result.error.message)
+            setTimeout(() => {
+                setIsLoading(false)
+            }, 600)
+        }
+        // try {
+        //     setIsLoading(true)
+        //     const result = await axios.post(`${process.env.REACT_APP_API_URL}/auth/google-login`, {
+        //         token: res?.tokenId,
+        //     })
+
+        //     // setUser(result.data.user)
+        //     console.log(result)
+        //     console.log(result.data.user)
+        //     // localStorage.setItem('user', JSON.stringify(result.data.user))
+        //     // navigate(-1)
+        //     // setTimeout(() => {
+        //     //     navigate(0)
+        //     // }, 300)
+        //     if (result?.data) {
+        //         localStorage.setItem('user', JSON.stringify({ ...result.data }))
+
+        //         localStorage.setItem('is_google_login', true)
+        //         navigate(-1)
+        //         setTimeout(() => {
+        //             navigate(0)
+        //         }, 300)
+        //     } else {
+        //         setLoginError(result.error.message)
+        //         console.log('🚀 ~ result', result)
+        //         setTimeout(() => {
+        //             setIsLoading(false)
+        //         }, 600)
+        //     }
+        // } catch (err) {
+        //     console.log(err)
+        // }
+
+        refreshTokenSetup(res)
+    }
+    const onGoogleLoginError = (res) => {
+        console.log('LOGIN FAILED --> res:', res)
     }
     //#endregion
     return (
@@ -202,13 +261,16 @@ function MRegister() {
                     </Link>
                 </div> */}
                     <div className="mt-3 flex cursor-pointer flex-col items-center">
-                        <h3 className="text-sm text-gray-500"> Or Register with</h3>
+                        <h3 className="text-sm text-gray-500"> Or</h3>
                         <div className="mt-2 flex">
-                            <img
-                                className="h-8 w-8 cursor-pointer"
-                                src={google}
-                                alt="Google icon"
-                                onClick={handleGoogleLogin}
+                            <GoogleLogin
+                                clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID}
+                                buttonText="Continue with Google"
+                                // text="Log in with Google"
+                                onSuccess={onGoogleLoginSuccess}
+                                onFailure={onGoogleLoginError}
+                                // onError={onGoogleLoginError}
+                                cookiePolicy={'single_host_origin'}
                             />
                         </div>
                     </div>

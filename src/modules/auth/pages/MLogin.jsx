@@ -208,18 +208,11 @@ function MLogin() {
                     </Link>
                 </div>
                 <div className="mt-3 flex flex-col items-center">
-                    <h3 className="text-sm text-gray-500"> Or Login with</h3>
+                    <h3 className="text-sm text-gray-500"> Or</h3>
                     <div className="mt-2 flex">
-                        {/* <img
-                            className="h-8 w-8 cursor-pointer"
-                            src={google}
-                            alt="Google icon"
-                            onClick={handleGoogleLogin}
-                        /> */}
-
                         <GoogleLogin
                             clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID}
-                            buttonText="Log in with Google"
+                            buttonText="Continue with Google"
                             // text="Log in with Google"
                             onSuccess={onGoogleLoginSuccess}
                             onFailure={onGoogleLoginError}

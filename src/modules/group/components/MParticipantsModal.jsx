@@ -69,16 +69,18 @@ const MParticipantsModal = forwardRef(({ participants }, ref) => {
                             Owner
                         </h5>
 
-                        <div className="flex items-center p-2">
-                            <div>
-                                <Avatar
-                                    alt="User settings"
-                                    img={owner?.user?.image}
-                                    rounded={true}
-                                />
+                        {owner && (
+                            <div className="flex items-center p-2">
+                                <div>
+                                    <Avatar
+                                        alt="User settings"
+                                        img={owner?.user?.image}
+                                        rounded={true}
+                                    />
+                                </div>
+                                <div className="flex-1 pl-3">{owner?.user?.name}</div>
                             </div>
-                            <div className="flex-1 pl-3">{owner?.user?.name}</div>
-                        </div>
+                        )}
                     </div>
                     <div className="mt-7 w-full px-3">
                         <h5 className="block w-full border-b-2  border-b-black py-2 text-[30px] text-[#38BDF8]">
