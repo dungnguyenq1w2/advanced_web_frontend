@@ -19,8 +19,8 @@ export const USERS = {
 //#region USERS
 export const GROUPS = {
     GET: '/groups',
-    GET_BY_ID: '/groups/:id',
+    GET_BY_ID: '/groups',
     CREATE: '/groups',
-    UPDATE: '/groups/:id',
+    UPDATE: '/groups',
 }
 //#endregion

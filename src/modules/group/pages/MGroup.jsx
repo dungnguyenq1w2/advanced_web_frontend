@@ -15,25 +15,38 @@ import { Button } from 'flowbite-react'
 import MParticipantsModal from '../components/MParticipantsModal'
 import MShareModal from '../components/MShareModal'
 import CLoading from 'common/components/CLoading'
-import { ROLE } from 'common/constant'
-
-// const data = {
-//     id: 1,
-//     title: 'group1',
-//     description: 'test',
-//     role: 'Owner',
-// }
+import { ROLE, ROLE_ASSIGNMENT } from 'common/constant'
 
 function MGroup() {
     //#region data
     const { groupId } = useParams()
     const shareModalRef = useRef()
     const participantsModalRef = useRef()
-    const { data: _data, isLoading } = getById(groupId)
-    const group = useMemo(() => _data?.data?.data ?? {}, [_data])
+    const { data, isLoading, set } = getById(groupId)
+    const group = useMemo(() => data?.data ?? {}, [data])
+
     //#endregion
 
     //#region event
+    const handleChangeRole = (mode, userId) => {
+        const index = group.participants.findIndex((e) => e.user.id === userId)
+        const newGroup = { ...group, participants: [...group.participants] }
+        switch (mode) {
+            case ROLE_ASSIGNMENT.PROMOTE:
+                newGroup.participants[index].role_id--
+                break
+            case ROLE_ASSIGNMENT.DEMOTE:
+                newGroup.participants[index].role_id++
+                break
+            case ROLE_ASSIGNMENT.KICK_OUT:
+                newGroup.participants.splice(index, 1)
+                break
+
+            default:
+                break
+        }
+        set({ ...data, data: newGroup })
+    }
     //#endregion
 
     if (isLoading) return <CLoading />
@@ -64,7 +77,7 @@ function MGroup() {
                     </div>
                     <div className="my-1 flex items-center">
                         <UserGroupIcon className="mr-2 h-5 w-5" />
-                        Participants ({group?.participants.length ?? 0})
+                        Participants ({group?.participants?.length ?? 0})
                         <ViewfinderCircleIcon
                             onClick={() => participantsModalRef.current.open()}
                             className="ml-2 h-6 w-6 cursor-pointer text-blue-500"
@@ -77,6 +90,7 @@ function MGroup() {
             <MParticipantsModal
                 ref={participantsModalRef}
                 participants={group.participants}
+                onRoleChange={handleChangeRole}
             />
         </div>
     )

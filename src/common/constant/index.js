@@ -3,3 +3,9 @@ export const ROLE = {
     2: 'Co-owner',
     3: 'Member',
 }
+
+export const ROLE_ASSIGNMENT = {
+    PROMOTE: 'PROMOTE',
+    DEMOTE: 'DEMOTE',
+    KICK_OUT: 'KICK_OUT',
+}

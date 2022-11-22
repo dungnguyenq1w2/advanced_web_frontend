@@ -67,12 +67,16 @@ function MGroupList() {
                                                 {group.description}
                                             </p>
                                             <div className="text-md mb-2 flex items-center">
-                                                <FireIcon className="mr-2 h-5 w-5" />
+                                                <div>
+                                                    <FireIcon className="mr-2 h-5 w-5" />
+                                                </div>
                                                 You are {ROLE[group.my_role]} of this group
                                                 {/* {ROLE[group.my_role]} */}
                                             </div>
                                             <div className="text-md mb-2 flex items-center">
-                                                <UserGroupIcon className="mr-2 h-5 w-5" />
+                                                <div>
+                                                    <UserGroupIcon className="mr-2 h-5 w-5" />
+                                                </div>
                                                 {group.group_size} participants
                                             </div>
                                         </div>
