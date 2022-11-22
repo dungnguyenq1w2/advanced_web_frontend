@@ -81,8 +81,6 @@ function MRegister() {
         })
 
         if (result?.data) {
-            // localStorage.setItem('user', JSON.stringify(result.data.user))
-            localStorage.setItem('is_google_login', true)
             // navigate(-1)
             setTimeout(() => {
                 // navigate(0)

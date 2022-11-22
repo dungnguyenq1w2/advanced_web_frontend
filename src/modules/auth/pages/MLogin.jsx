@@ -29,15 +29,6 @@ function MLogin() {
 
     // #region event
     useEffect(() => {
-        // gapi.load('client:auth2', () => {
-        //     // gapi.client.init({
-        //     gapi.auth2.getAuthInstance({
-        //         client_id:
-        //             '433396208748-b93bnrb74g5tgenlrpmhii397a5hp8b7.apps.googleusercontent.com',
-        //         // plugin_name: 'chat',
-        //         scope: '',
-        //     })
-        // })
         if (localStorage.getItem('user')) navigate('/')
     }, [])
 
@@ -52,11 +43,10 @@ function MLogin() {
         const res = await login(data)
 
         if (res?.data) {
-            localStorage.removeItem('is_google_login')
-            navigate(-1)
+            setIsLoading(false)
             setTimeout(() => {
-                navigate(0)
-            }, 300)
+                navigate(-1)
+            }, 600)
         } else {
             setLoginError(res.error.message)
             setTimeout(() => {
@@ -65,65 +55,20 @@ function MLogin() {
         }
     }
 
-    // const handleGoogleLogin = () => {
-    //     // Xử lí đăng nhập bằng Google
-    // }
     const onGoogleLoginSuccess = async (res) => {
-        console.log('LOGIN SUCCESS --> res:', res)
-
         setIsLoading(true)
         const result = await googleLogin({
             token: res?.tokenId,
         })
 
         if (result?.data) {
-            // localStorage.setItem('user', JSON.stringify(result.data.user))
-            localStorage.setItem('is_google_login', true)
-            // navigate(-1)
-            setTimeout(() => {
-                // navigate(0)
-                navigate('/')
-            }, 300)
+            navigate(-1)
         } else {
             setLoginError(result.error.message)
             setTimeout(() => {
                 setIsLoading(false)
             }, 600)
         }
-        // try {
-        //     setIsLoading(true)
-        //     const result = await axios.post(`${process.env.REACT_APP_API_URL}/auth/google-login`, {
-        //         token: res?.tokenId,
-        //     })
-
-        //     // setUser(result.data.user)
-        //     console.log(result)
-        //     console.log(result.data.user)
-        //     // localStorage.setItem('user', JSON.stringify(result.data.user))
-        //     // navigate(-1)
-        //     // setTimeout(() => {
-        //     //     navigate(0)
-        //     // }, 300)
-        //     if (result?.data) {
-        //         localStorage.setItem('user', JSON.stringify({ ...result.data }))
-
-        //         localStorage.setItem('is_google_login', true)
-        //         navigate(-1)
-        //         setTimeout(() => {
-        //             navigate(0)
-        //         }, 300)
-        //     } else {
-        //         setLoginError(result.error.message)
-        //         console.log('🚀 ~ result', result)
-        //         setTimeout(() => {
-        //             setIsLoading(false)
-        //         }, 600)
-        //     }
-        // } catch (err) {
-        //     console.log(err)
-        // }
-
-        refreshTokenSetup(res)
     }
     const onGoogleLoginError = (res) => {
         console.log('LOGIN FAILED --> res:', res)

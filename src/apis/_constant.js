@@ -22,5 +22,6 @@ export const GROUPS = {
     GET_BY_ID: '/groups',
     CREATE: '/groups',
     UPDATE: '/groups',
+    INVITE: '/groups',
 }
 //#endregion

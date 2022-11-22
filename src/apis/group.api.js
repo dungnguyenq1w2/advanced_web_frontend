@@ -38,3 +38,9 @@ export const kickOutParticipant = (id, params = {}) => {
         return isSuccess(rest) ? { data: data } : { data: [] }
     }).remove(`${GROUPS.UPDATE}/${id}/kick-out`, params)
 }
+
+export const joinGroupByLink = (id, params = {}) => {
+    return map(({ data, ...rest }) => {
+        return isSuccess(rest) ? { data: data } : { data: [] }
+    }).post(`${GROUPS.INVITE}/${id}/invite`, params)
+}

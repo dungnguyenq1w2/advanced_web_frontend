@@ -9,14 +9,13 @@ function MGroupList() {
     const { data, isLoading, refetch } = getAllGroup({}, false, { staleTime: 0 })
     const [roleOption, setRoleOption] = useState(0)
 
-    // const groups = useMemo(() => data?.data?.data ?? [], [data])
     const groups = useMemo(() => {
         let filteredGroup = []
-        if (data?.data?.data) {
+        if (data?.data) {
             if (roleOption === 0) {
-                filteredGroup = [...data?.data?.data]
+                filteredGroup = [...data?.data]
             } else {
-                filteredGroup = [...data?.data?.data].filter((item) => item.my_role === roleOption)
+                filteredGroup = [...data?.data].filter((item) => item.my_role === roleOption)
             }
         }
         return filteredGroup

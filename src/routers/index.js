@@ -4,7 +4,7 @@ import App from 'App'
 
 import { Home } from 'modules/home/pages'
 import { Login, Register, Verify } from 'modules/auth/pages'
-import { Group, GroupCreate, GroupList } from 'modules/group/pages'
+import { Group, GroupCreate, GroupInvite, GroupList } from 'modules/group/pages'
 import CAuthLayout from 'common/components/layouts/CAuthLayout'
 
 const router = createBrowserRouter([
@@ -25,7 +25,16 @@ const router = createBrowserRouter([
                     },
                     {
                         path: ':groupId',
-                        element: <Group />,
+                        children: [
+                            {
+                                index: true,
+                                element: <Group />,
+                            },
+                            {
+                                path: 'invite',
+                                element: <GroupInvite />,
+                            },
+                        ],
                     },
                     {
                         path: 'create',
