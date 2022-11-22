@@ -59,7 +59,7 @@ function MGroup() {
                     your participants.
                 </p>
                 <div className="flex justify-end">
-                    <Button size="md" onClick={() => shareModalRef.current.open()}>
+                    <Button disable={} size="md" onClick={() => shareModalRef.current.open()}>
                         <UserPlusIcon className="mr-2 h-5 w-5" /> Share invite
                     </Button>
                 </div>
