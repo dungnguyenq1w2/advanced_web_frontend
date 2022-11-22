@@ -39,9 +39,7 @@ export async function put(url, body, options = {}) {
 // fetch: method = delete
 export async function remove(url, options = {}) {
     try {
-        return await instance.delete(url, {
-            ...options,
-        })
+        return await instance.delete(url, { data: { ...options } })
     } catch (err) {
         return err
     }

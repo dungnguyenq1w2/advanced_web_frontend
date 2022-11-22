@@ -3,11 +3,23 @@ import { getAll as getAllGroup } from 'common/queries-fn/groups.query'
 import CLoading from 'common/components/CLoading'
 import { ROLE } from 'common/constant'
 import { FireIcon, UserGroupIcon } from '@heroicons/react/24/outline'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 function MGroupList() {
+    //#region data
     const { data, isLoading, refetch } = getAllGroup({}, false, { staleTime: 0 })
     const [roleOption, setRoleOption] = useState(0)
+    const navigate = useNavigate()
+    //#endregion
+
+    //#region event
+    useEffect(() => {
+        const user = localStorage.getItem('user')
+        if (!user) {
+            alert('Login to use this feature')
+            navigate('/auth/login')
+        }
+    }, [])
 
     const groups = useMemo(() => {
         let filteredGroup = []
@@ -20,7 +32,7 @@ function MGroupList() {
         }
         return filteredGroup
     }, [data, roleOption])
-
+    //#endregion
     // console.log('--------------')
     // console.log(data)
     // console.log(groups)

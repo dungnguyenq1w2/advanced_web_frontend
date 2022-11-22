@@ -43,8 +43,8 @@ function MLogin() {
         const res = await login(data)
 
         if (res?.data) {
-            setIsLoading(false)
             setTimeout(() => {
+                setIsLoading(false)
                 navigate(-1)
             }, 600)
         } else {
@@ -62,7 +62,10 @@ function MLogin() {
         })
 
         if (result?.data) {
-            navigate(-1)
+            setTimeout(() => {
+                setIsLoading(false)
+                navigate(-1)
+            }, 600)
         } else {
             setLoginError(result.error.message)
             setTimeout(() => {

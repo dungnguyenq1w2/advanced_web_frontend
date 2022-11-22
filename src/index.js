@@ -22,7 +22,6 @@ const root = ReactDOM.createRoot(document.getElementById('root'))
 //         {/* </GoogleOAuthProvider> */}
 //     </React.StrictMode>
 // )
-
 root.render(
     <QueryClientProvider client={client}>
         <RouterProvider router={router} />

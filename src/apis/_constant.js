@@ -21,7 +21,11 @@ export const GROUPS = {
     GET: '/groups',
     GET_BY_ID: '/groups',
     CREATE: '/groups',
-    UPDATE: '/groups',
-    INVITE: '/groups',
+    PROMOTE: (id) => `/groups/${id}/promote`,
+    DEMOTE: (id) => `/groups/${id}/demote`,
+    KICK_OUT: (id) => `/groups/${id}/kick-out`,
+    INVITE: (id) => `/groups/${id}/invite`,
+    INVITE_MAIL: (id) => `/groups/${id}/invite-email`,
+    SEND_INVITAION_MAIL: (id) => `/groups/${id}/send-email`,
 }
 //#endregion

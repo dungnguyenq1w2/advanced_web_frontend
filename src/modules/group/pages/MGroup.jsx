@@ -1,6 +1,6 @@
-import { useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 
 import { getById } from 'common/queries-fn/groups.query'
 
@@ -20,14 +20,22 @@ import { ROLE, ROLE_ASSIGNMENT } from 'common/constant'
 function MGroup() {
     //#region data
     const { groupId } = useParams()
+    const navigate = useNavigate()
     const shareModalRef = useRef()
     const participantsModalRef = useRef()
     const { data, isLoading, set } = getById(groupId)
     const group = useMemo(() => data?.data ?? {}, [data])
-
     //#endregion
 
     //#region event
+    useEffect(() => {
+        const user = localStorage.getItem('user')
+        if (!user) {
+            alert('Login to use this feature')
+            navigate('/auth/login')
+        }
+    }, [])
+
     const handleChangeRole = (mode, userId) => {
         const index = group.participants.findIndex((e) => e.user.id === userId)
         const newGroup = { ...group, participants: [...group.participants] }
@@ -59,7 +67,11 @@ function MGroup() {
                     your participants.
                 </p>
                 <div className="flex justify-end">
-                    <Button disable={} size="md" onClick={() => shareModalRef.current.open()}>
+                    <Button
+                        disabled={group.my_role === 3}
+                        size="md"
+                        onClick={() => shareModalRef.current.open()}
+                    >
                         <UserPlusIcon className="mr-2 h-5 w-5" /> Share invite
                     </Button>
                 </div>
@@ -69,7 +81,7 @@ function MGroup() {
                 <div className="">
                     <div className="my-1 flex items-center">
                         <FireIcon className="mr-2 h-5 w-5" />
-                        {ROLE[group.role]}
+                        {ROLE[group.my_role]}
                     </div>
                     <div className="my-1 flex items-center">
                         <Bars3BottomLeftIcon className="mr-2 h-5 w-5" />
