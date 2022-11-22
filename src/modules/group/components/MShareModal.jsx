@@ -1,14 +1,22 @@
 import { forwardRef, useImperativeHandle, useState } from 'react'
 
+import { useParams } from 'react-router-dom'
+
+import CLoading from 'common/components/CLoading'
 import CModal from 'common/components/CModal'
-import { emailVailation } from '../validation'
-import { v4 as uuidv4 } from 'uuid'
+
 import { Dialog } from '@headlessui/react'
+import { sendInvitationByEmail } from 'apis/group.api'
+
 import { CheckIcon, XMarkIcon } from '@heroicons/react/20/solid'
 import { Button } from 'flowbite-react'
+import { v4 as uuidv4 } from 'uuid'
+import { emailVailation } from '../validation'
 
 const MShareModal = forwardRef(({}, ref) => {
     //#region data
+    const { groupId } = useParams()
+    const [isLoading, setIsLoading] = useState(false)
     const [isOpen, setIsOpen] = useState(false)
     const [isCopied, setIsCopied] = useState(false)
     const [email, setEmail] = useState('')
@@ -49,8 +57,16 @@ const MShareModal = forwardRef(({}, ref) => {
         setEmails(newEmails)
     }
 
+    const handleSendEmail = async () => {
+        setIsLoading(true)
+        const res = await sendInvitationByEmail(groupId, { emails })
+        if (res.data) {
+            setIsLoading(false)
+        }
+    }
+
     const handleCopyShareLink = () => {
-        navigator.clipboard.writeText('https://localhost:5000/group/1/invite')
+        navigator.clipboard.writeText(`${window.location.href}/invite`)
         setIsCopied(true)
     }
 
@@ -81,7 +97,7 @@ const MShareModal = forwardRef(({}, ref) => {
                         <span className="text-sm font-semibold">Share with the link</span>
                         <div className="mb-4 flex items-center">
                             <span className="mr-2 w-80 overflow-hidden truncate text-ellipsis border p-2 text-sm text-gray-400">
-                                https://localhost:5000/group/1/invite
+                                {window.location.href}/invite
                             </span>
                             {isCopied ? (
                                 <CheckIcon className="h-5 w-5 text-green-500" />
@@ -126,8 +142,11 @@ const MShareModal = forwardRef(({}, ref) => {
                             <span className=" w-60 items-center text-xs text-gray-600">
                                 We'll need at least one email address to send your invite
                             </span>
-                            <Button disabled={!emails.length}>Send email</Button>
+                            <Button onClick={handleSendEmail} disabled={!emails.length}>
+                                Send email
+                            </Button>
                         </div>
+                        {isLoading && <CLoading />}
                     </div>
                 </div>
             </Dialog.Panel>

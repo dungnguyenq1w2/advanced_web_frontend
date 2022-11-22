@@ -8,8 +8,8 @@ const client = new QueryClient({
             retryDelay: 0,
             refetchOnWindowFocus: false,
             cacheTime: 2000 * 60,
-            staleTime: 2000 * 60,
-            // staleTime: 0,
+            // staleTime: 2000 * 60,
+            staleTime: 0,
         },
     },
 })
