@@ -3,9 +3,12 @@ import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 function MProfile() {
-    //const [user, setUser] = useState(JSON.parse(localStorage.getItem('user')))
-    const { data: _data, isLoading } = getById(JSON.parse(localStorage.getItem('user')).id)
-    const user = useMemo(() => _data?.data?.data ?? {}, [_data])
+    const { data, isLoading } = getById(JSON.parse(localStorage.getItem('user')).id) 
+    if (!data) {
+        alert('Login to use this feature')
+        navigate('/auth/login')
+    }
+    const user = useMemo(() => data?.data?.data ?? {}, [data])
     const navigate = useNavigate()
     return (
         <div className="flex h-[70vh] w-full items-center justify-center rounded-[12px]">
