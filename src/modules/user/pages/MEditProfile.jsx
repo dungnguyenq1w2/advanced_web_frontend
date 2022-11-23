@@ -18,7 +18,10 @@ const schema = yup
 
 function MEditProfile() {
     const { data, isLoading } = getById(JSON.parse(localStorage.getItem('user')).id)
-
+    if (!data) {
+        alert('Login to use this feature')
+        navigate('/auth/login')
+    }
     const [user, setUser] = useState(data?.data?.data)
     useEffect(() => {
         setUser(data?.data?.data)
@@ -33,9 +36,9 @@ function MEditProfile() {
     } = useForm({
         resolver: yupResolver(schema),
     })
-    
+
     const onSubmit = async (data) => {
-        const updateUser = async(userData) => {
+        const updateUser = async (userData) => {
             const res = await updateProfile(user.id, JSON.stringify(userData))
             if (res.data) {
                 const localUser = JSON.parse(localStorage.getItem('user'))
@@ -43,7 +46,7 @@ function MEditProfile() {
                     'user',
                     JSON.stringify({
                         ...localUser,
-                        ...res.data.data
+                        ...res.data.data,
                     })
                 )
                 window.setTimeout(function () {
@@ -60,8 +63,7 @@ function MEditProfile() {
                     data.image = reader.result
                     updateUser(data)
                 }
-            }
-            else{
+            } else {
                 updateUser(data)
             }
         } catch (error) {
@@ -146,7 +148,7 @@ function MEditProfile() {
                                 type="number"
                                 value={user?.phone}
                                 pattern="0[0-9]{9}"
-                                // placeholder="Phone number consists of 10 digits, starting with 0"
+                                placeholder="Phone number consists of 10 digits, starting with 0"
                                 {...register('phone')}
                                 onChange={(e) => {
                                     setUser({ ...user, phone: e.target.value })
