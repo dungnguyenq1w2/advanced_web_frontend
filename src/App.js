@@ -34,8 +34,8 @@ function App() {
     return (
         <>
             <CHeader />
-            {/* <div id="signin-div"></div> */}
-            <div className="min-h-[86.9vh] bg-slate-100">
+            <div className="min-h-[84vh] bg-slate-100">
+
                 <Suspense fallback={<CLoading />}>
                     <Outlet />
                 </Suspense>

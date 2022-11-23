@@ -79,6 +79,7 @@ function CHeader() {
                                     {user?.email}
                                 </span>
                             </Dropdown.Header>
+                            <Dropdown.Item onClick={() => {navigate('/profile')}}>Profile</Dropdown.Item>
                             <Dropdown.Item>Dashboard</Dropdown.Item>
                             <Dropdown.Item>Settings</Dropdown.Item>
                             <Dropdown.Item>Earnings</Dropdown.Item>

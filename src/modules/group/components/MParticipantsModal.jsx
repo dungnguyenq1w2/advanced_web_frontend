@@ -115,40 +115,37 @@ const MParticipantsModal = forwardRef(({ participants, onRoleChange }, ref) => {
                                 {co_owners.length} co-owner
                             </div>
                         </h5>
-                        {co_owners &&
-                            co_owners.map((co_owner, index) => (
-                                <div
-                                    key={index}
-                                    className="flex items-center border-b border-neutral-700 p-2"
-                                >
-                                    <div>
-                                        <Avatar
-                                            alt="User settings"
-                                            img={co_owner?.user?.image}
-                                            rounded={true}
-                                        />
-                                    </div>
-                                    <div className="flex-1 pl-3">{co_owner?.user?.name}</div>
-                                    {owner?.user?.id === user.id ? (
-                                        <div className="flex">
-                                            <ChevronDoubleDownIcon
-                                                onClick={() =>
-                                                    handleDemoteParticipant(co_owner?.user?.id)
-                                                }
-                                                className="ml-1 h-6 w-6 cursor-pointer text-blue-700"
-                                            ></ChevronDoubleDownIcon>
-                                            <XMarkIcon
-                                                onClick={() =>
-                                                    handleKickOutParticipant(co_owner?.user?.id)
-                                                }
-                                                className="ml-1 h-6 w-6 cursor-pointer text-red-700"
-                                            ></XMarkIcon>
-                                        </div>
-                                    ) : (
-                                        <></>
-                                    )}
+                        {co_owners && co_owners.map((co_owner, index) => (
+                            <div
+                                key={index}
+                                className="flex items-center border-b border-neutral-700 p-2"
+                            >
+                                <div>
+                                    <Avatar
+                                        alt="User settings"
+                                        img={co_owner?.user?.image}
+                                        rounded={true}
+                                    />
                                 </div>
-                            ))}
+                                <div className="flex-1 pl-3">{co_owner?.user?.name}</div>
+                                {owner?.user?.id === user.id ? (
+                                    <div className="flex">
+                                        <ChevronDoubleDownIcon
+                                            onClick={() =>
+                                                handleDepromotedeUser(co_owner?.user?.id)
+                                            }
+                                            className="ml-1 h-6 w-6 cursor-pointer text-blue-700"
+                                        ></ChevronDoubleDownIcon>
+                                        <XMarkIcon
+                                            onClick={() => handleDeleteUser(co_owner?.user?.id)}
+                                            className="ml-1 h-6 w-6 cursor-pointer text-red-700"
+                                        ></XMarkIcon>
+                                    </div>
+                                ) : (
+                                    <></>
+                                )}
+                            </div>
+                        ))}
                     </div>
                     <div className="mt-7 w-full px-3">
                         <h5 className="block w-full border-b-2  border-b-black py-2 text-[30px] text-[#38BDF8]">
@@ -174,24 +171,18 @@ const MParticipantsModal = forwardRef(({ participants, onRoleChange }, ref) => {
                                     {owner?.user?.id === user.id ? (
                                         <div className="flex">
                                             <ChevronDoubleUpIcon
-                                                onClick={() =>
-                                                    handlePromoteParticipant(member?.user?.id)
-                                                }
+                                                onClick={() => handlePromoteUser(member?.user?.id)}
                                                 className="mr-1 h-6 w-6 text-blue-700"
                                             ></ChevronDoubleUpIcon>
                                             <XMarkIcon
-                                                onClick={() =>
-                                                    handleKickOutParticipant(member?.user?.id)
-                                                }
+                                                onClick={() => handleDeleteUser(member?.user?.id)}
                                                 className="ml-1 h-6 w-6 text-red-700"
                                             ></XMarkIcon>
                                         </div>
                                     ) : user_co_owner ? (
                                         <div className="flex">
                                             <XMarkIcon
-                                                onClick={() =>
-                                                    handleKickOutParticipant(member?.user?.id)
-                                                }
+                                                onClick={() => handleDeleteUser(member?.user?.id)}
                                                 className="ml-1 h-6 w-6 text-red-700"
                                             ></XMarkIcon>
                                         </div>

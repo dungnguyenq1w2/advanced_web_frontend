@@ -12,11 +12,12 @@ export const AUTH = {
 //#region USERS
 export const USERS = {
     GET: '/users',
-    GET_BY_ID: '/users/:id',
+    GET_BY_ID: '/users',
+    PUT: '/users',
 }
 //#endregion
 
-//#region USERS
+//#region GROUPS
 export const GROUPS = {
     GET: '/groups',
     GET_BY_ID: '/groups',

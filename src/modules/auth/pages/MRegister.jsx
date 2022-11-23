@@ -72,15 +72,16 @@ function MRegister() {
         }
     }
 
-    const onGoogleLoginSuccess = async (res) => {
-        console.log('LOGIN SUCCESS --> res:', res)
+   const onGoogleLoginSuccess = async (res) => {
+    //    console.log('LOGIN SUCCESS --> res:', res)
 
-        setIsLoading(true)
-        const result = await googleLogin({
-            token: res?.tokenId,
-        })
+       setIsLoading(true)
+       const result = await googleLogin({
+           token: res?.tokenId,
+       })
 
         if (result?.data) {
+            localStorage.setItem('is_google_login', true)
             // navigate(-1)
             setTimeout(() => {
                 // navigate(0)
@@ -98,38 +99,38 @@ function MRegister() {
         //         token: res?.tokenId,
         //     })
 
-        //     // setUser(result.data.user)
-        //     console.log(result)
-        //     console.log(result.data.user)
-        //     // localStorage.setItem('user', JSON.stringify(result.data.user))
-        //     // navigate(-1)
-        //     // setTimeout(() => {
-        //     //     navigate(0)
-        //     // }, 300)
-        //     if (result?.data) {
-        //         localStorage.setItem('user', JSON.stringify({ ...result.data }))
+       //     // setUser(result.data.user)
+       //     console.log(result)
+       //     console.log(result.data.user)
+       //     // localStorage.setItem('user', JSON.stringify(result.data.user))
+       //     // navigate(-1)
+       //     // setTimeout(() => {
+       //     //     navigate(0)
+       //     // }, 300)
+       //     if (result?.data) {
+       //         localStorage.setItem('user', JSON.stringify({ ...result.data }))
 
-        //         localStorage.setItem('is_google_login', true)
-        //         navigate(-1)
-        //         setTimeout(() => {
-        //             navigate(0)
-        //         }, 300)
-        //     } else {
-        //         setLoginError(result.error.message)
-        //         console.log('🚀 ~ result', result)
-        //         setTimeout(() => {
-        //             setIsLoading(false)
-        //         }, 600)
-        //     }
-        // } catch (err) {
-        //     console.log(err)
-        // }
+       //         localStorage.setItem('is_google_login', true)
+       //         navigate(-1)
+       //         setTimeout(() => {
+       //             navigate(0)
+       //         }, 300)
+       //     } else {
+       //         setLoginError(result.error.message)
+       //         console.log('🚀 ~ result', result)
+       //         setTimeout(() => {
+       //             setIsLoading(false)
+       //         }, 600)
+       //     }
+       // } catch (err) {
+       //     console.log(err)
+       // }
 
-        refreshTokenSetup(res)
-    }
-    const onGoogleLoginError = (res) => {
-        console.log('LOGIN FAILED --> res:', res)
-    }
+       refreshTokenSetup(res)
+   }
+   const onGoogleLoginError = (res) => {
+       console.log('LOGIN FAILED --> res:', res)
+   }
     //#endregion
     return (
         <div className="flex flex-col items-center pt-16">
@@ -259,7 +260,7 @@ function MRegister() {
                     </Link>
                 </div> */}
                     <div className="mt-3 flex cursor-pointer flex-col items-center">
-                        <h3 className="text-sm text-gray-500"> Or</h3>
+                        <h3 className="text-sm text-gray-500"> Or Register with</h3>
                         <div className="mt-2 flex">
                             <GoogleLogin
                                 clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID}
@@ -271,7 +272,7 @@ function MRegister() {
                                 cookiePolicy={'single_host_origin'}
                             />
                         </div>
-                    </div>
+                    </div> */}
                 </form>
             ) : (
                 <div className="relative flex w-[25rem] flex-col gap-4 rounded-lg bg-white p-10 shadow-md">
