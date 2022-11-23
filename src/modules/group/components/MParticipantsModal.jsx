@@ -12,6 +12,7 @@ import { Avatar } from 'flowbite-react'
 
 import { ROLE_ASSIGNMENT } from 'common/constant'
 import { detachedByKey } from '../utils/index'
+import property from 'assets/images/property.png'
 
 const MParticipantsModal = forwardRef(({ participants, onRoleChange }, ref) => {
     //#region data
@@ -73,6 +74,8 @@ const MParticipantsModal = forwardRef(({ participants, onRoleChange }, ref) => {
             console.log('Error: ', error)
         }
     }
+
+    const handleDelegateOwner = async (curOwnerId, nextOwnerId) => {}
     //#endregion
 
     return (
@@ -108,7 +111,7 @@ const MParticipantsModal = forwardRef(({ participants, onRoleChange }, ref) => {
                             </div>
                         )}
                     </div>
-                    <div className="mt-7 w-full px-3">
+                    <div className="mt-6 w-full px-3">
                         <h5 className="block w-full border-b-2  border-b-black py-2 text-[30px] text-[#38BDF8]">
                             Co-owner
                             <div className="float-right pt-4 text-[18px]">
@@ -131,6 +134,17 @@ const MParticipantsModal = forwardRef(({ participants, onRoleChange }, ref) => {
                                     <div className="flex-1 pl-3">{co_owner?.user?.name}</div>
                                     {owner?.user?.id === user.id ? (
                                         <div className="flex">
+                                            <img
+                                                className="mr-2 h-6 w-6 cursor-pointer"
+                                                src={property}
+                                                onClick={() =>
+                                                    handleDelegateOwner(
+                                                        owner?.user?.id,
+                                                        co_owner?.user?.id
+                                                    )
+                                                }
+                                                alt="property"
+                                            />
                                             <ChevronDoubleDownIcon
                                                 onClick={() =>
                                                     handleDemoteParticipant(co_owner?.user?.id)
@@ -173,6 +187,17 @@ const MParticipantsModal = forwardRef(({ participants, onRoleChange }, ref) => {
                                     <div className="flex-1 pl-3">{member?.user?.name}</div>
                                     {owner?.user?.id === user.id ? (
                                         <div className="flex">
+                                            <img
+                                                className="mr-2 h-6 w-6 cursor-pointer"
+                                                src={property}
+                                                onClick={() =>
+                                                    handleDelegateOwner(
+                                                        owner?.user?.id,
+                                                        member?.user?.id
+                                                    )
+                                                }
+                                                alt="property"
+                                            />
                                             <ChevronDoubleUpIcon
                                                 onClick={() =>
                                                     handlePromoteParticipant(member?.user?.id)
