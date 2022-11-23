@@ -29,6 +29,15 @@ function MLogin() {
 
     // #region event
     useEffect(() => {
+        gapi.load('client:auth2', () => {
+            // gapi.client.init({
+            gapi.auth2.getAuthInstance({
+                client_id:
+                    '433396208748-b93bnrb74g5tgenlrpmhii397a5hp8b7.apps.googleusercontent.com',
+                // plugin_name: 'chat',
+                scope: '',
+            })
+        })
         if (localStorage.getItem('user')) navigate('/')
     }, [])
 
