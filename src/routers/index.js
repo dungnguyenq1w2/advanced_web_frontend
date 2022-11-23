@@ -6,6 +6,7 @@ import { Home } from 'modules/home/pages'
 import { Login, Register, Verify } from 'modules/auth/pages'
 import { Group, GroupCreate, GroupInvite, GroupList } from 'modules/group/pages'
 import CAuthLayout from 'common/components/layouts/CAuthLayout'
+import { EditProfile, Profile } from 'modules/user/pages'
 
 const router = createBrowserRouter([
     {
@@ -39,6 +40,19 @@ const router = createBrowserRouter([
                     {
                         path: 'create',
                         element: <GroupCreate />,
+                    },
+                ],
+            },
+            {
+                path: 'profile',
+                children: [
+                    {
+                        index: true,
+                        element: <Profile />,
+                    },
+                    {
+                        path: 'edit',
+                        element: <EditProfile />,
                     },
                 ],
             },
