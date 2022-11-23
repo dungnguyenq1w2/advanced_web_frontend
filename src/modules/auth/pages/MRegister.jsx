@@ -44,26 +44,6 @@ function MRegister() {
 
         if (resRegister.data) {
             setIsSuccess(true)
-            // alert('Đăng kí thành công!! Cần xác thực tài khoản để đăng nhập')
-            // const accountLogin = {
-            //     email: data.email,
-            //     password: data.password,
-            // }
-            // const resLogin = await login(accountLogin)
-            // if (resLogin?.data) {
-            //     setTimeout(() => {
-            //         setIsLoading(false)
-            //     }, 600)
-            //     navigate(-1)
-            //     setTimeout(() => {
-            //         navigate(0)
-            //     }, 300)
-            // } else {
-            //     setRegisterError(resLogin.error.message)
-            //     setTimeout(() => {
-            //         setIsLoading(false)
-            //     }, 600)
-            // }
         } else {
             setRegisterError(resRegister.error.message)
             setTimeout(() => {
@@ -72,65 +52,27 @@ function MRegister() {
         }
     }
 
-   const onGoogleLoginSuccess = async (res) => {
-    //    console.log('LOGIN SUCCESS --> res:', res)
-
-       setIsLoading(true)
-       const result = await googleLogin({
-           token: res?.tokenId,
-       })
+    const onGoogleLoginSuccess = async (res) => {
+        setIsLoading(true)
+        const result = await googleLogin({
+            token: res?.tokenId,
+        })
 
         if (result?.data) {
-            localStorage.setItem('is_google_login', true)
-            // navigate(-1)
             setTimeout(() => {
-                // navigate(0)
-                navigate('/')
-            }, 300)
+                setIsLoading(false)
+                navigate(-1)
+            }, 600)
         } else {
             setRegisterError(result.error.message)
             setTimeout(() => {
                 setIsLoading(false)
             }, 600)
         }
-        // try {
-        //     setIsLoading(true)
-        //     const result = await axios.post(`${process.env.REACT_APP_API_URL}/auth/google-login`, {
-        //         token: res?.tokenId,
-        //     })
-
-       //     // setUser(result.data.user)
-       //     console.log(result)
-       //     console.log(result.data.user)
-       //     // localStorage.setItem('user', JSON.stringify(result.data.user))
-       //     // navigate(-1)
-       //     // setTimeout(() => {
-       //     //     navigate(0)
-       //     // }, 300)
-       //     if (result?.data) {
-       //         localStorage.setItem('user', JSON.stringify({ ...result.data }))
-
-       //         localStorage.setItem('is_google_login', true)
-       //         navigate(-1)
-       //         setTimeout(() => {
-       //             navigate(0)
-       //         }, 300)
-       //     } else {
-       //         setLoginError(result.error.message)
-       //         console.log('🚀 ~ result', result)
-       //         setTimeout(() => {
-       //             setIsLoading(false)
-       //         }, 600)
-       //     }
-       // } catch (err) {
-       //     console.log(err)
-       // }
-
-       refreshTokenSetup(res)
-   }
-   const onGoogleLoginError = (res) => {
-       console.log('LOGIN FAILED --> res:', res)
-   }
+    }
+    const onGoogleLoginError = (res) => {
+        console.log('LOGIN FAILED --> res:', res)
+    }
     //#endregion
     return (
         <div className="flex flex-col items-center pt-16">
@@ -144,9 +86,7 @@ function MRegister() {
                             <ArrowLeftIcon className="mr-2 h-6 w-6" /> Home{' '}
                         </span>
                     </Link>
-
                     <h1 className="text-center text-xl font-bold">REGISTER</h1>
-
                     <div>
                         <div className="mb-2 block">
                             <Label htmlFor="name" value="Your name" />
@@ -242,7 +182,6 @@ function MRegister() {
                             )}
                         />
                     </div>
-
                     {registerError && (
                         <div
                             className="mt-1 rounded-lg bg-red-100 p-2 text-sm text-red-700 dark:bg-red-200 dark:text-red-800"
@@ -252,27 +191,20 @@ function MRegister() {
                         </div>
                     )}
                     {isLoading && <CLoading />}
-
                     <Button type="submit">Register</Button>
-                    {/* <div className="mx-auto text-sm text-gray-500">
-                    <Link to="/auth/login">
-                        <span className="hover:text-gray-800">Login</span>
-                    </Link>
-                </div> */}
+
                     <div className="mt-3 flex cursor-pointer flex-col items-center">
-                        <h3 className="text-sm text-gray-500"> Or Register with</h3>
+                        <h3 className="text-sm text-gray-500"> Or</h3>
                         <div className="mt-2 flex">
                             <GoogleLogin
                                 clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID}
                                 buttonText="Continue with Google"
-                                // text="Log in with Google"
                                 onSuccess={onGoogleLoginSuccess}
                                 onFailure={onGoogleLoginError}
-                                // onError={onGoogleLoginError}
                                 cookiePolicy={'single_host_origin'}
                             />
                         </div>
-                    </div> */}
+                    </div>
                 </form>
             ) : (
                 <div className="relative flex w-[25rem] flex-col gap-4 rounded-lg bg-white p-10 shadow-md">
