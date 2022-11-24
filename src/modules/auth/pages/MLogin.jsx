@@ -11,11 +11,8 @@ import { loginValidationSchema } from '../validation'
 
 import { Button, Label } from 'flowbite-react'
 import CLoading from 'common/components/CLoading'
-import { refreshTokenSetup } from '../../../utils/refreshTokenSetup'
 // import { GoogleLogin } from '@react-oauth/google'
-import { GoogleLogin } from 'react-google-login'
 import { gapi } from 'gapi-script'
-import axios from 'axios'
 import { ArrowLeftIcon } from '@heroicons/react/24/outline'
 
 const formOptions = { resolver: yupResolver(loginValidationSchema) }
@@ -29,17 +26,45 @@ function MLogin() {
 
     // #region event
     useEffect(() => {
-        gapi.load('client:auth2', () => {
-            // gapi.client.init({
-            gapi.auth2.getAuthInstance({
-                client_id:
-                    '433396208748-b93bnrb74g5tgenlrpmhii397a5hp8b7.apps.googleusercontent.com',
-                // plugin_name: 'chat',
-                scope: '',
+        const handleGoogleLoginCallback = async (response) => {
+            setIsLoading(true)
+            const result = await googleLogin({
+                token: response?.credential,
             })
-        })
+
+            if (result?.data) {
+                setTimeout(() => {
+                    setIsLoading(false)
+                    navigate(-1)
+                }, 600)
+            } else {
+                setLoginError(result.error.message)
+                setTimeout(() => {
+                    setIsLoading(false)
+                }, 600)
+            }
+        }
+
+        // /* global google */
+        if (window.google) {
+            const google = window.google
+            google.accounts.id.initialize({
+                client_id: process.env.REACT_APP_GOOGLE_CLIENT_ID,
+                callback: handleGoogleLoginCallback,
+            })
+
+            google.accounts.id.renderButton(document.getElementById('google-login'), {
+                shape: 'pill',
+                theme: 'outline',
+                text: 'continue_with',
+                size: 'medium',
+                locale: 'en-US',
+            })
+
+            google.accounts.id.prompt()
+        }
         if (localStorage.getItem('user')) navigate('/')
-    }, [])
+    }, [navigate])
 
     const {
         register,
@@ -167,7 +192,7 @@ function MLogin() {
                 <div className="mt-3 flex flex-col items-center">
                     <h3 className="text-sm text-gray-500"> Or</h3>
                     <div className="mt-2 flex">
-                        <GoogleLogin
+                        {/* <GoogleLogin
                             clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID}
                             buttonText="Continue with Google"
                             // text="Log in with Google"
@@ -175,7 +200,8 @@ function MLogin() {
                             onFailure={onGoogleLoginError}
                             // onError={onGoogleLoginError}
                             cookiePolicy={'single_host_origin'}
-                        />
+                        /> */}
+                        <div id="google-login"></div>
                     </div>
                 </div>
             </form>

@@ -14,8 +14,6 @@ import { Button, Label } from 'flowbite-react'
 import { registerValidationSchema } from '../validation'
 import google from 'assets/images/google.png'
 import { ArrowLeftIcon } from '@heroicons/react/24/outline'
-import GoogleLogin from 'react-google-login'
-import { refreshTokenSetup } from 'utils/refreshTokenSetup'
 
 const formOptions = { resolver: yupResolver(registerValidationSchema) }
 
@@ -35,8 +33,45 @@ function MRegister() {
 
     //#region event
     useEffect(() => {
+        const handleGoogleLoginCallback = async (response) => {
+            setIsLoading(true)
+            const result = await googleLogin({
+                token: response?.credential,
+            })
+
+            if (result?.data) {
+                setTimeout(() => {
+                    setIsLoading(false)
+                    navigate(-1)
+                }, 600)
+            } else {
+                setRegisterError(result.error.message)
+                setTimeout(() => {
+                    setIsLoading(false)
+                }, 600)
+            }
+        }
+
+        // /* global google */
+        if (window.google) {
+            const google = window.google
+            google.accounts.id.initialize({
+                client_id: process.env.REACT_APP_GOOGLE_CLIENT_ID,
+                callback: handleGoogleLoginCallback,
+            })
+
+            google.accounts.id.renderButton(document.getElementById('google-loginn'), {
+                shape: 'pill',
+                theme: 'outline',
+                text: 'continue_with',
+                size: 'medium',
+                locale: 'en-US',
+            })
+
+            google.accounts.id.prompt()
+        }
         if (localStorage.getItem('user')) navigate('/')
-    }, [])
+    }, [navigate])
 
     const onSubmit = async (data) => {
         setIsLoading(true)
@@ -196,13 +231,7 @@ function MRegister() {
                     <div className="mt-3 flex cursor-pointer flex-col items-center">
                         <h3 className="text-sm text-gray-500"> Or</h3>
                         <div className="mt-2 flex">
-                            <GoogleLogin
-                                clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID}
-                                buttonText="Continue with Google"
-                                onSuccess={onGoogleLoginSuccess}
-                                onFailure={onGoogleLoginError}
-                                cookiePolicy={'single_host_origin'}
-                            />
+                            <div id="google-loginn"></div>
                         </div>
                     </div>
                 </form>
