@@ -10,7 +10,7 @@ const schema = yup
     .object({
         phone: yup
             .string()
-            .matches(/0[0-9]{9}/, 'Phone number must have 10 digits (start with 0)')
+            .matches(/^0[0-9]{9}$/, 'Phone number must have 10 digits (start with 0)')
             .required('Input phone'),
         name: yup.string().min(5).required('Input name'),
     })
@@ -146,9 +146,9 @@ function MEditProfile() {
                             <input
                                 className=" borderpy-2 mb-3 w-full appearance-none rounded px-3 text-gray-700 shadow"
                                 id="phone"
-                                type="text"
+                                type="number"
                                 value={user?.phone}
-                                pattern="0[0-9]{9}"
+                                //pattern="0[0-9]{9}"
                                 placeholder="Phone number consists of 10 digits, starting with 0"
                                 {...register('phone')}
                                 onChange={(e) => {
