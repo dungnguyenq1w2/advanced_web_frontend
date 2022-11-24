@@ -8,4 +8,5 @@ export const ROLE_ASSIGNMENT = {
     PROMOTE: 'PROMOTE',
     DEMOTE: 'DEMOTE',
     KICK_OUT: 'KICK_OUT',
+    SET_OWNER: 'SET_OWNER',
 }

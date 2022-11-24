@@ -38,6 +38,12 @@ export const kickOutParticipant = (id, params = {}) => {
     }).remove(GROUPS.KICK_OUT(id), params)
 }
 
+export const setOwner = (id, params = {}) => {
+    return map(({ data, ...rest }) => {
+        return isSuccess(rest) ? { data: data } : { data: [] }
+    }).put(GROUPS.SET_OWNER(id), params)
+}
+
 export const joinGroupByLink = (id, params = {}) => {
     return map(({ data, ...rest }) => {
         return isSuccess(rest) ? { data: data } : { data: [] }

@@ -1,4 +1,4 @@
-import { forwardRef, useImperativeHandle, useMemo, useState, useRef } from 'react'
+import { forwardRef, useImperativeHandle, useMemo, useState, useRef, useEffect } from 'react'
 
 import { useParams } from 'react-router-dom'
 
@@ -18,8 +18,8 @@ import MPopUpModal from './MPopUpModal'
 const MParticipantsModal = forwardRef(({ participants, onRoleChange }, ref) => {
     //#region data
     const { groupId } = useParams()
-    const MPopUpModalRef = useRef()
-    const [curClickId, setCurClickId ] = useState()
+    const MPopUpModalRef = useRef(false)
+    const [selectedUserId, setSelectedUserId] = useState()
     const [isOpen, setIsOpen] = useState(false)
     const owner = useMemo(() => detachedByKey(participants, 1)[0])
     const co_owners = useMemo(() => detachedByKey(participants, 2))
@@ -30,7 +30,7 @@ const MParticipantsModal = forwardRef(({ participants, onRoleChange }, ref) => {
         for (let co_owner of co_owners) if (user.id === co_owner.user.id) return true
 
         return false
-    }, [user])
+    }, [user, co_owners])
     //#endregion
 
     //#region event
@@ -47,7 +47,6 @@ const MParticipantsModal = forwardRef(({ participants, onRoleChange }, ref) => {
         setIsOpen(false)
     }
 
-    // code thăng cấp member
     const handlePromoteParticipant = async (id) => {
         try {
             const res = await promoteParticipant(groupId, { userId: id })
@@ -139,13 +138,13 @@ const MParticipantsModal = forwardRef(({ participants, onRoleChange }, ref) => {
                                                     className="mr-2 h-6 w-6 cursor-pointer"
                                                     src={property}
                                                     // onClick={() =>
-                                                    //     handleDelegateOwner(
+                                                    //     handleSetOwner(
                                                     //         owner?.user?.id,
                                                     //         co_owner?.user?.id
                                                     //     )
                                                     // }
                                                     onClick={() => {
-                                                        setCurClickId(co_owner?.user?.id)
+                                                        setSelectedUserId(co_owner?.user?.id)
                                                         MPopUpModalRef.current.open()
                                                     }}
                                                     alt="property"
@@ -180,7 +179,7 @@ const MParticipantsModal = forwardRef(({ participants, onRoleChange }, ref) => {
                                 members.map((member, index) => (
                                     <div
                                         key={index}
-                                        className="mx-3 cursor-pointer flex items-center border-b border-neutral-700 p-2"
+                                        className="mx-3 flex cursor-pointer items-center border-b border-neutral-700 p-2"
                                     >
                                         <div>
                                             <Avatar
@@ -196,13 +195,13 @@ const MParticipantsModal = forwardRef(({ participants, onRoleChange }, ref) => {
                                                     className="mr-2 h-6 w-6 cursor-pointer"
                                                     src={property}
                                                     // onClick={() =>
-                                                    //     handleDelegateOwner(
+                                                    //     handleSetOwner(
                                                     //         owner?.user?.id,
                                                     //         member?.user?.id
                                                     //     )
                                                     // }
                                                     onClick={() => {
-                                                        setCurClickId(member?.user?.id)
+                                                        setSelectedUserId(member?.user?.id)
                                                         MPopUpModalRef.current.open()
                                                     }}
                                                     alt="property"
@@ -222,6 +221,7 @@ const MParticipantsModal = forwardRef(({ participants, onRoleChange }, ref) => {
                                             </div>
                                         ) : user_co_owner ? (
                                             <></>
+                                        ) : (
                                             // <div className="flex">
                                             //     <XMarkIcon
                                             //         onClick={() =>
@@ -230,7 +230,6 @@ const MParticipantsModal = forwardRef(({ participants, onRoleChange }, ref) => {
                                             //         className="ml-1 h-6 w-6 text-red-700"
                                             //     ></XMarkIcon>
                                             // </div>
-                                        ) : (
                                             <></>
                                         )}
                                     </div>
@@ -241,10 +240,11 @@ const MParticipantsModal = forwardRef(({ participants, onRoleChange }, ref) => {
             </CModal>
             <MPopUpModal
                 ref={MPopUpModalRef}
-                curOwnerId={user.id}
-                nextOwnerId={curClickId}
+                groupId={groupId}
+                currentOwnerId={user.id}
+                selectedUserId={selectedUserId}
                 // participants={group.participants}
-                // onRoleChange={handleChangeRole}
+                onRoleChange={onRoleChange}
             />
         </>
     )

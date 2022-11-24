@@ -25,6 +25,7 @@ export const GROUPS = {
     PROMOTE: (id) => `/groups/${id}/promote`,
     DEMOTE: (id) => `/groups/${id}/demote`,
     KICK_OUT: (id) => `/groups/${id}/kick-out`,
+    SET_OWNER: (id) => `/groups/${id}/set-owner`,
     INVITE: (id) => `/groups/${id}/invite`,
     INVITE_MAIL: (id) => `/groups/${id}/invite-email`,
     SEND_INVITAION_MAIL: (id) => `/groups/${id}/send-email`,

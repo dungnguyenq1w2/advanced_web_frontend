@@ -38,7 +38,7 @@ function MGroup() {
 
     const handleChangeRole = (mode, userId) => {
         const index = group.participants.findIndex((e) => e.user.id === userId)
-        const newGroup = { ...group, participants: [...group.participants] }
+        let newGroup = { ...group, participants: [...group.participants] }
         switch (mode) {
             case ROLE_ASSIGNMENT.PROMOTE:
                 newGroup.participants[index].role_id--
@@ -48,6 +48,13 @@ function MGroup() {
                 break
             case ROLE_ASSIGNMENT.KICK_OUT:
                 newGroup.participants.splice(index, 1)
+                break
+            case ROLE_ASSIGNMENT.SET_OWNER:
+                newGroup.participants[index].role_id = 1
+                newGroup.my_role = 2
+                console.log(newGroup)
+                // set({ ...data, data: newGroup })
+
                 break
 
             default:
@@ -103,6 +110,7 @@ function MGroup() {
                 ref={participantsModalRef}
                 participants={group.participants}
                 onRoleChange={handleChangeRole}
+                set={set}
             />
         </div>
     )
