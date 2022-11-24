@@ -221,14 +221,15 @@ const MParticipantsModal = forwardRef(({ participants, onRoleChange }, ref) => {
                                                 ></XMarkIcon>
                                             </div>
                                         ) : user_co_owner ? (
-                                            <div className="flex">
-                                                <XMarkIcon
-                                                    onClick={() =>
-                                                        handleKickOutParticipant(member?.user?.id)
-                                                    }
-                                                    className="ml-1 h-6 w-6 text-red-700"
-                                                ></XMarkIcon>
-                                            </div>
+                                            <></>
+                                            // <div className="flex">
+                                            //     <XMarkIcon
+                                            //         onClick={() =>
+                                            //             handleKickOutParticipant(member?.user?.id)
+                                            //         }
+                                            //         className="ml-1 h-6 w-6 text-red-700"
+                                            //     ></XMarkIcon>
+                                            // </div>
                                         ) : (
                                             <></>
                                         )}
