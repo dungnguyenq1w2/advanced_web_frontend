@@ -33,6 +33,7 @@ function MGroupCreate() {
             alert('Login to use this feature')
             navigate('/auth/login')
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     const onSubmit = async (data) => {

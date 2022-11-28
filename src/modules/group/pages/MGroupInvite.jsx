@@ -7,6 +7,7 @@ import CLoading from 'common/components/CLoading'
 
 const MGroupInvite = () => {
     const { groupId } = useParams()
+    // eslint-disable-next-line no-unused-vars
     const [searchParams, setSearchParams] = useSearchParams()
     const [isLoading, setIsLoading] = useState(false)
     const [errorMessage, setErrorMessage] = useState(false)

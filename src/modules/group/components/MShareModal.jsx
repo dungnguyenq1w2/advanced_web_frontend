@@ -13,6 +13,7 @@ import { Button } from 'flowbite-react'
 import { v4 as uuidv4 } from 'uuid'
 import { emailVailation } from '../validation'
 
+// eslint-disable-next-line no-empty-pattern
 const MShareModal = forwardRef(({}, ref) => {
     //#region data
     const { groupId } = useParams()

@@ -1,11 +1,12 @@
-import { useEffect, useState, useLayoutEffect } from 'react'
+import { useEffect, useState } from 'react'
 
-import { Link, useNavigate, useSearchParams } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 
-import { Button, Label, Card, Spinner } from 'flowbite-react'
 import { verify } from 'apis/auth.api'
+import { Button, Card, Spinner } from 'flowbite-react'
 
 function MVerify() {
+    // eslint-disable-next-line no-unused-vars
     const [searchParams, setSearchParams] = useSearchParams()
     const [isLoading, setIsLoading] = useState(false)
     const [errorMessage, setErrorMessage] = useState(false)
@@ -39,6 +40,7 @@ function MVerify() {
             } else setErrorMessage(res.error?.message)
         }
         restApi()
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     const handleButton = () => {

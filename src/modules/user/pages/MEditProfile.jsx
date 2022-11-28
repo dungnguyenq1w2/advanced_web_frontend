@@ -23,7 +23,7 @@ function MEditProfile() {
         alert('Login to use this feature')
         navigate('/auth/login')
     }
-    const { data, isLoading } = getById(localUser.id)
+    const { data } = getById(localUser.id)
     const [user, setUser] = useState(data?.data?.data)
     useEffect(() => {
         setUser(data?.data?.data)
