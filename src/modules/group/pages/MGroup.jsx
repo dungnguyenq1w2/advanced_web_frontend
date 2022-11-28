@@ -70,8 +70,7 @@ function MGroup() {
             <div className="mb-1 w-[52rem] rounded border bg-white p-5">
                 <h1 className="text-xl font-semibold">Still waiting for responses</h1>
                 <p className="w-[40rem] text-base text-gray-500">
-                    If you haven't shared your invite, copy the link or use Doodle to email it to
-                    your participants.
+                    If you haven't shared your invite, copy the link or email to your participants.
                 </p>
                 <div className="flex justify-end">
                     <Button

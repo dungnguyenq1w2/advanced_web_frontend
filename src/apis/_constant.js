@@ -29,5 +29,6 @@ export const GROUPS = {
     INVITE: (id) => `/groups/${id}/invite`,
     INVITE_MAIL: (id) => `/groups/${id}/invite-email`,
     SEND_INVITAION_MAIL: (id) => `/groups/${id}/send-email`,
+    GENERATE_INVITE_CODE: (id) => `/groups/${id}/generate-invite-code`,
 }
 //#endregion

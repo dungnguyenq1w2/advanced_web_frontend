@@ -15,3 +15,14 @@ export function getById(id, isLoading = false, options = {}) {
         ...options,
     })
 }
+
+export function getInviteCode(id, params = {}, isLoading = false, options = {}) {
+    return createQuery(
+        ['invite-link', params],
+        ({ queryKey: [, _params] }) => groups.generateInviteCode(id, _params),
+        {
+            enabled: !isLoading,
+            ...options,
+        }
+    )
+}

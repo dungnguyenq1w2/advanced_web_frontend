@@ -6,12 +6,13 @@ import CLoading from 'common/components/CLoading'
 import CModal from 'common/components/CModal'
 
 import { Dialog } from '@headlessui/react'
-import { sendInvitationByEmail } from 'apis/group.api'
+import { generateInviteCode, sendInvitationByEmail } from 'apis/group.api'
 
 import { CheckIcon, XMarkIcon } from '@heroicons/react/20/solid'
 import { Button } from 'flowbite-react'
 import { v4 as uuidv4 } from 'uuid'
 import { emailVailation } from '../validation'
+import { getInviteCode } from 'common/queries-fn/groups.query'
 
 const MShareModal = forwardRef(({}, ref) => {
     //#region data
@@ -22,6 +23,8 @@ const MShareModal = forwardRef(({}, ref) => {
     const [email, setEmail] = useState('')
     const [emails, setEmails] = useState([])
     const [emailError, setEmailError] = useState()
+    const [inviteLink, setInviteLink] = useState('')
+    const { data: code } = getInviteCode(groupId)
     //#endregion
 
     //#region event
@@ -65,9 +68,11 @@ const MShareModal = forwardRef(({}, ref) => {
         }
     }
 
-    const handleCopyShareLink = () => {
-        navigator.clipboard.writeText(`${window.location.href}/invite`)
-        setIsCopied(true)
+    const handleCopyShareLink = async () => {
+        if (code) {
+            navigator.clipboard.writeText(`${window.location.host}/group/${code.data}/invite`)
+            setIsCopied(true)
+        }
     }
 
     const handleClose = () => {
@@ -97,7 +102,7 @@ const MShareModal = forwardRef(({}, ref) => {
                         <span className="text-sm font-semibold">Share with the link</span>
                         <div className="mb-4 flex items-center">
                             <span className="mr-2 w-80 overflow-hidden truncate text-ellipsis border p-2 text-sm text-gray-400">
-                                {window.location.href}/invite
+                                {`${window.location.host}/group/${code?.data}/invite`}
                             </span>
                             {isCopied ? (
                                 <CheckIcon className="h-5 w-5 text-green-500" />

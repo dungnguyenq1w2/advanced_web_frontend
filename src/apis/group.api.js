@@ -44,6 +44,12 @@ export const setOwner = (id, params = {}) => {
     }).put(GROUPS.SET_OWNER(id), params)
 }
 
+export const generateInviteCode = (id, params = {}) => {
+    return map(({ data, ...rest }) => {
+        return isSuccess(rest) ? { data: data.code } : { data: [] }
+    }).post(GROUPS.GENERATE_INVITE_CODE(id), params)
+}
+
 export const joinGroupByLink = (id, params = {}) => {
     return map(({ data, ...rest }) => {
         return isSuccess(rest) ? { data: data } : { data: [] }
