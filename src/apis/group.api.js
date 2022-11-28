@@ -46,17 +46,18 @@ export const setOwner = (id, params = {}) => {
 
 export const joinGroupByLink = (id, params = {}) => {
     return map(({ data, ...rest }) => {
-        return isSuccess(rest) ? { data: data } : { data: [] }
+        return isSuccess(rest) ? { data: data } : { error: rest.response.data }
     }).post(GROUPS.INVITE(id), params)
 }
 
 export const joinGroupByEmail = (id, params = {}) => {
     return map(({ data, ...rest }) => {
-        return isSuccess(rest) ? { data: data } : { data: [] }
+        return isSuccess(rest) ? { data: data } : { error: rest.response.data }
     }).post(GROUPS.INVITE_MAIL(id), params)
 }
+
 export const sendInvitationByEmail = (id, params = {}) => {
     return map(({ data, ...rest }) => {
-        return isSuccess(rest) ? { data: data } : { data: [] }
+        return isSuccess(rest) ? { data: data } : { data: {} }
     }).post(GROUPS.SEND_INVITAION_MAIL(id), params)
 }

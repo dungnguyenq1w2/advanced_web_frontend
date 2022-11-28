@@ -2,30 +2,22 @@ import { useEffect, useState } from 'react'
 
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 
-import { joinGroupByLink } from 'apis/group.api'
+import { joinGroupByEmail, joinGroupByLink } from 'apis/group.api'
+import CLoading from 'common/components/CLoading'
 
 const MGroupInvite = () => {
     const { groupId } = useParams()
     const [searchParams, setSearchParams] = useSearchParams()
     const [isLoading, setIsLoading] = useState(false)
     const [errorMessage, setErrorMessage] = useState(false)
-    const [isFirst, setIsFirst] = useState(true)
-    const [isError404, setIsError404] = useState(false)
     const navigate = useNavigate()
 
     useEffect(() => {
-        const joinGroup = async () => {
+        const handleJoinGroup = async () => {
             setIsLoading(true)
             const res = await joinGroupByLink(groupId)
 
-            // if (res?.error?.status === 404) {
-            //     setIsFirst(false)
-            //     setIsError404(true)
-            //     //navigate('/')
-            // }
-
             if (res?.data) {
-                setIsFirst(false)
                 setIsLoading(false)
                 navigate(`/group/${groupId}`)
             } else {
@@ -33,21 +25,13 @@ const MGroupInvite = () => {
                 setErrorMessage(res.error?.message)
             }
         }
-        const joinGroupByEmail = async () => {
+        const handleJoinGroupByEmail = async () => {
             setIsLoading(true)
             const res = await joinGroupByEmail(groupId, {
-                email: searchParams?.email,
-                token: searchParams?.token,
+                email: searchParams.get('email'),
+                token: searchParams.get('token'),
             })
-
-            // if (res?.error?.status === 404) {
-            //     setIsFirst(false)
-            //     setIsError404(true)
-            //     //navigate('/')
-            // }
-
             if (res?.data) {
-                setIsFirst(false)
                 setIsLoading(false)
                 navigate(`/group/${groupId}`)
             } else {
@@ -55,23 +39,28 @@ const MGroupInvite = () => {
                 setErrorMessage(res.error?.message)
             }
         }
+
         const user = localStorage.getItem('user')
 
         if (user) {
-            if (searchParams?.email) {
-                joinGroupByEmail()
+            if (searchParams.get('email')) {
+                handleJoinGroupByEmail()
             } else {
-                joinGroup()
+                handleJoinGroup()
             }
         } else {
             alert('Login to use this feature')
             navigate('/auth/login')
         }
-    }, [])
+    }, [groupId, navigate, searchParams])
 
     return (
-        <div>
-            <p></p>
+        <div className="flex flex-col items-center p-8">
+            {isLoading ? (
+                <CLoading />
+            ) : errorMessage ? (
+                <h2 className="text-red-800">{errorMessage}</h2>
+            ) : null}
         </div>
     )
 }
