@@ -107,7 +107,10 @@ const MParticipantsModal = forwardRef(({ participants, onRoleChange }, ref) => {
                                             rounded={true}
                                         />
                                     </div>
-                                    <div className="flex-1 pl-3">{owner?.user?.name}</div>
+                                    <div className="flex-1 pl-3">
+                                        {owner?.user?.name}
+                                        {user?.id === owner?.user?.id && ' (me)'}
+                                    </div>
                                 </div>
                             )}
                         </div>
@@ -131,7 +134,10 @@ const MParticipantsModal = forwardRef(({ participants, onRoleChange }, ref) => {
                                                 rounded={true}
                                             />
                                         </div>
-                                        <div className="flex-1 pl-3">{co_owner?.user?.name}</div>
+                                        <div className="flex-1 pl-3">
+                                            {co_owner?.user?.name}
+                                            {user?.id === co_owner?.user?.id && ' (me)'}
+                                        </div>
                                         {owner?.user?.id === user.id ? (
                                             <div className="flex">
                                                 <img
@@ -188,7 +194,10 @@ const MParticipantsModal = forwardRef(({ participants, onRoleChange }, ref) => {
                                                 rounded={true}
                                             />
                                         </div>
-                                        <div className="flex-1 pl-3">{member?.user?.name}</div>
+                                        <div className="flex-1 pl-3">
+                                            {member?.user?.name}
+                                            {user?.id === member?.user?.id && ' (me)'}
+                                        </div>
                                         {owner?.user?.id === user.id ? (
                                             <div className="flex">
                                                 <img
