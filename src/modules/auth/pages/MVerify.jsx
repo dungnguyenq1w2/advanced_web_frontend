@@ -1,11 +1,12 @@
-import { useEffect, useState, useLayoutEffect } from 'react'
+import { useEffect, useState } from 'react'
 
-import { Link, useNavigate, useSearchParams } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 
-import { Button, Label, Card, Spinner } from 'flowbite-react'
 import { verify } from 'apis/auth.api'
+import { Button, Card, Spinner } from 'flowbite-react'
 
 function MVerify() {
+    // eslint-disable-next-line no-unused-vars
     const [searchParams, setSearchParams] = useSearchParams()
     const [isLoading, setIsLoading] = useState(false)
     const [errorMessage, setErrorMessage] = useState(false)
@@ -39,6 +40,7 @@ function MVerify() {
             } else setErrorMessage(res.error?.message)
         }
         restApi()
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     const handleButton = () => {
@@ -51,22 +53,22 @@ function MVerify() {
     return (
         <>
             {isError404 ? (
-                <section class="flex h-full items-center p-16 dark:bg-gray-900 dark:text-gray-100">
-                    <div class="container mx-auto my-8 flex flex-col items-center justify-center px-5">
-                        <div class="max-w-md text-center">
-                            <h2 class="mb-8 text-9xl font-extrabold dark:text-gray-600">
-                                <span class="sr-only">Error</span>404
+                <section className="flex h-full items-center p-16 dark:bg-gray-900 dark:text-gray-100">
+                    <div className="container mx-auto my-8 flex flex-col items-center justify-center px-5">
+                        <div className="max-w-md text-center">
+                            <h2 className="mb-8 text-9xl font-extrabold dark:text-gray-600">
+                                <span className="sr-only">Error</span>404
                             </h2>
-                            <p class="text-2xl font-semibold md:text-3xl">
+                            <p className="text-2xl font-semibold md:text-3xl">
                                 Sorry, we couldn't find this page.
                             </p>
-                            <p class="mt-4 mb-8 dark:text-gray-400">
+                            <p className="mt-4 mb-8 dark:text-gray-400">
                                 But dont worry, you can find plenty of other things on our homepage.
                             </p>
                             <a
                                 rel="noopener noreferrer"
-                                href="#"
-                                class="rounded px-8 py-3 font-semibold dark:bg-violet-400 dark:text-gray-900"
+                                href="/#"
+                                className="rounded px-8 py-3 font-semibold dark:bg-violet-400 dark:text-gray-900"
                                 onClick={() => {
                                     navigate('/')
                                 }}
