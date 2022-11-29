@@ -5,14 +5,14 @@ import { useParams } from 'react-router-dom'
 import CLoading from 'common/components/CLoading'
 import CModal from 'common/components/CModal'
 
-import { Dialog } from '@headlessui/react'
-import { generateInviteCode, sendInvitationByEmail } from 'apis/group.api'
+import { sendInvitationByEmail } from 'apis/group.api'
+import { getInviteCode } from 'common/queries-fn/groups.query'
 
+import { Dialog } from '@headlessui/react'
 import { CheckIcon, XMarkIcon } from '@heroicons/react/20/solid'
 import { Button } from 'flowbite-react'
 import { v4 as uuidv4 } from 'uuid'
 import { emailVailation } from '../validation'
-import { getInviteCode } from 'common/queries-fn/groups.query'
 
 // eslint-disable-next-line no-empty-pattern
 const MShareModal = forwardRef(({}, ref) => {

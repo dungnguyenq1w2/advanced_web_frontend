@@ -1,6 +1,8 @@
-import { getById } from 'common/queries-fn/users.query'
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
+
 import { Link, useNavigate } from 'react-router-dom'
+
+import { getById } from 'common/queries-fn/users.query'
 
 function MProfile() {
     const navigate = useNavigate()
@@ -9,7 +11,7 @@ function MProfile() {
         alert('Login to use this feature')
         navigate('/auth/login')
     }
-    const { data, isLoading } = getById(localUser.id)
+    const { data } = getById(localUser.id)
     const user = useMemo(() => data?.data?.data ?? {}, [data])
     return (
         <div className="flex h-[70vh] w-full items-center justify-center rounded-[12px]">

@@ -11,11 +11,11 @@ import {
     UserPlusIcon,
     ViewfinderCircleIcon,
 } from '@heroicons/react/24/outline'
+import CLoading from 'common/components/CLoading'
+import { ROLE, ROLE_ASSIGNMENT } from 'common/constant'
 import { Button } from 'flowbite-react'
 import MParticipantsModal from '../components/MParticipantsModal'
 import MShareModal from '../components/MShareModal'
-import CLoading from 'common/components/CLoading'
-import { ROLE, ROLE_ASSIGNMENT } from 'common/constant'
 
 function MGroup() {
     //#region data
@@ -34,6 +34,7 @@ function MGroup() {
             alert('Login to use this feature')
             navigate('/auth/login')
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     const handleChangeRole = (mode, userId) => {
@@ -65,11 +66,12 @@ function MGroup() {
     //#endregion
 
     if (isLoading) return <CLoading />
+
     return (
         <div className="flex flex-col items-center pt-20">
-            <div className="mb-1 w-[52rem] rounded border bg-white p-5">
-                <h1 className="text-xl font-semibold">Still waiting for responses</h1>
-                <p className="w-[40rem] text-base text-gray-500">
+            <div className="mb-1 w-[25rem] rounded border bg-white p-5 sm:w-[35rem] lg:w-[52rem]">
+                <h1 className="text-lg font-semibold md:text-xl">Still waiting for responses</h1>
+                <p className="mb-2 text-sm text-gray-500 md:text-base">
                     If you haven't shared your invite, copy the link or email to your participants.
                 </p>
                 <div className="flex justify-end">
@@ -82,7 +84,7 @@ function MGroup() {
                     </Button>
                 </div>
             </div>
-            <div className="w-[52rem] rounded border bg-white p-5">
+            <div className="w-[25rem] rounded border bg-white p-5 sm:w-[35rem] lg:w-[52rem]">
                 <h1 className="mb-10 text-xl font-semibold">{group.name}</h1>
                 <div className="">
                     <div className="my-1 flex items-center">

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 
-import { Link, useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
+import { Link, useNavigate } from 'react-router-dom'
 
 import { ErrorMessage } from '@hookform/error-message'
 import { yupResolver } from '@hookform/resolvers/yup'
@@ -10,10 +10,9 @@ import { googleLogin, register as accountRegister } from 'apis/auth.api'
 
 import CLoading from 'common/components/CLoading'
 
+import { ArrowLeftIcon } from '@heroicons/react/24/outline'
 import { Button, Label } from 'flowbite-react'
 import { registerValidationSchema } from '../validation'
-import google from 'assets/images/google.png'
-import { ArrowLeftIcon } from '@heroicons/react/24/outline'
 
 const formOptions = { resolver: yupResolver(registerValidationSchema) }
 
@@ -86,29 +85,8 @@ function MRegister() {
             }, 600)
         }
     }
-
-    const onGoogleLoginSuccess = async (res) => {
-        setIsLoading(true)
-        const result = await googleLogin({
-            token: res?.tokenId,
-        })
-
-        if (result?.data) {
-            setTimeout(() => {
-                setIsLoading(false)
-                navigate(-1)
-            }, 600)
-        } else {
-            setRegisterError(result.error.message)
-            setTimeout(() => {
-                setIsLoading(false)
-            }, 600)
-        }
-    }
-    const onGoogleLoginError = (res) => {
-        console.log('LOGIN FAILED --> res:', res)
-    }
     //#endregion
+
     return (
         <div className="flex flex-col items-center pt-16">
             {!isSuccess ? (

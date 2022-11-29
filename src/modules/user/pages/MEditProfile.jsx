@@ -1,9 +1,12 @@
-import { yupResolver } from '@hookform/resolvers/yup'
-import { updateProfile } from 'apis/user.api'
-import { getById } from 'common/queries-fn/users.query'
 import { useEffect, useState } from 'react'
+
 import { useForm } from 'react-hook-form'
 import { Link, useNavigate } from 'react-router-dom'
+
+import { updateProfile } from 'apis/user.api'
+import { getById } from 'common/queries-fn/users.query'
+
+import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
 
 const schema = yup

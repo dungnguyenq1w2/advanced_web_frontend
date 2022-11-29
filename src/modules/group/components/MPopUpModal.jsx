@@ -1,13 +1,14 @@
-import { forwardRef, useState, useEffect, useMemo, useRef, useImperativeHandle } from 'react'
+import { forwardRef, useImperativeHandle, useState } from 'react'
 
-import { Navigate, useNavigate, useParams } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
+
+import { setOwner } from 'apis/group.api'
+
 import CModal from 'common/components/CModal'
-import { getById } from 'common/queries-fn/groups.query'
+
 import { Dialog } from '@headlessui/react'
 import { XMarkIcon } from '@heroicons/react/20/solid'
-import { Button } from 'flowbite-react'
 import { ROLE_ASSIGNMENT } from 'common/constant'
-import { setOwner } from 'apis/group.api'
 
 function MPopUpModal({ groupId, currentOwnerId, selectedUserId, onRoleChange, set }, ref) {
     //#region data
@@ -31,14 +32,13 @@ function MPopUpModal({ groupId, currentOwnerId, selectedUserId, onRoleChange, se
 
     const handleSetOwner = async () => {
         try {
-            const res = await setOwner(groupId, {
+            await setOwner(groupId, {
                 currentOwnerId: currentOwnerId,
                 selectedUserId: selectedUserId,
             })
             onRoleChange(ROLE_ASSIGNMENT.SET_OWNER, selectedUserId)
             onRoleChange(ROLE_ASSIGNMENT.DEMOTE, currentOwnerId)
             setIsOpen(false)
-            // set()
             navigate(0)
         } catch (error) {
             setIsOpen(false)
@@ -61,7 +61,7 @@ function MPopUpModal({ groupId, currentOwnerId, selectedUserId, onRoleChange, se
                     onClick={handleClose}
                 />
                 <hr />
-                <div className="h-[190px]">
+                <div className="h-[210px]">
                     <div className="relative rounded-lg bg-white shadow dark:bg-gray-700">
                         <div className="p-6 text-center">
                             <svg
@@ -85,14 +85,14 @@ function MPopUpModal({ groupId, currentOwnerId, selectedUserId, onRoleChange, se
                             <button
                                 type="button"
                                 onClick={handleSetOwner}
-                                className="mr-2 inline-flex items-center rounded-lg bg-red-600 px-5 py-2.5 text-center text-lg font-medium text-white hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 dark:focus:ring-red-800"
+                                className="mr-2 inline-flex items-center rounded-lg bg-red-600 px-8 py-2.5 text-center text-lg font-medium text-white hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 dark:focus:ring-red-800"
                             >
                                 Yes
                             </button>
                             <button
                                 type="button"
                                 onClick={handleClose}
-                                className="rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-lg font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-900 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:border-gray-500 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white dark:focus:ring-gray-600"
+                                className="rounded-lg border border-gray-200 bg-white px-8 py-2.5 text-lg font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-900 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:border-gray-500 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white dark:focus:ring-gray-600"
                             >
                                 No
                             </button>

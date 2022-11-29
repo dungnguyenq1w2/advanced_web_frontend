@@ -1,7 +1,7 @@
-import { Button } from 'flowbite-react'
-import poll from 'assets/images/poll.jpg'
-import group from 'assets/images/group.jpg'
 import { Link } from 'react-router-dom'
+
+import group from 'assets/images/group.jpg'
+import poll from 'assets/images/poll.jpg'
 
 function MHome() {
     return (
@@ -44,9 +44,6 @@ function MHome() {
                     <h1>All your invites and events will show up here once you get started.</h1>
                 </div>
             </div>
-            {/* <div className="ml-1 rounded border bg-white p-5">
-                <h1 className="text-base font-semibold">My groups</h1>
-            </div> */}
         </div>
     )
 }

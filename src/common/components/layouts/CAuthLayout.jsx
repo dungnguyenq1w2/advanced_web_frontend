@@ -1,5 +1,7 @@
 import React, { Suspense } from 'react'
+
 import { Outlet } from 'react-router-dom'
+
 import CLoading from '../CLoading'
 
 function CAuthLayout() {

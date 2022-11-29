@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 
 import { joinGroupByEmail, joinGroupByLink } from 'apis/group.api'
+
 import CLoading from 'common/components/CLoading'
 
 const MGroupInvite = () => {

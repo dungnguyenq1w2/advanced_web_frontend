@@ -1,18 +1,17 @@
 import { useEffect, useState } from 'react'
 
-import { Link, useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
+import { Link, useNavigate } from 'react-router-dom'
 
-import { yupResolver } from '@hookform/resolvers/yup'
 import { ErrorMessage } from '@hookform/error-message'
+import { yupResolver } from '@hookform/resolvers/yup'
 
 import { googleLogin, login } from 'apis/auth.api'
 import { loginValidationSchema } from '../validation'
 
-import { Button, Label } from 'flowbite-react'
 import CLoading from 'common/components/CLoading'
+import { Button, Label } from 'flowbite-react'
 // import { GoogleLogin } from '@react-oauth/google'
-import { gapi } from 'gapi-script'
 import { ArrowLeftIcon } from '@heroicons/react/24/outline'
 
 const formOptions = { resolver: yupResolver(loginValidationSchema) }
@@ -87,28 +86,6 @@ function MLogin() {
                 setIsLoading(false)
             }, 600)
         }
-    }
-
-    const onGoogleLoginSuccess = async (res) => {
-        setIsLoading(true)
-        const result = await googleLogin({
-            token: res?.tokenId,
-        })
-
-        if (result?.data) {
-            setTimeout(() => {
-                setIsLoading(false)
-                navigate(-1)
-            }, 600)
-        } else {
-            setLoginError(result.error.message)
-            setTimeout(() => {
-                setIsLoading(false)
-            }, 600)
-        }
-    }
-    const onGoogleLoginError = (res) => {
-        console.log('LOGIN FAILED --> res:', res)
     }
     // #endregion
 

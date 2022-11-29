@@ -7,7 +7,7 @@ import { Link, useNavigate } from 'react-router-dom'
 
 function MGroupList() {
     //#region data
-    const { data, isLoading, refetch } = getAllGroup({}, false, { staleTime: 0 })
+    const { data, isLoading } = getAllGroup({}, false, { staleTime: 0 })
     const [roleOption, setRoleOption] = useState(0)
     const navigate = useNavigate()
     //#endregion
@@ -19,6 +19,7 @@ function MGroupList() {
             alert('Login to use this feature')
             navigate('/auth/login')
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     const groups = useMemo(() => {
@@ -33,16 +34,13 @@ function MGroupList() {
         return filteredGroup
     }, [data, roleOption])
     //#endregion
-    // console.log('--------------')
-    // console.log(data)
-    // console.log(groups)
 
     if (isLoading) {
         return <CLoading />
     }
 
     return (
-        <div className="mx-60 pt-10">
+        <div className="mx-2 pt-10 md:mx-10 lg:mx-20 xl:mx-40 2xl:mx-60">
             <div className="bg-white p-5">
                 <div className="flex items-center justify-end">
                     <label htmlFor="my-role" className="mr-2 text-base font-medium text-gray-900">
@@ -60,14 +58,14 @@ function MGroupList() {
                         <option value="3">Member</option>
                     </select>
                 </div>
-                {/* mx-auto */}
-                <div className="container grid grid-cols-3 gap-4">
+
+                <div className="container grid grid-cols-1 gap-4 p-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
                     {groups.map((group) => {
                         if (group.hasOwnProperty('my_role')) {
                             return (
                                 <Link to={`/group/${group.id}`} key={group.id}>
                                     <div
-                                        className="my-4 overflow-hidden rounded border border-gray-300 bg-white"
+                                        className="overflow-hidden rounded border border-gray-300 bg-white"
                                         // onClick={}
                                     >
                                         <div className="px-6 py-4">

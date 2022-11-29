@@ -1,4 +1,4 @@
-import { forwardRef, useImperativeHandle, useMemo, useState, useRef, useEffect } from 'react'
+import { forwardRef, useImperativeHandle, useMemo, useRef, useState } from 'react'
 
 import { useParams } from 'react-router-dom'
 
@@ -10,9 +10,9 @@ import { Dialog } from '@headlessui/react'
 import { ChevronDoubleDownIcon, ChevronDoubleUpIcon, XMarkIcon } from '@heroicons/react/20/solid'
 import { Avatar } from 'flowbite-react'
 
+import property from 'assets/images/property.png'
 import { ROLE_ASSIGNMENT } from 'common/constant'
 import { detachedByKey } from '../utils/index'
-import property from 'assets/images/property.png'
 import MPopUpModal from './MPopUpModal'
 
 const MParticipantsModal = forwardRef(({ participants, onRoleChange }, ref) => {
@@ -21,10 +21,14 @@ const MParticipantsModal = forwardRef(({ participants, onRoleChange }, ref) => {
     const MPopUpModalRef = useRef(false)
     const [selectedUserId, setSelectedUserId] = useState()
     const [isOpen, setIsOpen] = useState(false)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     const owner = useMemo(() => detachedByKey(participants, 1)[0])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     const co_owners = useMemo(() => detachedByKey(participants, 2))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     const members = useMemo(() => detachedByKey(participants, 3))
 
+    // eslint-disable-next-line no-unused-vars
     const [user, setUser] = useState(JSON.parse(localStorage.getItem('user')))
     const user_co_owner = useMemo(() => {
         for (let co_owner of co_owners) if (user.id === co_owner.user.id) return true
@@ -49,7 +53,7 @@ const MParticipantsModal = forwardRef(({ participants, onRoleChange }, ref) => {
 
     const handlePromoteParticipant = async (id) => {
         try {
-            const res = await promoteParticipant(groupId, { userId: id })
+            await promoteParticipant(groupId, { userId: id })
             onRoleChange(ROLE_ASSIGNMENT.PROMOTE, id)
         } catch (error) {
             console.log('Error: ', error)
@@ -58,7 +62,7 @@ const MParticipantsModal = forwardRef(({ participants, onRoleChange }, ref) => {
 
     const handleDemoteParticipant = async (id) => {
         try {
-            const res = await demoteParticipant(groupId, { userId: id })
+            await demoteParticipant(groupId, { userId: id })
             onRoleChange(ROLE_ASSIGNMENT.DEMOTE, id)
         } catch (error) {
             console.log('Error: ', error)
@@ -67,7 +71,7 @@ const MParticipantsModal = forwardRef(({ participants, onRoleChange }, ref) => {
 
     const handleKickOutParticipant = async (id) => {
         try {
-            const res = await kickOutParticipant(groupId, { userId: id })
+            await kickOutParticipant(groupId, { userId: id })
             onRoleChange(ROLE_ASSIGNMENT.KICK_OUT, id)
             // setIsLoading(false)
         } catch (error) {
