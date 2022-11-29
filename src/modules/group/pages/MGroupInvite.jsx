@@ -20,7 +20,7 @@ const MGroupInvite = () => {
 
             if (res?.data) {
                 setIsLoading(false)
-                navigate(`/group/${groupId}`)
+                navigate(`/group/${res.data.groupId}`)
             } else {
                 setIsLoading(false)
                 setErrorMessage(res.error?.message)
