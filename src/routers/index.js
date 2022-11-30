@@ -7,6 +7,7 @@ import { Login, Register, Verify } from 'modules/auth/pages'
 import { Group, GroupCreate, GroupInvite, GroupList } from 'modules/group/pages'
 import CAuthLayout from 'common/components/layouts/CAuthLayout'
 import { EditProfile, Profile } from 'modules/user/pages'
+import C404 from 'common/components/layouts/C404'
 
 const router = createBrowserRouter([
     {
@@ -66,6 +67,14 @@ const router = createBrowserRouter([
             { path: 'register', element: <Register /> },
             { path: 'verify', element: <Verify /> },
         ],
+    },
+    {
+        path: '*',
+        element: <C404 />,
+    },
+    {
+        path: '/404',
+        element: <C404 />,
     },
 ])
 

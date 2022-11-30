@@ -11,6 +11,7 @@ import { ChevronDoubleDownIcon, ChevronDoubleUpIcon, XMarkIcon } from '@heroicon
 import { Avatar } from 'flowbite-react'
 
 import property from 'assets/images/property.png'
+import CLoading from 'common/components/CLoading'
 import { ROLE_ASSIGNMENT } from 'common/constant'
 import { detachedByKey } from '../utils/index'
 import MPopUpModal from './MPopUpModal'
@@ -21,6 +22,7 @@ const MParticipantsModal = forwardRef(({ participants, onRoleChange }, ref) => {
     const MPopUpModalRef = useRef(false)
     const [selectedUserId, setSelectedUserId] = useState()
     const [isOpen, setIsOpen] = useState(false)
+    const [isLoading, setIsLoading] = useState(false)
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const owner = useMemo(() => detachedByKey(participants, 1)[0])
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -53,29 +55,38 @@ const MParticipantsModal = forwardRef(({ participants, onRoleChange }, ref) => {
 
     const handlePromoteParticipant = async (id) => {
         try {
+            setIsLoading(true)
             await promoteParticipant(groupId, { userId: id })
             onRoleChange(ROLE_ASSIGNMENT.PROMOTE, id)
+            setIsLoading(false)
         } catch (error) {
             console.log('Error: ', error)
+            setIsLoading(false)
         }
     }
 
     const handleDemoteParticipant = async (id) => {
         try {
+            setIsLoading(true)
             await demoteParticipant(groupId, { userId: id })
             onRoleChange(ROLE_ASSIGNMENT.DEMOTE, id)
+            setIsLoading(false)
         } catch (error) {
             console.log('Error: ', error)
+            setIsLoading(false)
         }
     }
 
     const handleKickOutParticipant = async (id) => {
         try {
+            setIsLoading(true)
             await kickOutParticipant(groupId, { userId: id })
             onRoleChange(ROLE_ASSIGNMENT.KICK_OUT, id)
+            setIsLoading(false)
             // setIsLoading(false)
         } catch (error) {
             console.log('Error: ', error)
+            setIsLoading(false)
         }
     }
 
@@ -251,6 +262,7 @@ const MParticipantsModal = forwardRef(({ participants, onRoleChange }, ref) => {
                     </div>
                 </Dialog.Panel>
             </CModal>
+            {isLoading && <CLoading />}
             <MPopUpModal
                 ref={MPopUpModalRef}
                 groupId={groupId}

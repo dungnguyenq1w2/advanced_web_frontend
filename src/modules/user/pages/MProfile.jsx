@@ -14,8 +14,8 @@ function MProfile() {
     const { data } = getById(localUser.id)
     const user = useMemo(() => data?.data?.data ?? {}, [data])
     return (
-        <div className="flex h-[70vh] w-full items-center justify-center rounded-[12px]">
-            <div className="flex h-2/4 w-[550px] items-center justify-center rounded-lg bg-white shadow-xl">
+        <div className="flex h-[70vh] w-full items-center justify-center rounded-[12px] ">
+            <div className="flex h-2/4 items-center justify-center rounded-lg bg-white px-5 shadow-xl">
                 <div className="photo-wrapper pr-14.5">
                     <img
                         className="mx-auto h-40 w-40 rounded-full"
