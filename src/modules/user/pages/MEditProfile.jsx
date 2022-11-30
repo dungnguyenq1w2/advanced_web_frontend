@@ -21,6 +21,7 @@ const schema = yup
 
 function MEditProfile() {
     const navigate = useNavigate()
+    const [isLoading, setIsLoading] = useState(false)
     const localUser = JSON.parse(localStorage.getItem('user'))
     if (!localUser) {
         alert('Login to use this feature')
@@ -43,6 +44,7 @@ function MEditProfile() {
 
     const onSubmit = async (data) => {
         const updateUser = async (userData) => {
+            setIsLoading(true)
             const res = await updateProfile(user.id, JSON.stringify(userData))
             if (res.data) {
                 const localUser = JSON.parse(localStorage.getItem('user'))
@@ -53,6 +55,7 @@ function MEditProfile() {
                         ...res.data.data,
                     })
                 )
+                setIsLoading(false)
                 window.setTimeout(function () {
                     window.location = '/profile'
                 }, 0)
