@@ -21,7 +21,7 @@ function MPresentationCreate() {
 
     return (
         <>
-            <div className=" border-t-2 p-1.5 border-solid border-black bg-white">
+            <div className=" border-t-2 border-solid border-black bg-white p-1.5">
                 <MNavbar />
             </div>
             <div className="px-10 py-5">
@@ -61,14 +61,18 @@ function MPresentationCreate() {
                             <div className="m-2 h-40 flex-1 rounded-sm bg-white p-2">Silde 4</div>
                         </div>
                     </div>
+
+                    {/* phần giữa */}
                     <div className="flex flex-1 bg-slate-300">
                         <div className="m-5 h-[550px] w-[650px] flex-1 rounded-sm bg-white">
                             Silde 1
                         </div>
                     </div>
+
+                    {/* Phần Description */}
                     <div className="flex w-[350px] flex-none flex-col">
                         <b className="mx-3 my-3 flex-none text-center">Description</b>
-                        <div className="mx-3 my-10 flex-none">
+                        <div className="mx-3 my-6 flex-none">
                             <label
                                 for="question"
                                 className="mb-2 block text-sm font-bold text-gray-900 dark:text-white"
@@ -80,11 +84,10 @@ function MPresentationCreate() {
                                 id="question"
                                 className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
                                 placeholder="Your question"
-                                autoFocus
                                 required
                             ></input>
                         </div>
-                        <b className="mx-3 mt-1 mb-3 flex-none">Options: </b>
+                        <b className="mx-3 mt-1 mb-2 flex-none">Options: </b>
                         {Array(numberOptions)
                             .fill(null)
                             .map((e, i) => (
@@ -109,6 +112,12 @@ function MPresentationCreate() {
                             onClick={addOption}
                         >
                             + Add option
+                        </button>
+
+                        <button
+                            className="mx-2 mt-5 mb-1 w-full rounded-lg bg-red-700 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800 sm:w-auto"
+                        >
+                            Delete silde
                         </button>
                     </div>
                 </div>
