@@ -7,7 +7,7 @@ import { logout } from 'apis/auth.api'
 import CLoading from './CLoading'
 
 import { Avatar, Button, Dropdown, Navbar } from 'flowbite-react'
-import { HomeIcon, RectangleGroupIcon } from '@heroicons/react/24/outline'
+import { HomeIcon, RectangleGroupIcon, PresentationChartLineIcon } from '@heroicons/react/24/outline'
 
 function CHeader() {
     //#region data
@@ -104,6 +104,18 @@ function CHeader() {
                             }
                         >
                             <HomeIcon className="mr-2 h-5 w-5" /> Home
+                        </NavLink>
+                    </Navbar.Link>
+                    <Navbar.Link>
+                        <NavLink
+                            to="/presentation"
+                            className={({ isActive }) =>
+                                `flex items-center text-base ${
+                                    isActive && 'border-blue-600 text-blue-700'
+                                } `
+                            }
+                        >
+                            <PresentationChartLineIcon className="mr-2 h-5 w-5" /> My presentations
                         </NavLink>
                     </Navbar.Link>
                     <Navbar.Link>

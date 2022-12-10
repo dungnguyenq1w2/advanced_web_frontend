@@ -10,6 +10,7 @@ import { Group, GroupCreate, GroupInvite, GroupList } from 'modules/group/pages'
 import { GuestSlide, HostSlide } from 'modules/slide/pages'
 import { EditProfile, Profile } from 'modules/user/pages'
 import C404 from 'common/components/layouts/C404'
+import { PresentationEdit, PresentationList, PresentationCreate } from 'modules/presentation/pages'
 
 const router = createBrowserRouter([
     {
@@ -56,6 +57,23 @@ const router = createBrowserRouter([
                     {
                         path: 'edit',
                         element: <EditProfile />,
+                    },
+                ],
+            },
+            {
+                path: 'presentation',
+                children: [
+                    {
+                        index: true,
+                        element: <PresentationList />,
+                    },
+                    {
+                        path: 'create',
+                        element: <PresentationCreate />,
+                    },
+                    {
+                        path: 'edit',
+                        element: <PresentationEdit />,
                     },
                 ],
             },
