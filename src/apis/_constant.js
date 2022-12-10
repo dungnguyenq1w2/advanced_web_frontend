@@ -32,3 +32,8 @@ export const GROUPS = {
     GENERATE_INVITE_CODE: (id) => `/groups/${id}/generate-invite-code`,
 }
 //#endregion
+
+//#region PRESENTATIONS
+export const PRESENTATIONS = {
+    GET_ALL_BY_HOST_ID: (hostId) => `/presentations/${hostId}`,
+}
