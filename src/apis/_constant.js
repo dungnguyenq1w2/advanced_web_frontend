@@ -32,3 +32,10 @@ export const GROUPS = {
     GENERATE_INVITE_CODE: (id) => `/groups/${id}/generate-invite-code`,
 }
 //#endregion
+
+//#region SLIDES
+export const SLIDES = {
+    GET_FOR_HOST: (id) => `/slides/${id}/host`,
+    GET_FOR_GUEST: (id) => `/slides/${id}/guest`,
+}
+//#endregion

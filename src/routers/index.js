@@ -1,11 +1,13 @@
 import { createBrowserRouter } from 'react-router-dom'
 
 import App from 'App'
+import CAuthLayout from 'common/components/layouts/CAuthLayout'
+import CSlideLayout from 'common/components/layouts/CSlideLayout'
 
 import { Home } from 'modules/home/pages'
 import { Login, Register, Verify } from 'modules/auth/pages'
 import { Group, GroupCreate, GroupInvite, GroupList } from 'modules/group/pages'
-import CAuthLayout from 'common/components/layouts/CAuthLayout'
+import { GuestSlide, HostSlide } from 'modules/slide/pages'
 import { EditProfile, Profile } from 'modules/user/pages'
 import C404 from 'common/components/layouts/C404'
 
@@ -66,6 +68,20 @@ const router = createBrowserRouter([
             { path: 'login', element: <Login /> },
             { path: 'register', element: <Register /> },
             { path: 'verify', element: <Verify /> },
+        ],
+    },
+    {
+        path: '/slide',
+        element: <CSlideLayout />,
+        children: [
+            {
+                path: ':slideId/host',
+                element: <HostSlide />,
+            },
+            {
+                path: ':slideId/guest',
+                element: <GuestSlide />,
+            },
         ],
     },
     {
