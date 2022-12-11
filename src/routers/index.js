@@ -72,8 +72,8 @@ const router = createBrowserRouter([
                         element: <PresentationCreate />,
                     },
                     {
-                        path: 'edit/:id',
-                        element: <PresentationEdit/>,
+                        path: ':presentationId/:slideId/edit',
+                        element: <PresentationEdit />,
                     },
                 ],
             },

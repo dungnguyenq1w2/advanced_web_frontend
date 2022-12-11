@@ -19,6 +19,7 @@ function MPresentationList() {
         alert('Login to use this feature')
         navigate('/auth/login')
     }
+
     //#endregion
 
     if (isLoading) {
@@ -39,7 +40,7 @@ function MPresentationList() {
                                     <div className="flex justify-center">
                                         <Link
                                             className="mb-2 flex-1 text-xl font-bold"
-                                            to={'/presentation/edit'}
+                                            to={`/presentation/${presentation.id}/edit`}
                                         >
                                             <div>{presentation?.name}</div>
                                         </Link>
