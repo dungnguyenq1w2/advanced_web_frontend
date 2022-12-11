@@ -12,3 +12,14 @@ export function getAllByHostId(hostId, params = {}, isLoading = false, options =
         }
     )
 }
+
+export function getAllSlidesById(presentationId, params = {}, isLoading = false, options = {}) {
+    return createQuery(
+        ['presentations-slides', presentationId],
+        ({ queryKey: [, _params] }) => presentations.getAllSlidesById(presentationId, _params),
+        {
+            enabled: !isLoading,
+            ...options,
+        }
+    )
+}

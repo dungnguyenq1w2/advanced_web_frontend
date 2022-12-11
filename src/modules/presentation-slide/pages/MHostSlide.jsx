@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 
 import { hostSocket } from 'common/config/socket'
 import { getForHost } from 'common/queries-fn/slides.query'
@@ -16,6 +16,7 @@ import {
     Tooltip,
 } from 'chart.js'
 import CLoading from 'common/components/CLoading'
+import { getAllSlidesById } from 'common/queries-fn/presentations.query'
 import { Bar } from 'react-chartjs-2'
 import { MSlide } from '../components'
 
@@ -79,34 +80,30 @@ function getRandomColor() {
     return color
 }
 
-// const labels = [
-//     'January',
-//     'February',
-//     'January',
-//     'February',
-//     'January',
-//     'February',
-//     'January',
-//     'February',
-// ]
-
-// export const data = {
-//     labels,
-//     datasets: [
-//         {
-//             data: [45, 25, 45, 25, 45, 25, 45, 25],
-//             backgroundColor: [getRandomColor(), getRandomColor()],
-//             barThickness: 80,
-//             maxBarThickness: 100,
-//         },
-//     ],
-// }
-
 function MHostSlide() {
     //#region data
-    const { slideId } = useParams()
-    const { data: _data, isLoading, set } = getForHost(slideId)
+    const { presentationId } = useParams()
+    const navigate = useNavigate()
+
+    const { data: _slides, isLoading: isLoadingSlides } = getAllSlidesById(presentationId)
+
+    const slidesId = useMemo(() => {
+        if (_slides?.data?.slides) {
+            const result = _slides?.data?.slides
+            result.unshift(null)
+            result.push(null)
+            return result
+        } else {
+            return []
+        }
+    }, [_slides])
+
+    const [slideIndex, setSlideIndex] = useState({ cur: 0, prev: null, next: null })
+
+    const { data: _data, isLoading, set } = getForHost(slidesId[slideIndex.cur]?.id)
+
     const [newNumOfChoices, setNewNumOfChoices] = useState()
+
     const slide = useMemo(() => {
         return _data?.data
             ? {
@@ -148,12 +145,43 @@ function MHostSlide() {
 
     //#region event
     useEffect(() => {
-        hostSocket.open()
-        hostSocket.emit('subscribe', slideId)
-        return () => {
-            hostSocket.emit('unsubscribe', slideId)
+        if (_slides?.data) {
+            const user = JSON.parse(localStorage.getItem('user'))
+            if (user) {
+                if (_slides.data.host_id.toString() !== user.id.toString()) {
+                    alert('You are not allowed access this page')
+                    navigate('/')
+                }
+            } else {
+                alert('You are not allowed access this page')
+                navigate('/')
+            }
         }
-    }, [slideId])
+    }, [_slides, navigate])
+
+    useEffect(() => {
+        if (slidesId.length) {
+            setSlideIndex({
+                ...slideIndex,
+                cur: 1,
+                prev: null,
+                next: slidesId.length === 3 ? null : slidesId.length > 3 ? 2 : null,
+            })
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [slidesId])
+
+    useEffect(() => {
+        if (slidesId[slideIndex.cur]?.id) {
+            hostSocket.open()
+            hostSocket.emit('subscribe', slidesId[slideIndex.cur].id)
+        }
+        return () => {
+            if (slidesId[slideIndex.cur]?.id) {
+                hostSocket.emit('unsubscribe', slidesId[slideIndex.cur].id)
+            }
+        }
+    }, [slidesId, slideIndex.cur])
 
     useEffect(() => {
         hostSocket.on('server-send-choices', (choices) => {
@@ -185,8 +213,17 @@ function MHostSlide() {
     //#endregion
 
     return (
-        <MSlide question={slide.question}>
-            {isLoading ? <CLoading /> : <Bar options={options} data={slide.data} />}
+        <MSlide
+            question={slide.question}
+            slidesId={slidesId}
+            slideIndex={slideIndex}
+            onChangeSlide={setSlideIndex}
+        >
+            {isLoading || isLoadingSlides ? (
+                <CLoading />
+            ) : (
+                <Bar options={options} data={slide.data} />
+            )}
         </MSlide>
     )
 }

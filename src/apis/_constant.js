@@ -33,10 +33,10 @@ export const GROUPS = {
 }
 //#endregion
 
-
 //#region PRESENTATIONS
 export const PRESENTATIONS = {
     GET_ALL_BY_HOST_ID: (hostId) => `/presentations/${hostId}`,
+    GET_ALL_SLIDES_BY_ID: (presentationId) => `/presentations/${presentationId}/slides`,
 }
 
 //#region SLIDES

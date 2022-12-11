@@ -7,3 +7,9 @@ export const getAllByHostId = (hostId, params = {}) => {
         return isSuccess(rest) ? { data: data.data } : { data: [] }
     }).get(PRESENTATIONS.GET_ALL_BY_HOST_ID(hostId), params)
 }
+
+export const getAllSlidesById = (presentationId, params = {}) => {
+    return map(({ data, ...rest }) => {
+        return isSuccess(rest) ? { data: data.data } : { data: [] }
+    }).get(PRESENTATIONS.GET_ALL_SLIDES_BY_ID(presentationId), params)
+}

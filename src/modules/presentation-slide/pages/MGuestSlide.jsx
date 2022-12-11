@@ -19,6 +19,7 @@ import CLoading from 'common/components/CLoading'
 import { Bar } from 'react-chartjs-2'
 import { getIP } from 'utils/func'
 import { MCheckbox, MSlide } from '../components'
+import { getAllSlidesById } from 'common/queries-fn/presentations.query'
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, Colors)
 
@@ -80,37 +81,35 @@ function getRandomColor() {
     return color
 }
 
-// const labels = [
-//     'January',
-//     'February',
-//     'January',
-//     'February',
-//     'January',
-//     'February',
-//     'January',
-//     'February',
-// ]
-
-// export const data = {
-//     labels,
-//     datasets: [
-//         {
-//             data: [45, 25, 45, 25, 45, 25, 45, 25],
-//             backgroundColor: [getRandomColor(), getRandomColor()],
-//             barThickness: 80,
-//             maxBarThickness: 100,
-//         },
-//     ],
-// }
-
 function MGuestSlide() {
     //#region data
-    const { slideId } = useParams()
+    const { presentationId } = useParams()
+
     const [newNumOfChoices, setNewNumOfChoices] = useState()
     const [isShowChart, setIsShowChart] = useState(false)
+
+    const { data: _slides, isLoading: isLoadingSlides } = getAllSlidesById(presentationId)
+
+    const slidesId = useMemo(() => {
+        if (_slides?.data?.slides) {
+            const result = _slides?.data?.slides
+            result.unshift(null)
+            result.push(null)
+            return result
+        } else {
+            return []
+        }
+    }, [_slides])
+
+    const [slideIndex, setSlideIndex] = useState({ cur: 0, prev: null, next: null })
+
     const [guestId, setGuestId] = useState()
 
-    const { data: _data, isLoading, set } = getForGuest(slideId, { guestId: guestId })
+    const {
+        data: _data,
+        isLoading,
+        set,
+    } = getForGuest(slidesId[slideIndex.cur]?.id, { guestId: guestId })
 
     const slide = useMemo(() => {
         return _data?.data
@@ -153,16 +152,31 @@ function MGuestSlide() {
 
     //#region event
     useEffect(() => {
-        guestSocket.open()
-        guestSocket.emit('subscribe', slideId)
-        return () => {
-            guestSocket.emit('unsubscribe', slideId)
+        if (slidesId.length) {
+            setSlideIndex({
+                ...slideIndex,
+                cur: 1,
+                prev: null,
+                next: slidesId.length === 3 ? null : slidesId.length > 3 ? 2 : null,
+            })
         }
-    }, [slideId])
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [slidesId])
+
+    useEffect(() => {
+        if (slidesId[slideIndex.cur]?.id) {
+            guestSocket.open()
+            guestSocket.emit('subscribe', slidesId[slideIndex.cur].id)
+        }
+        return () => {
+            if (slidesId[slideIndex.cur]?.id) {
+                guestSocket.emit('unsubscribe', slidesId[slideIndex.cur].id)
+            }
+        }
+    }, [slidesId, slideIndex.cur])
 
     useEffect(() => {
         guestSocket.on('server-send-choices', (choices) => {
-            console.log('🚀 ~ choices', choices)
             // Xử lí -> lưu state kết quả socket trả về
             // rồi tạo useEffect với dependency là state đó
             setNewNumOfChoices(choices)
@@ -176,7 +190,6 @@ function MGuestSlide() {
     useEffect(() => {
         if (newNumOfChoices) {
             const newData = { ..._data.data }
-            console.log('🚀 ~ newData', newData)
             newNumOfChoices.forEach((addChoice) => {
                 const index = newData.choices.findIndex(
                     (choice) => choice.id.toString() === addChoice.toString()
@@ -218,21 +231,26 @@ function MGuestSlide() {
     }, [_data])
 
     const handleChoiceSendSocket = (choices) => {
-        guestSocket.emit('client-send-choices', slideId, guestId, choices)
+        guestSocket.emit('client-send-choices', slideIndex.cur, guestId, choices)
         setIsShowChart(true)
     }
     //#endregion
 
     return (
-        <MSlide question={slide.question}>
-            {isLoading ? (
+        <MSlide
+            question={slide.question}
+            slidesId={slidesId}
+            slideIndex={slideIndex}
+            onChangeSlide={setSlideIndex}
+        >
+            {isLoading || isLoadingSlides ? (
                 <CLoading />
             ) : isShowChart ? (
                 <div className="relative">
                     <Bar options={options} data={slide.data} />
                     <div
                         style={{ minWidth: '300px' }}
-                        className="absolute right-20 top-40 max-w-[20rem] rounded-lg bg-blue-900 bg-opacity-30 py-2 shadow-lg"
+                        className="absolute right-20 top-40 max-h-[45rem] max-w-[20rem] rounded-lg bg-blue-900 bg-opacity-30 py-2 shadow-lg"
                     >
                         <h1 className="mb-3 py-3 text-center text-2xl font-bold">YOUR CHOICES</h1>
                         <ul>
