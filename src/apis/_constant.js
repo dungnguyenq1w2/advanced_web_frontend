@@ -33,7 +33,15 @@ export const GROUPS = {
 }
 //#endregion
 
+
 //#region PRESENTATIONS
 export const PRESENTATIONS = {
     GET_ALL_BY_HOST_ID: (hostId) => `/presentations/${hostId}`,
 }
+
+//#region SLIDES
+export const SLIDES = {
+    GET_FOR_HOST: (id) => `/slides/${id}/host`,
+    GET_FOR_GUEST: (id) => `/slides/${id}/guest`,
+}
+//#endregion
