@@ -7,6 +7,7 @@ import { updateProfile } from 'apis/user.api'
 import { getById } from 'common/queries-fn/users.query'
 
 import { yupResolver } from '@hookform/resolvers/yup'
+import CLoading from 'common/components/CLoading'
 import * as yup from 'yup'
 
 const schema = yup
@@ -181,6 +182,7 @@ function MEditProfile() {
                     </div>
                 </form>
             </div>
+            {isLoading && <CLoading />}
         </div>
     )
 }

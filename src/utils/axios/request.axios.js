@@ -7,7 +7,7 @@ import TokenService from './token.axios'
 export async function get(url, options = {}) {
     try {
         return await instance.get(url, {
-            ...options,
+            params: { ...options },
         })
     } catch (err) {
         return err

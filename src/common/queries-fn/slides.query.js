@@ -9,10 +9,10 @@ export function getForHost(id, isLoading = false, options = {}) {
     })
 }
 
-export function getForGuest(id, isLoading = false, options = {}) {
+export function getForGuest(id, params = {}, isLoading = false, options = {}) {
     return createQuery(
-        ['slides-guest', id],
-        ({ queryKey: [, _params] }) => slides.getForGuest(id, _params),
+        ['slides-guest', id, params],
+        ({ queryKey: [, , _params] }) => slides.getForGuest(id, _params),
         {
             enabled: !isLoading,
             ...options,

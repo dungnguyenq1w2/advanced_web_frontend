@@ -142,6 +142,7 @@ function MHostSlide() {
                       ],
                   },
               }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [_data, set])
     //#endregion
 
@@ -179,6 +180,7 @@ function MHostSlide() {
             })
             set({ ..._data, data: newData })
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [newNumOfChoices])
     //#endregion
 
