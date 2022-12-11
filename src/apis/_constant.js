@@ -11,17 +11,17 @@ export const AUTH = {
 
 //#region USERS
 export const USERS = {
-    GET: '/users',
-    GET_BY_ID: '/users',
-    PUT: '/users',
+    GET_ALL: '/users',
+    GET_BY_ID: (id) => `/users${id}`,
+    PUT: (id) => `/users${id}`,
 }
 //#endregion
 
 //#region GROUPS
 export const GROUPS = {
-    GET: '/groups',
-    GET_BY_ID: '/groups',
-    CREATE: '/groups',
+    GET_ALL: '/groups',
+    GET_BY_ID: (id) => `/groups/${id}`,
+    CREATE: '/groups/create',
     PROMOTE: (id) => `/groups/${id}/promote`,
     DEMOTE: (id) => `/groups/${id}/demote`,
     KICK_OUT: (id) => `/groups/${id}/kick-out`,
@@ -32,7 +32,6 @@ export const GROUPS = {
     GENERATE_INVITE_CODE: (id) => `/groups/${id}/generate-invite-code`,
 }
 //#endregion
-
 
 //#region PRESENTATIONS
 export const PRESENTATIONS = {

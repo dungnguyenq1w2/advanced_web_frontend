@@ -5,13 +5,13 @@ import { GROUPS } from './_constant'
 export const getAll = (params = {}) => {
     return map(({ data, ...rest }) => {
         return isSuccess(rest) ? { data: data.data } : { data: [] }
-    }).get(GROUPS.GET, params)
+    }).get(GROUPS.GET_ALL, params)
 }
 
 export const getById = (id, params = {}) => {
     return map(({ data, ...rest }) => {
         return isSuccess(rest) ? { data: data.data } : { data: {} }
-    }).get(`${GROUPS.GET}/${id}`, params)
+    }).get(GROUPS.GET_BY_ID(id), params)
 }
 
 export const create = (params = {}) => {
