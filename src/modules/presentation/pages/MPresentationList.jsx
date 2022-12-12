@@ -5,6 +5,7 @@ import { FireIcon, EllipsisVerticalIcon } from '@heroicons/react/24/outline'
 import { Link, useNavigate } from 'react-router-dom'
 import { Dropdown } from 'flowbite-react'
 import { PlayIcon, XMarkIcon } from '@heroicons/react/20/solid'
+import { getFirst as getFirstSlide } from 'apis/slide.api'
 
 function MPresentationList() {
     //#region data
@@ -38,12 +39,9 @@ function MPresentationList() {
                             >
                                 <div className="px-6 py-4">
                                     <div className="flex justify-center">
-                                        <Link
-                                            className="mb-2 flex-1 text-xl font-bold"
-                                            to={`/presentation/${presentation.id}/1/edit`}
-                                        >
+                                        <div className="mb-2 flex-1 cursor-pointer text-xl font-bold">
                                             <div>{presentation?.name}</div>
-                                        </Link>
+                                        </div>
 
                                         <Dropdown
                                             arrowIcon={false}
@@ -64,14 +62,14 @@ function MPresentationList() {
                                             </Dropdown.Item>
                                         </Dropdown>
                                     </div>
-                                    <Link to={`/presentation/${presentation.id}/1/edit`}>
+                                    <div className="cursor-pointer">
                                         <div className="text-md mb-2 flex items-center">
                                             <div>
                                                 <FireIcon className="mr-2 h-5 w-5" />
                                             </div>
                                             You are owner of this presentation
                                         </div>
-                                    </Link>
+                                    </div>
                                 </div>
                             </div>
                         )

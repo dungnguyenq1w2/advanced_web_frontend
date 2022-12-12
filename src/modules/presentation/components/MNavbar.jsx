@@ -1,13 +1,29 @@
 import { useState, useEffect } from 'react'
 import { PlayIcon, XMarkIcon, ArrowPathIcon } from '@heroicons/react/24/outline'
+import { add as addSlide } from 'apis/slide.api'
+import { useNavigate } from 'react-router-dom'
 
-function MNavbar() {
+function MNavbar({ presentationId, refetchSlides }) {
     //#region data
-
+    const navigate = useNavigate()
     //#endregion
 
     //#region event
-    const addSlide = () => {}
+    const handleAddSlide = async () => {
+        try {
+            const res = await addSlide({
+                question: 'What color is your Bugatti?',
+                presentation_id: presentationId,
+            })
+
+            if (res?.data) {
+                await refetchSlides()
+                navigate(`/presentation/${presentationId}/${res?.data?.id}/edit`)
+            }
+        } catch (error) {
+            console.log('Error', error)
+        }
+    }
     //#endregion
 
     return (
@@ -25,7 +41,7 @@ function MNavbar() {
                 </div>
                 <button
                     className="mr-32 w-full rounded-lg bg-blue-700 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 sm:w-auto"
-                    onClick={addSlide}
+                    onClick={handleAddSlide}
                 >
                     + Add Slide
                 </button>

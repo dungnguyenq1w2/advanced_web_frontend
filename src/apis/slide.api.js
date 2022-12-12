@@ -14,6 +14,12 @@ export const getById = (id, params = {}) => {
     }).get(SLIDES.GET_BY_ID(id), params)
 }
 
+export const add = (params = {}) => {
+    return map(({ data, ...rest }) => {
+        return isSuccess(rest) ? { data: data?.data } : { data: {} }
+    }).post(SLIDES.ADD, params)
+}
+
 export const update = (id, params = {}) => {
     return map(({ data, ...rest }) => {
         return isSuccess(rest) ? { data: data } : { data: {} }

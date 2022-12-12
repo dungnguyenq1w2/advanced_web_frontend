@@ -1,11 +1,11 @@
 import { Dialog } from '@headlessui/react'
 import { XMarkIcon } from '@heroicons/react/24/outline'
-import { remove as removeSlide } from 'apis/slide.api'
+import { getFirst as getFirstSlide, remove as removeSlide } from 'apis/slide.api'
 import CModal from 'common/components/CModal'
 import { forwardRef, useImperativeHandle, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-const MConfirmationModal = forwardRef(({ slideId, refetchSlides }, ref) => {
+const MConfirmationModal = forwardRef(({ slideId, refetchSlides, presentationId }, ref) => {
     //#region data
     const [isOpen, setIsOpen] = useState(false)
     const navigate = useNavigate()
@@ -27,12 +27,15 @@ const MConfirmationModal = forwardRef(({ slideId, refetchSlides }, ref) => {
     }
 
     const handleDeleteSlide = async () => {
-        await removeSlide(slideId)
-        await refetchSlides()
+        try {
+            await removeSlide(slideId)
+            await refetchSlides()
 
-        navigate(`/presentation/1/1/edit`)
-
-        setIsOpen(false)
+            setIsOpen(false)
+        } catch (error) {
+            setIsOpen(false)
+            console.log('Error', error)
+        }
     }
     //#endregion
 

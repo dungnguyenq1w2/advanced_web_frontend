@@ -11,6 +11,7 @@ import MConfirmationModal from '../components/MConfirmationModal'
 function MPresentationEdit() {
     //#region data
     const { presentationId, slideId } = useParams()
+
     const confirmationModalRef = useRef()
 
     const {
@@ -106,15 +107,13 @@ function MPresentationEdit() {
         }
     }
 
-    const handleDeleteSlide = async () => {}
-
     const handleSlideClick = (e) => {}
     //#endregion
 
     return (
         <>
             <div className=" border-t-2 border-solid border-black bg-white p-1.5">
-                <MNavbar />
+                <MNavbar presentationId={presentationId} refetchSlides={refetchSlides} />
             </div>
             <div className="px-10 py-5">
                 <div className="flex h-[600px] transform bg-white">
@@ -136,8 +135,19 @@ function MPresentationEdit() {
                                                 <PlayIcon className="h-12 w-12 cursor-pointer text-cyan-600" />
                                             )}
                                         </div>
-                                        <div className="m-2 h-40 flex-1 rounded-sm bg-white p-2">
-                                            Slide {index + 1}
+                                        <div className="m-2 flex h-40 w-60 items-center justify-center rounded-sm bg-white p-2 text-center">
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                viewBox="0 0 24 24"
+                                                fill="currentColor"
+                                                className="h-16 w-16"
+                                            >
+                                                <path d="M18.375 2.25c-1.035 0-1.875.84-1.875 1.875v15.75c0 1.035.84 1.875 1.875 1.875h.75c1.035 0 1.875-.84 1.875-1.875V4.125c0-1.036-.84-1.875-1.875-1.875h-.75zM9.75 8.625c0-1.036.84-1.875 1.875-1.875h.75c1.036 0 1.875.84 1.875 1.875v11.25c0 1.035-.84 1.875-1.875 1.875h-.75a1.875 1.875 0 01-1.875-1.875V8.625zM3 13.125c0-1.036.84-1.875 1.875-1.875h.75c1.036 0 1.875.84 1.875 1.875v6.75c0 1.035-.84 1.875-1.875 1.875h-.75A1.875 1.875 0 013 19.875v-6.75z" />
+                                            </svg>
+
+                                            <span className="text-lg font-medium">
+                                                Multiple Choice
+                                            </span>
                                         </div>
                                     </div>
                                 </Link>
@@ -247,6 +257,7 @@ function MPresentationEdit() {
                 ref={confirmationModalRef}
                 slideId={slideId}
                 refetchSlides={refetchSlides}
+                presentationId={presentationId}
             />
         </>
     )
