@@ -31,6 +31,14 @@ const MConfirmationModal = forwardRef(({ slideId, refetchSlides, presentationId 
             await removeSlide(slideId)
             await refetchSlides()
 
+            const res = await getFirstSlide({
+                presentationId: presentationId,
+            })
+
+            if (res?.data) {
+                navigate(`/presentation/${presentationId}/${res?.data?.id}/edit`)
+            }
+
             setIsOpen(false)
         } catch (error) {
             setIsOpen(false)

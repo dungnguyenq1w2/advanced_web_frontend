@@ -21,6 +21,15 @@ function MPresentationList() {
         navigate('/auth/login')
     }
 
+    const handlePresentationClick = (presentationId) => async () => {
+        const res = await getFirstSlide({
+            presentationId: presentationId,
+        })
+
+        if (res?.data) {
+            navigate(`/presentation/${presentationId}/${res?.data?.id}/edit`)
+        }
+    }
     //#endregion
 
     if (isLoading) {
@@ -39,7 +48,10 @@ function MPresentationList() {
                             >
                                 <div className="px-6 py-4">
                                     <div className="flex justify-center">
-                                        <div className="mb-2 flex-1 cursor-pointer text-xl font-bold">
+                                        <div
+                                            className="mb-2 flex-1 cursor-pointer text-xl font-bold"
+                                            onClick={handlePresentationClick(presentation.id)}
+                                        >
                                             <div>{presentation?.name}</div>
                                         </div>
 
@@ -62,7 +74,10 @@ function MPresentationList() {
                                             </Dropdown.Item>
                                         </Dropdown>
                                     </div>
-                                    <div className="cursor-pointer">
+                                    <div
+                                        className="cursor-pointer"
+                                        onClick={handlePresentationClick(presentation.id)}
+                                    >
                                         <div className="text-md mb-2 flex items-center">
                                             <div>
                                                 <FireIcon className="mr-2 h-5 w-5" />

@@ -41,6 +41,7 @@ export const PRESENTATIONS = {
 //#region SLIDES
 export const SLIDES = {
     GET_ALL: '/slides',
+    GET_FIRST: '/slides/first-slide',
     GET_BY_ID: (id) => `/slides/${id}`,
     ADD: '/slides/add',
     UPDATE: (id) => `/slides/${id}`,

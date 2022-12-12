@@ -8,6 +8,12 @@ export const getAll = (params = {}) => {
     }).post(SLIDES.GET_ALL, params)
 }
 
+export const getFirst = (params = {}) => {
+    return map(({ data, ...rest }) => {
+        return isSuccess(rest) ? { data: data?.data } : { data: {} }
+    }).post(SLIDES.GET_FIRST, params)
+}
+
 export const getById = (id, params = {}) => {
     return map(({ data, ...rest }) => {
         return isSuccess(rest) ? { data: data?.data } : { data: {} }
