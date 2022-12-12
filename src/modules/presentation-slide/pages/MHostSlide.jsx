@@ -84,7 +84,6 @@ function MHostSlide() {
     //#region data
     const { presentationId } = useParams()
     const navigate = useNavigate()
-
     const { data: _slides, isLoading: isLoadingSlides } = getAllSlidesById(presentationId)
 
     const slidesId = useMemo(() => {
@@ -215,6 +214,8 @@ function MHostSlide() {
     return (
         <MSlide
             question={slide.question}
+            code={_slides?.data.code}
+            presentationId={presentationId}
             slidesId={slidesId}
             slideIndex={slideIndex}
             onChangeSlide={setSlideIndex}

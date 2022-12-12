@@ -155,7 +155,6 @@ function MEditProfile() {
                                 id="phone"
                                 type="number"
                                 value={user?.phone}
-                                //pattern="0[0-9]{9}"
                                 placeholder="Phone number consists of 10 digits, starting with 0"
                                 {...register('phone')}
                                 onChange={(e) => {

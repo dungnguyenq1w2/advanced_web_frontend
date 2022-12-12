@@ -13,3 +13,15 @@ export const getAllSlidesById = (presentationId, params = {}) => {
         return isSuccess(rest) ? { data: data.data } : { data: [] }
     }).get(PRESENTATIONS.GET_ALL_SLIDES_BY_ID(presentationId), params)
 }
+
+export const deletePresentation = (presentationId, params = {}) => {
+    return map(({ data, ...rest }) => {
+        return isSuccess(rest) ? { data: data.data } : { data: [] }
+    }).remove(PRESENTATIONS.DELETE_PRESENTATION(presentationId), params)
+}
+
+export const postCheckCodePresentation = (params = {}) => {
+    return map(({ data, ...rest }) => {
+        return isSuccess(rest) ? { data: data.data } : { data: [] }
+    }).post(PRESENTATIONS.POST_CHECK_CODE, params)
+}

@@ -2,7 +2,7 @@ import { CheckIcon, ChevronLeftIcon } from '@heroicons/react/24/outline'
 import { ChevronRightIcon } from '@heroicons/react/24/outline'
 import { useState } from 'react'
 
-function MSlide({ children, question, slidesId, slideIndex, onChangeSlide }) {
+function MSlide({ children,question, code, presentationId,  slidesId, slideIndex, onChangeSlide }) {
     //#region Data
     const [isCopied, setIsCopied] = useState(false)
     //#endregion
@@ -29,7 +29,7 @@ function MSlide({ children, question, slidesId, slideIndex, onChangeSlide }) {
 
     const handleCopyShareLink = async () => {
         navigator.clipboard.writeText(
-            `${window.location.host}/slide-present/${slidesId[1]?.id}/guest`
+            `${window.location.host}/presentation-slide/${presentationId}/guest`
         )
         setIsCopied(true)
     }
@@ -46,11 +46,11 @@ function MSlide({ children, question, slidesId, slideIndex, onChangeSlide }) {
                 <div className="w-full bg-gray-900 bg-opacity-20">
                     <h1 className="peer p-2 text-center text-2xl font-semibold">
                         Go to www.menti.com and use the code{' '}
-                        <span className="text-3xl">2952 6208</span>
+                        <span className="text-3xl">{code}</span>
                     </h1>
                     <div className="hidden p-2 pb-4 text-center hover:flex hover:items-center hover:justify-center peer-hover:flex peer-hover:items-center peer-hover:justify-center">
                         <span className="mr-2 border border-gray-700 p-1 text-center text-sm font-normal">
-                            {`${window.location.host}/slide-present/${slidesId[1]?.id}/guest`}
+                            {`${window.location.host}/presentation-slide/${presentationId}/guest`}
                         </span>
                         <button
                             className="border border-gray-500 p-1 text-sm font-medium hover:border-black hover:bg-black"
@@ -84,7 +84,6 @@ function MSlide({ children, question, slidesId, slideIndex, onChangeSlide }) {
                 >
                     <ChevronRightIcon className="h-10 w-10" />
                 </button>
-                <div className="absolute bottom-10 right-10">Num of member</div>
             </div>
         </div>
     )
