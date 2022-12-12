@@ -42,6 +42,7 @@ export const PRESENTATIONS = {
 export const SLIDES = {
     GET_ALL: '/slides',
     GET_BY_ID: (id) => `/slides/${id}`,
+    UPDATE: (id) => `/slides/${id}`,
     GET_FOR_HOST: (id) => `/slides/${id}/host`,
     GET_FOR_GUEST: (id) => `/slides/${id}/guest`,
 }
@@ -51,5 +52,8 @@ export const SLIDES = {
 export const CHOICES = {
     GET_ALL: '/choices',
     GET_BY_ID: (id) => `/choices/${id}`,
+    ADD: '/choices/add',
+    UPDATE: (id) => `/choices/${id}`,
+    REMOVE: (id) => `/choices/${id}`,
 }
 //#endregion

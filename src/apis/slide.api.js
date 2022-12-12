@@ -14,6 +14,12 @@ export const getById = (id, params = {}) => {
     }).get(SLIDES.GET_BY_ID(id), params)
 }
 
+export const update = (id, params = {}) => {
+    return map(({ data, ...rest }) => {
+        return isSuccess(rest) ? { data: data } : { data: {} }
+    }).put(SLIDES.UPDATE(id), params)
+}
+
 export const getForHost = (id, params = {}) => {
     return map(({ data, ...rest }) => {
         return isSuccess(rest) ? { data: data?.data } : { data: {} }

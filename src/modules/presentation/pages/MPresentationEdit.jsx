@@ -4,14 +4,24 @@ import { getAll as getAllChoices } from 'common/queries-fn/choices.query'
 import React, { useEffect, useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import MNavbar from '../components/MNavbar'
+import { add as addChoice, update as updateChoice, remove as removeChoice } from 'apis/choice.api'
+import { update as updateSlide } from 'apis/slide.api'
 
 function MPresentationEdit() {
     //#region data
     const { presentationId, slideId } = useParams()
-    const { data: slidesData, isLoading: isSlidesDataLoading } = getAllSlides({
+    const {
+        data: slidesData,
+        isLoading: isSlidesDataLoading,
+        refetch: refetchSlides,
+    } = getAllSlides({
         presentationId: presentationId,
     })
-    const { data: choicesData, isLoading: isChoicesDataLoading } = getAllChoices({
+    const {
+        data: choicesData,
+        isLoading: isChoicesDataLoading,
+        refetch: refetchChoices,
+    } = getAllChoices({
         slideId: slideId,
     })
 
@@ -25,30 +35,68 @@ function MPresentationEdit() {
     const [currentSlide, setCurrentSlide] = useState(
         slides.find((slide) => slide.id === parseInt(slideId)) ?? {}
     )
+    //#endregion
 
+    //#region event
     useEffect(() => {
         setCurrentSlide(slides.find((slide) => slide.id === parseInt(slideId)))
         setnumberOptions(choices.length)
         setSlideChoices(choices)
     }, [slides, slideId, choices])
 
-    console.log('-----------------')
-    console.log(choices)
-    console.log(slideChoices)
-
-    //#endregion
-
-    //#region event
-    const addOption = () => {
-        // if (numberOptions + 1 > 5) return alert('Number option from 1 to 5')
+    const handleAddChoice = () => {
         setnumberOptions(numberOptions + 1)
-        setSlideChoices([...slideChoices, { content: `Option ${slideChoices.length + 1}` }])
+        setSlideChoices([
+            ...slideChoices,
+            {
+                content: `Option ${numberOptions + 1}`,
+                slide_id: slideId,
+                action: 'ADD',
+            },
+        ])
     }
 
-    const removeOption = (index) => () => {
+    const handleRemoveChoice = (index) => () => {
         const newSlideChoices = [...slideChoices]
-        newSlideChoices.splice(index, 1)
+        if (newSlideChoices[index].action && newSlideChoices[index]?.action === 'ADD') {
+            newSlideChoices.splice(index, 1)
+        } else {
+            newSlideChoices[index].action = 'DELETE'
+        }
         setSlideChoices(newSlideChoices)
+    }
+
+    const handleSaveSlide = async () => {
+        const isChoicesChange = slideChoices.findIndex((choice) => choice?.action) !== -1
+        const isSlideChange = typeof currentSlide?.change !== 'undefined'
+
+        if (isSlideChange) {
+            await updateSlide(slideId, { question: currentSlide?.question })
+            refetchSlides()
+        }
+
+        if (isChoicesChange) {
+            for (const choice of slideChoices) {
+                if (choice?.action) {
+                    const { action, id, ...choiceData } = choice
+                    switch (choice?.action) {
+                        case 'ADD':
+                            await addChoice(choiceData)
+                            break
+                        case 'UPDATE':
+                            await updateChoice(id, choiceData)
+                            break
+                        case 'DELETE':
+                            await removeChoice(id)
+                            break
+                        default:
+                            break
+                    }
+                }
+            }
+
+            refetchChoices()
+        }
     }
 
     const handleSlideClick = (e) => {}
@@ -110,9 +158,13 @@ function MPresentationEdit() {
                                 id="question"
                                 className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
                                 placeholder="Your question"
-                                value={currentSlide?.question}
+                                value={currentSlide?.question ?? 'Your question'}
                                 onChange={(e) => {
-                                    setCurrentSlide({ ...currentSlide, question: e.target.value })
+                                    setCurrentSlide({
+                                        ...currentSlide,
+                                        question: e.target.value,
+                                        change: true,
+                                    })
                                 }}
                                 required
                             />
@@ -122,11 +174,10 @@ function MPresentationEdit() {
                         {isChoicesDataLoading && slideChoices?.length === 0 ? (
                             <></>
                         ) : (
-                            slideChoices.map((item, index) => {
-                                {
-                                    /* const slideChoice = slideChoices[index] */
-                                }
-                                return (
+                            slideChoices.map((choice, index) => {
+                                return choice?.action && choice?.action === 'DELETE' ? (
+                                    <div key={index}></div>
+                                ) : (
                                     <div key={index} className="flex flex-none flex-row">
                                         <div className="ml-3 mb-3 flex-1">
                                             <input
@@ -134,11 +185,12 @@ function MPresentationEdit() {
                                                 id={`option${index + 1}`}
                                                 className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
                                                 placeholder="Input option"
-                                                value={item?.content ?? `Option ${index + 1}`}
+                                                value={choice?.content ?? `Option ${index + 1}`}
                                                 onChange={(e) => {
                                                     const newChoice = {
-                                                        ...item,
+                                                        ...choice,
                                                         content: e.target.value,
+                                                        action: choice?.id ? 'UPDATE' : 'ADD',
                                                     }
                                                     const cloneChoices = [...slideChoices]
 
@@ -150,7 +202,7 @@ function MPresentationEdit() {
                                         </div>
                                         <XMarkIcon
                                             className="mr-3 h-8 w-8 cursor-pointer text-[#F20000]"
-                                            onClick={removeOption(index)}
+                                            onClick={handleRemoveChoice(index)}
                                         />
                                     </div>
                                 )
@@ -159,12 +211,15 @@ function MPresentationEdit() {
 
                         <button
                             className="bg-white-700 mx-24 mt-3 w-full rounded-lg border border-indigo-600 px-5 py-2.5 text-center text-sm font-medium text-indigo-600 hover:bg-blue-100 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 sm:w-auto"
-                            onClick={addOption}
+                            onClick={handleAddChoice}
                         >
                             + Add option
                         </button>
 
-                        <button className="mx-2 mt-5 mb-1 w-full rounded-lg bg-blue-700 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 sm:w-auto">
+                        <button
+                            className="mx-2 mt-5 mb-1 w-full rounded-lg bg-blue-700 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 sm:w-auto"
+                            onClick={handleSaveSlide}
+                        >
                             Save changes
                         </button>
 
