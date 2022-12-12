@@ -2,7 +2,7 @@ import { CheckIcon, ChevronLeftIcon } from '@heroicons/react/24/outline'
 import { ChevronRightIcon } from '@heroicons/react/24/outline'
 import { useState } from 'react'
 
-function MSlide({ children,question, code, presentationId,  slidesId, slideIndex, onChangeSlide }) {
+function MSlide({ children, question, code, presentationId, slidesId, slideIndex, onChangeSlide }) {
     //#region Data
     const [isCopied, setIsCopied] = useState(false)
     //#endregion

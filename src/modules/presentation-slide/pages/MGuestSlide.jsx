@@ -239,6 +239,8 @@ function MGuestSlide() {
     return (
         <MSlide
             question={slide.question}
+            code={_slides?.data.code}
+            presentationId={presentationId}
             slidesId={slidesId}
             slideIndex={slideIndex}
             onChangeSlide={setSlideIndex}

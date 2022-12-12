@@ -22,6 +22,6 @@ export const deletePresentation = (presentationId, params = {}) => {
 
 export const postCheckCodePresentation = (params = {}) => {
     return map(({ data, ...rest }) => {
-        return isSuccess(rest) ? { data: data.data } : { data: [] }
+        return isSuccess(rest) ? { data: data.data } : { error: rest.response.data }
     }).post(PRESENTATIONS.POST_CHECK_CODE, params)
 }

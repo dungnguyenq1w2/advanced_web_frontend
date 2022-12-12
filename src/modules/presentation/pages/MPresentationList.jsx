@@ -24,7 +24,7 @@ function MPresentationList() {
     const handleDelPresentation = async (presentationId) => {
         const res = await deletePresentation(presentationId)
 
-        if (res?.status) refetch()
+        if (res?.data?.status) refetch()
     }
 
     const handleDropdownClick = (e) => {

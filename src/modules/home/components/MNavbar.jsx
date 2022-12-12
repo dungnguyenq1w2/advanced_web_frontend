@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { postCheckCodePresentation } from 'apis/presentation.api'
+import axios from 'axios'
 function MNavbar() {
     //#region data
     const [msgError, setMsgError] = useState(null)
@@ -8,16 +9,31 @@ function MNavbar() {
     //#endregion
 
     //#region event
-    const handleKeyDown = async(e) => {
+    const handleKeyDown = async (e) => {
         if (e.key === 'Enter') {
             e.preventDefault()
 
             if (/^[0-9]{8}$/.test(e.target.value)) {
                 const res = await postCheckCodePresentation({ code: e.target.value })
-                if (res?.data) {
+                
+                if (res?.data?.id) {
                     setMsgError(null)
                     navigate(`/presentation-slide/${res?.data?.id}/guest`)
                 } else setMsgError('Number code invalid')
+
+                // const res = await axios.post(
+                //     `${process.env.REACT_APP_API_URL}/presentations/checkCode`,
+                //     { code: e.target.value }
+                // )
+                // console.log('abc: ', res?.response.data?.data)
+                // console.log('abc');
+                // if (res?.data?.data?.id) {
+                //     setMsgError(null)
+                //     navigate(`/presentation-slide/${res?.data?.data?.id}/guest`)
+                // } else {
+                //     console.log('123')
+                //     setMsgError('Number code invalid')
+                // }
             } else setMsgError('Number code include 8 number')
         }
     }
