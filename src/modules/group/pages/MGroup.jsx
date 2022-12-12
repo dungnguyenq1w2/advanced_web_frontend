@@ -23,7 +23,7 @@ function MGroup() {
     const navigate = useNavigate()
     const shareModalRef = useRef()
     const participantsModalRef = useRef()
-    const { data, isLoading, set } = getById(groupId)
+    const { data, isLoading, set, refetch } = getById(groupId)
     const group = useMemo(() => data?.data ?? {}, [data])
     //#endregion
 
@@ -112,6 +112,7 @@ function MGroup() {
                 participants={group.participants}
                 onRoleChange={handleChangeRole}
                 set={set}
+                refetch={refetch}
             />
         </div>
     )

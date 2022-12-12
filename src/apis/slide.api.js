@@ -20,6 +20,12 @@ export const update = (id, params = {}) => {
     }).put(SLIDES.UPDATE(id), params)
 }
 
+export const remove = (id, params = {}) => {
+    return map(({ data, ...rest }) => {
+        return isSuccess(rest) ? { data: data } : { data: {} }
+    }).remove(SLIDES.REMOVE(id), params)
+}
+
 export const getForHost = (id, params = {}) => {
     return map(({ data, ...rest }) => {
         return isSuccess(rest) ? { data: data?.data } : { data: {} }

@@ -1,15 +1,18 @@
 import { XMarkIcon, PlayIcon } from '@heroicons/react/20/solid'
 import { getAll as getAllSlides } from 'common/queries-fn/slides.query'
 import { getAll as getAllChoices } from 'common/queries-fn/choices.query'
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import MNavbar from '../components/MNavbar'
 import { add as addChoice, update as updateChoice, remove as removeChoice } from 'apis/choice.api'
 import { update as updateSlide } from 'apis/slide.api'
+import MConfirmationModal from '../components/MConfirmationModal'
 
 function MPresentationEdit() {
     //#region data
     const { presentationId, slideId } = useParams()
+    const confirmationModalRef = useRef()
+
     const {
         data: slidesData,
         isLoading: isSlidesDataLoading,
@@ -67,37 +70,43 @@ function MPresentationEdit() {
     }
 
     const handleSaveSlide = async () => {
-        const isChoicesChange = slideChoices.findIndex((choice) => choice?.action) !== -1
-        const isSlideChange = typeof currentSlide?.change !== 'undefined'
+        try {
+            const isChoicesChange = slideChoices.findIndex((choice) => choice?.action) !== -1
+            const isSlideChange = typeof currentSlide?.change !== 'undefined'
 
-        if (isSlideChange) {
-            await updateSlide(slideId, { question: currentSlide?.question })
-            refetchSlides()
-        }
-
-        if (isChoicesChange) {
-            for (const choice of slideChoices) {
-                if (choice?.action) {
-                    const { action, id, ...choiceData } = choice
-                    switch (choice?.action) {
-                        case 'ADD':
-                            await addChoice(choiceData)
-                            break
-                        case 'UPDATE':
-                            await updateChoice(id, choiceData)
-                            break
-                        case 'DELETE':
-                            await removeChoice(id)
-                            break
-                        default:
-                            break
-                    }
-                }
+            if (isSlideChange) {
+                await updateSlide(slideId, { question: currentSlide?.question })
+                await refetchSlides()
             }
 
-            refetchChoices()
+            if (isChoicesChange) {
+                for (const choice of slideChoices) {
+                    if (choice?.action) {
+                        const { action, id, ...choiceData } = choice
+                        switch (choice?.action) {
+                            case 'ADD':
+                                await addChoice(choiceData)
+                                break
+                            case 'UPDATE':
+                                await updateChoice(id, choiceData)
+                                break
+                            case 'DELETE':
+                                await removeChoice(id)
+                                break
+                            default:
+                                break
+                        }
+                    }
+                }
+
+                await refetchChoices()
+            }
+        } catch (error) {
+            console.log('Error:', error)
         }
     }
+
+    const handleDeleteSlide = async () => {}
 
     const handleSlideClick = (e) => {}
     //#endregion
@@ -223,12 +232,22 @@ function MPresentationEdit() {
                             Save changes
                         </button>
 
-                        <button className="mx-2 mt-5 mb-1 w-full rounded-lg bg-red-700 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800 sm:w-auto">
+                        <button
+                            className="mx-2 mt-5 mb-1 w-full rounded-lg bg-red-700 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800 sm:w-auto"
+                            onClick={() => {
+                                confirmationModalRef.current.open()
+                            }}
+                        >
                             Delete slide
                         </button>
                     </div>
                 </div>
             </div>
+            <MConfirmationModal
+                ref={confirmationModalRef}
+                slideId={slideId}
+                refetchSlides={refetchSlides}
+            />
         </>
     )
 }

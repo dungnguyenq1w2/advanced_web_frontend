@@ -16,7 +16,7 @@ import { ROLE_ASSIGNMENT } from 'common/constant'
 import { detachedByKey } from '../utils/index'
 import MPopUpModal from './MPopUpModal'
 
-const MParticipantsModal = forwardRef(({ participants, onRoleChange }, ref) => {
+const MParticipantsModal = forwardRef(({ participants, onRoleChange, refetch }, ref) => {
     //#region data
     const { groupId } = useParams()
     const MPopUpModalRef = useRef(false)
@@ -270,6 +270,7 @@ const MParticipantsModal = forwardRef(({ participants, onRoleChange }, ref) => {
                 selectedUserId={selectedUserId}
                 // participants={group.participants}
                 onRoleChange={onRoleChange}
+                refetch={refetch}
             />
         </>
     )

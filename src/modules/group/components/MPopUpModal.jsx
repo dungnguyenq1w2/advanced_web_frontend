@@ -10,10 +10,9 @@ import { Dialog } from '@headlessui/react'
 import { XMarkIcon } from '@heroicons/react/20/solid'
 import { ROLE_ASSIGNMENT } from 'common/constant'
 
-function MPopUpModal({ groupId, currentOwnerId, selectedUserId, onRoleChange, set }, ref) {
+function MPopUpModal({ groupId, currentOwnerId, selectedUserId, onRoleChange, set, refetch }, ref) {
     //#region data
     const [isOpen, setIsOpen] = useState(false)
-    const navigate = useNavigate()
     //#endregion
 
     //#region event
@@ -38,8 +37,8 @@ function MPopUpModal({ groupId, currentOwnerId, selectedUserId, onRoleChange, se
             })
             onRoleChange(ROLE_ASSIGNMENT.SET_OWNER, selectedUserId)
             onRoleChange(ROLE_ASSIGNMENT.DEMOTE, currentOwnerId)
+            await refetch()
             setIsOpen(false)
-            navigate(0)
         } catch (error) {
             setIsOpen(false)
             console.log('Error: ', error)
