@@ -41,7 +41,15 @@ export const PRESENTATIONS = {
 //#region SLIDES
 export const SLIDES = {
     GET_ALL: '/slides',
+    GET_BY_ID: (id) => `/slides/${id}`,
     GET_FOR_HOST: (id) => `/slides/${id}/host`,
     GET_FOR_GUEST: (id) => `/slides/${id}/guest`,
+}
+//#endregion
+
+//#region CHOICES
+export const CHOICES = {
+    GET_ALL: '/choices',
+    GET_BY_ID: (id) => `/choices/${id}`,
 }
 //#endregion

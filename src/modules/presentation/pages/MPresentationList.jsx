@@ -40,7 +40,7 @@ function MPresentationList() {
                                     <div className="flex justify-center">
                                         <Link
                                             className="mb-2 flex-1 text-xl font-bold"
-                                            to={`/presentation/${presentation.id}/edit`}
+                                            to={`/presentation/${presentation.id}/1/edit`}
                                         >
                                             <div>{presentation?.name}</div>
                                         </Link>
@@ -64,7 +64,7 @@ function MPresentationList() {
                                             </Dropdown.Item>
                                         </Dropdown>
                                     </div>
-                                    <Link to={`/presentation/edit/${presentation?.id}`}>
+                                    <Link to={`/presentation/${presentation.id}/1/edit`}>
                                         <div className="text-md mb-2 flex items-center">
                                             <div>
                                                 <FireIcon className="mr-2 h-5 w-5" />

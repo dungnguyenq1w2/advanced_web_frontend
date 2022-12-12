@@ -8,6 +8,12 @@ export const getAll = (params = {}) => {
     }).post(SLIDES.GET_ALL, params)
 }
 
+export const getById = (id, params = {}) => {
+    return map(({ data, ...rest }) => {
+        return isSuccess(rest) ? { data: data?.data } : { data: {} }
+    }).get(SLIDES.GET_BY_ID(id), params)
+}
+
 export const getForHost = (id, params = {}) => {
     return map(({ data, ...rest }) => {
         return isSuccess(rest) ? { data: data?.data } : { data: {} }

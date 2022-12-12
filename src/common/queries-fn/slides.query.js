@@ -9,6 +9,13 @@ export function getAll(params = {}, isLoading = false, options = {}) {
     })
 }
 
+export function getById(id, isLoading = false, options = {}) {
+    return createQuery(['slides', id], () => slides.getById(id), {
+        enabled: !isLoading,
+        ...options,
+    })
+}
+
 export function getForHost(id, isLoading = false, options = {}) {
     return createQuery(['slides-host', id], () => slides.getForHost(id), {
         enabled: !isLoading,
