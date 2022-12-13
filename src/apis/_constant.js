@@ -36,6 +36,9 @@ export const GROUPS = {
 //#region PRESENTATIONS
 export const PRESENTATIONS = {
     GET_ALL_BY_HOST_ID: (hostId) => `/presentations/${hostId}`,
+    GET_ALL_SLIDES_BY_ID: (presentationId) => `/presentations/${presentationId}/slides`,
+    DELETE_PRESENTATION: (presentationId) => `/presentations/${presentationId}`,
+    POST_CHECK_CODE: '/presentations/checkCode',
 }
 
 //#region SLIDES
