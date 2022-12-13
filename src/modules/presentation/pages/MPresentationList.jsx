@@ -1,9 +1,9 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import CLoading from 'common/components/CLoading'
 import { deletePresentation } from 'apis/presentation.api'
 import { getAllByHostId } from 'common/queries-fn/presentations.query'
 import { FireIcon, EllipsisVerticalIcon } from '@heroicons/react/24/outline'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { Dropdown } from 'flowbite-react'
 import { PlayIcon, XMarkIcon } from '@heroicons/react/20/solid'
 import { getFirst as getFirstSlide } from 'apis/slide.api'
@@ -12,15 +12,21 @@ function MPresentationList() {
     //#region data
     const navigate = useNavigate()
     const localUser = JSON.parse(localStorage.getItem('user'))
-    const { data, isLoading, refetch } = getAllByHostId(localUser.id)
+    useEffect(() => {
+
+        if (!localUser) {
+            alert('Login to use this feature')
+            navigate('/auth/login')
+        }
+    }, [])
+
+    const { data, isLoading, refetch } = getAllByHostId(localUser?.id)
     const presentations = useMemo(() => data?.data ?? [], [data])
     //#endregion
 
     //#endregion event
-    if (!localUser) {
-        alert('Login to use this feature')
-        navigate('/auth/login')
-    }
+
+    console.log(localUser)
 
     const handleDelPresentation = async (presentationId) => {
         const res = await deletePresentation(presentationId)

@@ -1,125 +1,140 @@
-import { PlayIcon, XMarkIcon } from '@heroicons/react/24/outline'
-import { useState } from 'react'
-import MNavbar from '../components/MHeader'
+import { useEffect, useState } from 'react'
+
+import { useForm } from 'react-hook-form'
+import { useNavigate } from 'react-router-dom'
+
+import { ErrorMessage } from '@hookform/error-message'
+import { yupResolver } from '@hookform/resolvers/yup'
+
+import { postAddPresentation } from 'apis/presentation.api'
+import CLoading from 'common/components/CLoading'
+
+import { Dialog } from '@headlessui/react'
+import CModal from 'common/components/CModal'
+import { Button, Label } from 'flowbite-react'
+import { presentationValidationSchema } from '../validation'
+import { add as addSlide } from 'apis/slide.api'
 
 function MPresentationCreate() {
     //#region data
-    const [numberOptions, setnumberOptions] = useState(4)
+    const [isLoading, setIsLoading] = useState(false)
+    const [PresentationId, setPresentationId] = useState(0)
+    const [sildeId, setSildeId] = useState(0)
+    const navigate = useNavigate()
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+    } = useForm({ resolver: yupResolver(presentationValidationSchema) })
+    const user = JSON.parse(localStorage.getItem('user'))
     //#endregion
 
     //#region event
-    const addOption = () => {
-        if (numberOptions + 1 > 5) return alert('Number option from 1 to 5')
-        setnumberOptions(numberOptions + 1)
+    useEffect(() => {
+        if (!user) {
+            alert('Login to use this feature')
+            navigate('/auth/login')
+        }
+    }, [])
+
+    const handleAddSlide = async (presentationId) => {
+        try {
+            const res = await addSlide({
+                question: '',
+                presentation_id: presentationId,
+            })
+
+            if (res?.data) setSildeId(res?.data?.id)
+        } catch (error) {
+            console.log('Error', error)
+        }
     }
 
-    const removeOption = () => {
-        // code here
+    const onSubmit = async (data) => {
+        data.hostId = user?.id;
+        setIsLoading(true)
+        const res = await postAddPresentation(data)
+
+        if (res?.data) {
+            setPresentationId(res?.data?.id)
+            await handleAddSlide(res?.data?.id)
+            setTimeout(() => {
+                setIsLoading(false)
+            }, 600)
+        } else {
+            setTimeout(() => {
+                setIsLoading(false)
+            }, 600)
+        }
+    }
+
+    const closeModal = () => {
+        navigate(`/presentation/${PresentationId}/${sildeId}/edit`)
     }
     //#endregion
 
     return (
-        <>
-            <div className=" border-t-2 border-solid border-black bg-white p-1.5">
-                <MNavbar />
-            </div>
-            <div className="px-10 py-5">
-                <div className="flex h-[600px] transform bg-white">
-                    <div className=" w-[300px] flex-none overflow-auto bg-slate-200">
-                        {/* Silde 1 bg-blue-300: Dùng để xác định đang ở silde nào*/}
-                        <div className="flex flex-row border-4 border-indigo-200 border-b-indigo-500 bg-blue-300">
-                            <div className="flex h-14 w-14 flex-col ">
-                                <div className="pl-3 text-xl">1</div>
-                                <PlayIcon className="h-12 w-12 cursor-pointer text-cyan-400" />
+        <div className="flex justify-center pt-20">
+            <div className="w-[40rem] rounded border bg-white p-5">
+                <h1 className="text-center text-2xl font-semibold">Create a Group</h1>
+
+                <div className="my-5">
+                    <form onSubmit={handleSubmit(onSubmit)}>
+                        <div>
+                            <div className="mb-2 block">
+                                <Label htmlFor="name" value="Name *" />
                             </div>
-                            <div className="m-2 h-40 flex-1 rounded-sm bg-white p-2">Silde 1</div>
-                        </div>
-
-                        {/* Silde 2 */}
-                        <div className="flex flex-row border-4 border-indigo-200 border-b-indigo-500">
-                            <div className="flex h-14 w-14 flex-col">
-                                <div className="pl-3 text-xl">2</div>
-                                <PlayIcon className="h-12 w-12 cursor-pointer text-cyan-400" />
-                            </div>
-                            <div className="m-2 h-40 flex-1 rounded-sm bg-white p-2">Silde 2</div>
-                        </div>
-
-                        <div className="flex flex-row border-4 border-indigo-200 border-b-indigo-500">
-                            <div className="flex h-14 w-14 flex-col">
-                                <div className="pl-3 text-xl">3</div>
-                                <PlayIcon className="h-12 w-12 cursor-pointer text-cyan-400" />
-                            </div>
-                            <div className="m-2 h-40 flex-1 rounded-sm bg-white p-2">Silde 3</div>
-                        </div>
-
-                        <div className="flex flex-row border-4 border-indigo-200 border-b-indigo-500">
-                            <div className="flex h-14 w-14 flex-col">
-                                <div className="pl-3 text-xl">4</div>
-                                <PlayIcon className="h-12 w-12 cursor-pointer text-cyan-400" />
-                            </div>
-                            <div className="m-2 h-40 flex-1 rounded-sm bg-white p-2">Silde 4</div>
-                        </div>
-                    </div>
-
-                    {/* phần giữa */}
-                    <div className="flex flex-1 bg-slate-300">
-                        <div className="m-5 h-[550px] w-[650px] flex-1 rounded-sm bg-white">
-                            Silde 1
-                        </div>
-                    </div>
-
-                    {/* Phần Description */}
-                    <div className="flex w-[350px] flex-none flex-col">
-                        <b className="mx-3 my-3 flex-none text-center">Description</b>
-                        <div className="mx-3 my-6 flex-none">
-                            <label
-                                for="question"
-                                className="mb-2 block text-sm font-bold text-gray-900 dark:text-white"
-                            >
-                                Your question:
-                            </label>
                             <input
-                                type="text"
-                                id="question"
-                                className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
-                                placeholder="Your question"
+                                type="name"
+                                name="name"
+                                {...register('name', { required: true })}
+                                className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
+                                autoFocus
                                 required
-                            ></input>
-                        </div>
-                        <b className="mx-3 mt-1 mb-2 flex-none">Options: </b>
-                        {Array(numberOptions)
-                            .fill(null)
-                            .map((e, i) => (
-                                <div className="flex flex-none flex-row" key={i}>
-                                    <div className="ml-3 mb-3 flex-1">
-                                        <input
-                                            type="text"
-                                            id={`option${i + 1}`}
-                                            className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
-                                            placeholder="Input option"
-                                            required
-                                        ></input>
+                            />
+                            <ErrorMessage
+                                errors={errors}
+                                name="name"
+                                render={() => (
+                                    <div
+                                        className="mt-1 rounded-lg bg-red-100 p-2 text-sm text-red-700 dark:bg-red-200 dark:text-red-800"
+                                        role="alert"
+                                    >
+                                        <span className="font-medium">{errors.name?.message}</span>
                                     </div>
-                                    <XMarkIcon
-                                        className="mr-3 h-8 w-8 cursor-pointer text-[#F20000]"
-                                        onClick={removeOption}
-                                    />
-                                </div>
-                            ))}
-                        <button
-                            className="mx-28 mt-3 w-full rounded-lg bg-blue-700 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 sm:w-auto"
-                            onClick={addOption}
-                        >
-                            + Add option
-                        </button>
-
-                        <button className="mx-2 mt-5 mb-1 w-full rounded-lg bg-red-700 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800 sm:w-auto">
-                            Delete silde
-                        </button>
-                    </div>
+                                )}
+                            />
+                        </div>
+                        <div className="mt-3 flex justify-center">
+                            <Button type="submit">Create</Button>
+                        </div>
+                    </form>
                 </div>
             </div>
-        </>
+
+            <CModal isOpen={!!PresentationId} onClose={closeModal}>
+                <Dialog.Panel className="max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+                    <Dialog.Title
+                        as="h3"
+                        className="text-center text-lg font-medium leading-6 text-gray-900"
+                    >
+                        Create presentation successful
+                    </Dialog.Title>
+
+                    <div className="mt-8 text-center">
+                        <button
+                            type="button"
+                            className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                            onClick={closeModal}
+                        >
+                            Got it, thanks!
+                        </button>
+                    </div>
+                </Dialog.Panel>
+            </CModal>
+
+            {isLoading && <CLoading />}
+        </div>
     )
 }
 

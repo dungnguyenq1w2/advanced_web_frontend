@@ -12,7 +12,7 @@ function MHeader({ presentationId, refetchSlides }) {
     const handleAddSlide = async () => {
         try {
             const res = await addSlide({
-                question: 'What color is your Bugatti?',
+                question: '',
                 presentation_id: presentationId,
             })
 

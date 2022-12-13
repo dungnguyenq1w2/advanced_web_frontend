@@ -39,6 +39,7 @@ export const PRESENTATIONS = {
     GET_ALL_SLIDES_BY_ID: (presentationId) => `/presentations/${presentationId}/slides`,
     DELETE_PRESENTATION: (presentationId) => `/presentations/${presentationId}`,
     POST_CHECK_CODE: '/presentations/checkCode',
+    POST_ADD: '/presentations/add',
 }
 
 //#region SLIDES

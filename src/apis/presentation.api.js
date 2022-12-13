@@ -25,3 +25,9 @@ export const postCheckCodePresentation = (params = {}) => {
         return isSuccess(rest) ? { data: data.data } : { error: rest.response.data }
     }).post(PRESENTATIONS.POST_CHECK_CODE, params)
 }
+
+export const postAddPresentation = (params = {}) => {
+    return map(({ data, ...rest }) => {
+        return isSuccess(rest) ? { data: data.data } : { data: [] }
+    }).post(PRESENTATIONS.POST_ADD, params)
+}
