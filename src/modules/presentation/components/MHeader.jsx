@@ -3,7 +3,7 @@ import { PlayIcon, XMarkIcon, ArrowPathIcon } from '@heroicons/react/24/outline'
 import { add as addSlide } from 'apis/slide.api'
 import { useNavigate } from 'react-router-dom'
 
-function MNavbar({ presentationId, refetchSlides }) {
+function MHeader({ presentationId, refetchSlides }) {
     //#region data
     const navigate = useNavigate()
     //#endregion
@@ -70,4 +70,4 @@ function MNavbar({ presentationId, refetchSlides }) {
     )
 }
 
-export default MNavbar
+export default MHeader

@@ -1,12 +1,24 @@
-import { XMarkIcon, PlayIcon } from '@heroicons/react/20/solid'
-import { getAll as getAllSlides } from 'common/queries-fn/slides.query'
-import { getAll as getAllChoices } from 'common/queries-fn/choices.query'
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import '../assets/styles/index.css'
+
+import { useEffect, useMemo, useRef, useState } from 'react'
+
 import { Link, useParams } from 'react-router-dom'
-import MNavbar from '../components/MNavbar'
-import { add as addChoice, update as updateChoice, remove as removeChoice } from 'apis/choice.api'
+
+import { add as addChoice, remove as removeChoice, update as updateChoice } from 'apis/choice.api'
 import { update as updateSlide } from 'apis/slide.api'
+
+import { getAll as getAllChoices } from 'common/queries-fn/choices.query'
+import {
+    getAll as getAllSlides,
+    getForHost as getSlideForHost,
+} from 'common/queries-fn/slides.query'
+
+import { PlayIcon, XMarkIcon } from '@heroicons/react/20/solid'
 import MConfirmationModal from '../components/MConfirmationModal'
+import MHeader from '../components/MHeader'
+import MSlide from '../components/MSlide'
+
+import { getRandomColor } from 'utils/func'
 
 function MPresentationEdit() {
     //#region data
@@ -28,6 +40,51 @@ function MPresentationEdit() {
     } = getAllChoices({
         slideId: slideId,
     })
+
+    const {
+        data: _slideData,
+        isLoading: isSlideDataLoading,
+        set: setSlideData,
+        refetch: refetchSlideData,
+    } = getSlideForHost(slideId)
+
+    const slideData = useMemo(() => {
+        return _slideData?.data
+            ? {
+                  question: _slideData.data.question,
+                  data: {
+                      labels: _slideData.data.choices.map((e) => e.content),
+                      datasets: [
+                          {
+                              data: _slideData.data.choices.map((e) => e.n_choices),
+                              backgroundColor: [
+                                  getRandomColor(),
+                                  getRandomColor(),
+                                  getRandomColor(),
+                                  getRandomColor(),
+                              ],
+                              barThickness: 80,
+                              maxBarThickness: 100,
+                          },
+                      ],
+                  },
+              }
+            : {
+                  question: '',
+                  data: {
+                      labels: [],
+                      datasets: [
+                          {
+                              data: [],
+                              backgroundColor: [getRandomColor(), getRandomColor()],
+                              barThickness: 80,
+                              maxBarThickness: 100,
+                          },
+                      ],
+                  },
+              }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [_slideData])
 
     const slides = useMemo(() => slidesData?.data ?? [], [slidesData])
     const choices = useMemo(() => choicesData?.data ?? [], [choicesData])
@@ -77,7 +134,8 @@ function MPresentationEdit() {
 
             if (isSlideChange) {
                 await updateSlide(slideId, { question: currentSlide?.question })
-                await refetchSlides()
+                refetchSlides()
+                refetchSlideData()
             }
 
             if (isChoicesChange) {
@@ -100,7 +158,8 @@ function MPresentationEdit() {
                     }
                 }
 
-                await refetchChoices()
+                refetchChoices()
+                refetchSlideData()
             }
         } catch (error) {
             console.log('Error:', error)
@@ -113,11 +172,11 @@ function MPresentationEdit() {
     return (
         <>
             <div className=" border-t-2 border-solid border-black bg-white p-1.5">
-                <MNavbar presentationId={presentationId} refetchSlides={refetchSlides} />
+                <MHeader presentationId={presentationId} refetchSlides={refetchSlides} />
             </div>
             <div className="px-10 py-5">
-                <div className="flex h-[600px] transform bg-white">
-                    <div className=" w-[300px] flex-none overflow-auto bg-slate-200">
+                <div className="flex h-[570px] transform bg-white">
+                    <div className=" custom-scrollbar w-[300px] flex-none overflow-auto  bg-slate-200">
                         {slides.map((slide, index) => {
                             const className =
                                 parseInt(slideId) === slide.id
@@ -157,18 +216,17 @@ function MPresentationEdit() {
 
                     {/* phần giữa */}
                     <div className="flex flex-1 bg-slate-300">
-                        <div className="m-5 h-[550px] w-[650px] flex-1 rounded-sm bg-white">
-                            Slide {slideId}
+                        <div className="m-5 h-[530px] w-[650px] flex-1 rounded-sm bg-white">
+                            <MSlide slideData={slideData} isSlideDataLoading={isSlideDataLoading} />
                         </div>
                     </div>
 
                     {/* Phần Description */}
                     <div className="flex w-[350px] flex-none flex-col">
-                        <b className="mx-3 my-3 flex-none text-center">Description</b>
-                        <div className="mx-3 my-6 flex-none">
+                        <div className="mx-3 flex-none py-2">
                             <label
                                 htmlFor="question"
-                                className="mb-2 block text-sm font-bold text-gray-900 dark:text-white"
+                                className="mb-2 block text-lg font-bold text-gray-900 dark:text-white"
                             >
                                 Your question:
                             </label>
@@ -188,45 +246,47 @@ function MPresentationEdit() {
                                 required
                             />
                         </div>
-                        <b className="mx-3 mt-1 mb-2 flex-none">Options: </b>
+                        <b className="mx-3 mt-1 mb-2 flex-none text-lg">Options: </b>
                         {/* choices.map((choice, index) => { */}
-                        {isChoicesDataLoading && slideChoices?.length === 0 ? (
-                            <></>
-                        ) : (
-                            slideChoices.map((choice, index) => {
-                                return choice?.action && choice?.action === 'DELETE' ? (
-                                    <div key={index}></div>
-                                ) : (
-                                    <div key={index} className="flex flex-none flex-row">
-                                        <div className="ml-3 mb-3 flex-1">
-                                            <input
-                                                type="text"
-                                                id={`option${index + 1}`}
-                                                className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
-                                                placeholder="Input option"
-                                                value={choice?.content ?? `Option ${index + 1}`}
-                                                onChange={(e) => {
-                                                    const newChoice = {
-                                                        ...choice,
-                                                        content: e.target.value,
-                                                        action: choice?.id ? 'UPDATE' : 'ADD',
-                                                    }
-                                                    const cloneChoices = [...slideChoices]
+                        <div className="custom-scrollbar flex-1 overflow-auto">
+                            {isChoicesDataLoading && slideChoices?.length === 0 ? (
+                                <></>
+                            ) : (
+                                slideChoices.map((choice, index) => {
+                                    return choice?.action && choice?.action === 'DELETE' ? (
+                                        <div key={index}></div>
+                                    ) : (
+                                        <div key={index} className="flex flex-none flex-row">
+                                            <div className="ml-3 mb-3 flex-1">
+                                                <input
+                                                    type="text"
+                                                    id={`option${index + 1}`}
+                                                    className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+                                                    placeholder="Input option"
+                                                    value={choice?.content ?? `Option ${index + 1}`}
+                                                    onChange={(e) => {
+                                                        const newChoice = {
+                                                            ...choice,
+                                                            content: e.target.value,
+                                                            action: choice?.id ? 'UPDATE' : 'ADD',
+                                                        }
+                                                        const cloneChoices = [...slideChoices]
 
-                                                    cloneChoices[index] = newChoice
-                                                    setSlideChoices(cloneChoices)
-                                                }}
-                                                required
+                                                        cloneChoices[index] = newChoice
+                                                        setSlideChoices(cloneChoices)
+                                                    }}
+                                                    required
+                                                />
+                                            </div>
+                                            <XMarkIcon
+                                                className="mr-3 h-8 w-8 cursor-pointer text-[#F20000]"
+                                                onClick={handleRemoveChoice(index)}
                                             />
                                         </div>
-                                        <XMarkIcon
-                                            className="mr-3 h-8 w-8 cursor-pointer text-[#F20000]"
-                                            onClick={handleRemoveChoice(index)}
-                                        />
-                                    </div>
-                                )
-                            })
-                        )}
+                                    )
+                                })
+                            )}
+                        </div>
 
                         <button
                             className="bg-white-700 mx-24 mt-3 w-full rounded-lg border border-indigo-600 px-5 py-2.5 text-center text-sm font-medium text-indigo-600 hover:bg-blue-100 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 sm:w-auto"
@@ -236,14 +296,14 @@ function MPresentationEdit() {
                         </button>
 
                         <button
-                            className="mx-2 mt-5 mb-1 w-full rounded-lg bg-blue-700 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 sm:w-auto"
+                            className="mx-2 mt-6 w-full rounded-lg bg-blue-700 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 sm:w-auto"
                             onClick={handleSaveSlide}
                         >
                             Save changes
                         </button>
 
                         <button
-                            className="mx-2 mt-5 mb-1 w-full rounded-lg bg-red-700 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800 sm:w-auto"
+                            className="mx-2 mt-2 w-full rounded-lg bg-red-700 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800 sm:w-auto"
                             onClick={() => {
                                 confirmationModalRef.current.open()
                             }}

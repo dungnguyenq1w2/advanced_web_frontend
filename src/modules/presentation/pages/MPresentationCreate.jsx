@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react'
 import { PlayIcon, XMarkIcon } from '@heroicons/react/24/outline'
-import MNavbar from '../components/MNavbar'
+import { useState } from 'react'
+import MNavbar from '../components/MHeader'
 
 function MPresentationCreate() {
     //#region data
@@ -9,8 +9,7 @@ function MPresentationCreate() {
 
     //#region event
     const addOption = () => {
-        if(numberOptions + 1 > 5)
-            return alert('Number option from 1 to 5')
+        if (numberOptions + 1 > 5) return alert('Number option from 1 to 5')
         setnumberOptions(numberOptions + 1)
     }
 
@@ -114,9 +113,7 @@ function MPresentationCreate() {
                             + Add option
                         </button>
 
-                        <button
-                            className="mx-2 mt-5 mb-1 w-full rounded-lg bg-red-700 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800 sm:w-auto"
-                        >
+                        <button className="mx-2 mt-5 mb-1 w-full rounded-lg bg-red-700 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800 sm:w-auto">
                             Delete silde
                         </button>
                     </div>

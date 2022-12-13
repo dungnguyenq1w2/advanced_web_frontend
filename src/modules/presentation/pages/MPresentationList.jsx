@@ -5,7 +5,7 @@ import { getAllByHostId } from 'common/queries-fn/presentations.query'
 import { FireIcon, EllipsisVerticalIcon } from '@heroicons/react/24/outline'
 import { Link, useNavigate } from 'react-router-dom'
 import { Dropdown } from 'flowbite-react'
-import { PencilSquareIcon, XMarkIcon } from '@heroicons/react/20/solid'
+import { PlayIcon, XMarkIcon } from '@heroicons/react/20/solid'
 import { getFirst as getFirstSlide } from 'apis/slide.api'
 
 function MPresentationList() {
@@ -32,7 +32,7 @@ function MPresentationList() {
         e.stopPropagation()
     }
 
-    const handlePresentationClick = (presentationId) => {
+    const handlePresentationClick = (presentationId) => () => {
         navigate(`/presentation-slide/${presentationId}/host`)
     }
 
@@ -61,7 +61,7 @@ function MPresentationList() {
                                 key={index}
                                 className="cursor-pointer overflow-hidden rounded border border-gray-300 bg-white"
                                 title="present"
-                                onClick={() => handlePresentationClick(presentation?.id)}
+                                onClick={handleEditPresentation(presentation?.id)}
                             >
                                 <div className="px-6 py-4">
                                     <div className="flex justify-center">
@@ -78,13 +78,13 @@ function MPresentationList() {
                                             >
                                                 <div
                                                     className="cursor-pointer"
-                                                    onClick={handleEditPresentation(
+                                                    onClick={handlePresentationClick(
                                                         presentation.id
                                                     )}
                                                 >
                                                     <Dropdown.Item className="text-[#1A94FF]">
-                                                        <PencilSquareIcon className="h-5 w-6 cursor-pointer pr-1 text-[#1A94FF]" />
-                                                        <h3>Edit</h3>
+                                                        <PlayIcon className="h-5 w-6 cursor-pointer pr-1 text-[#1A94FF]" />
+                                                        <h3>Present</h3>
                                                     </Dropdown.Item>
                                                 </div>
 

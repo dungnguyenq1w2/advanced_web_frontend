@@ -19,6 +19,7 @@ import CLoading from 'common/components/CLoading'
 import { getAllSlidesById } from 'common/queries-fn/presentations.query'
 import { Bar } from 'react-chartjs-2'
 import { MSlide } from '../components'
+import { getRandomColor } from 'utils/func'
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, Colors)
 
@@ -69,15 +70,6 @@ export const options = {
             display: false,
         },
     },
-}
-
-function getRandomColor() {
-    var letters = '0123456789ABCDEF'.split('')
-    var color = '#'
-    for (var i = 0; i < 6; i++) {
-        color += letters[Math.floor(Math.random() * 16)]
-    }
-    return color
 }
 
 function MHostSlide() {

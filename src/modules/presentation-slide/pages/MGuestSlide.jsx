@@ -17,7 +17,7 @@ import {
 } from 'chart.js'
 import CLoading from 'common/components/CLoading'
 import { Bar } from 'react-chartjs-2'
-import { getIP } from 'utils/func'
+import { getIP, getRandomColor } from 'utils/func'
 import { MCheckbox, MSlide } from '../components'
 import { getAllSlidesById } from 'common/queries-fn/presentations.query'
 
@@ -70,15 +70,6 @@ export const options = {
             display: false,
         },
     },
-}
-
-function getRandomColor() {
-    var letters = '0123456789ABCDEF'.split('')
-    var color = '#'
-    for (var i = 0; i < 6; i++) {
-        color += letters[Math.floor(Math.random() * 16)]
-    }
-    return color
 }
 
 function MGuestSlide() {
