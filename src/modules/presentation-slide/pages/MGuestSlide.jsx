@@ -168,7 +168,6 @@ function MGuestSlide() {
 
     useEffect(() => {
         guestSocket.on('server-send-choices', (choices) => {
-            console.log('🚀 ~ choices', choices)
             // Xử lí -> lưu state kết quả socket trả về
             // rồi tạo useEffect với dependency là state đó
             setNewNumOfChoices(choices)
