@@ -3,7 +3,8 @@ import { PlayIcon, ArrowPathIcon, CheckIcon } from '@heroicons/react/24/outline'
 import { add as addSlide } from 'apis/slide.api'
 import {
     getPresentationById,
-    updatePresentationName as updatePresentationNameById,
+    updatePresentationName,
+    postCreatePresentationCode
 } from 'apis/presentation.api'
 import { useNavigate } from 'react-router-dom'
 import { XMarkIcon } from '@heroicons/react/20/solid'
@@ -29,7 +30,7 @@ function MHeader({ presentationId, refetchSlides }) {
     async function handleUpdatePresentation(data) {
         try {
             setIsLoadingUpdateName('loading')
-            const res = await updatePresentationNameById(data)
+            const res = await updatePresentationName(data)
 
             if (res?.data) {
                 setPresentation({ ...presentation, name: res?.data })
@@ -41,6 +42,16 @@ function MHeader({ presentationId, refetchSlides }) {
                     setIsLoadingUpdateName('fail')
                 }, 600)
             }
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    const handleResetNumberCode = async () => {
+        try {
+            const res = await postCreatePresentationCode(presentation?.id)
+            if (res?.data) 
+                setPresentation({ ...presentation, code: res?.data })
         } catch (error) {
             console.log(error)
         }
@@ -128,9 +139,12 @@ function MHeader({ presentationId, refetchSlides }) {
                         value={presentation?.code || ' '}
                         required
                         readOnly
-                    ></input>
+                    />
                 </div>
-                <ArrowPathIcon className="mx-2 my-1 h-8 w-8 cursor-pointer text-blue-600" />
+                <ArrowPathIcon
+                    className="mx-2 my-1 h-8 w-8 cursor-pointer text-blue-600"
+                    onClick={handleResetNumberCode}
+                />
             </div>
 
             <button

@@ -14,15 +14,16 @@ import { Dropdown } from 'flowbite-react'
 function MPresentationList() {
     //#region data
     const navigate = useNavigate()
-    const localUser = JSON.parse(localStorage.getItem('user'))
+
     useEffect(() => {
+        const localUser = JSON.parse(localStorage.getItem('user'))
         if (!localUser) {
             alert('Login to use this feature')
             navigate('/auth/login')
         }
     }, [])
 
-    const { data, isLoading, refetch } = getAllByHostId(localUser?.id)
+    const { data, isLoading, refetch } = getAllByHostId()
     const presentations = useMemo(() => data?.data ?? [], [data])
     //#endregion
 

@@ -35,13 +35,14 @@ export const GROUPS = {
 
 //#region PRESENTATIONS
 export const PRESENTATIONS = {
-    GET_ALL_BY_HOST_ID: (hostId) => `/presentations/${hostId}`,
+    GET_ALL_BY_HOST_ID: '/presentations',
     GET_ALL_SLIDES_BY_ID: (presentationId) => `/presentations/${presentationId}/slides`,
     DELETE_PRESENTATION: (presentationId) => `/presentations/${presentationId}`,
-    GET_PRESENTATION_BY_ID: (presentationId) => `/presentations/presentationId/${presentationId}`,
+    GET_PRESENTATION_BY_ID: (presentationId) => `/presentations/${presentationId}`,
     POST_CHECK_CODE: '/presentations/checkCode',
     POST_ADD: '/presentations/add',
     UPDATE_PRESENTATION_NAME: '/presentations/updateName',
+    POST_NEW_CODE: (presentationId) => `/presentations/createCode/${presentationId}`,
 }
 
 //#region SLIDES

@@ -2,10 +2,10 @@ import { map } from 'utils/axios'
 import { isSuccess } from 'utils/func'
 import { PRESENTATIONS } from './_constant'
 
-export const getAllByHostId = (hostId, params = {}) => {
+export const getAllByHostId = ( params = {}) => {
     return map(({ data, ...rest }) => {
         return isSuccess(rest) ? { data: data.data } : { data: [] }
-    }).get(PRESENTATIONS.GET_ALL_BY_HOST_ID(hostId), params)
+    }).get(PRESENTATIONS.GET_ALL_BY_HOST_ID, params)
 }
 
 export const getPresentationById = (presentationId, params = {}) => {
@@ -42,4 +42,10 @@ export const updatePresentationName = (params = {}) => {
     return map(({ data, ...rest }) => {
         return isSuccess(rest) ? { data: data.data } : { data: {} }
     }).put(PRESENTATIONS.UPDATE_PRESENTATION_NAME, params)
+}
+
+export const postCreatePresentationCode = (presentationId, params = {}) => {
+    return map(({ data, ...rest }) => {
+        return isSuccess(rest) ? { data: data.data } : { data: {} }
+    }).post(PRESENTATIONS.POST_NEW_CODE(presentationId), params)
 }
