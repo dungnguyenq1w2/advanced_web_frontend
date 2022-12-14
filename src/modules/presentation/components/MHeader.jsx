@@ -4,7 +4,7 @@ import { add as addSlide } from 'apis/slide.api'
 import {
     getPresentationById,
     updatePresentationName,
-    postCreatePresentationCode
+    postCreatePresentationCode,
 } from 'apis/presentation.api'
 import { useNavigate } from 'react-router-dom'
 import { XMarkIcon } from '@heroicons/react/20/solid'
@@ -50,8 +50,7 @@ function MHeader({ presentationId, refetchSlides }) {
     const handleResetNumberCode = async () => {
         try {
             const res = await postCreatePresentationCode(presentation?.id)
-            if (res?.data) 
-                setPresentation({ ...presentation, code: res?.data })
+            if (res?.data) setPresentation({ ...presentation, code: res?.data })
         } catch (error) {
             console.log(error)
         }
@@ -60,7 +59,7 @@ function MHeader({ presentationId, refetchSlides }) {
     const handleAddSlide = async () => {
         try {
             const res = await addSlide({
-                question: '',
+                question: 'Question',
                 presentation_id: presentationId,
             })
 

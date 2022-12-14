@@ -111,7 +111,8 @@ function MPresentationEdit() {
         setSlideChoices([
             ...slideChoices,
             {
-                content: `Option ${numberOptions + 1}`,
+                content: `Option`,
+                // content: ``,
                 slide_id: slideId,
                 action: 'ADD',
             },
@@ -237,7 +238,7 @@ function MPresentationEdit() {
                                 className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
                                 placeholder="Your question"
                                 autoFocus
-                                value={currentSlide?.question ?? 'Your question'}
+                                value={currentSlide?.question ?? 'Question'}
                                 onChange={(e) => {
                                     setCurrentSlide({
                                         ...currentSlide,
@@ -265,7 +266,7 @@ function MPresentationEdit() {
                                                     id={`option${index + 1}`}
                                                     className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
                                                     placeholder="Input option"
-                                                    value={choice?.content ?? `Option ${index + 1}`}
+                                                    value={choice?.content ?? `Option`}
                                                     onChange={(e) => {
                                                         const newChoice = {
                                                             ...choice,

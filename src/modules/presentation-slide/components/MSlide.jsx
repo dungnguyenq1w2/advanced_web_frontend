@@ -45,7 +45,7 @@ function MSlide({ children, question, code, presentationId, slidesId, slideIndex
             <div className="absolute top-0 left-0 z-10 flex w-full flex-col items-center">
                 <div className="w-full bg-gray-900 bg-opacity-20">
                     <h1 className="peer p-2 text-center text-2xl font-semibold">
-                        Go to www.menti.com and use the code{' '}
+                        Go to {window.location.host} and use the code{' '}
                         <span className="text-3xl">{code}</span>
                     </h1>
                     <div className="hidden p-2 pb-4 text-center hover:flex hover:items-center hover:justify-center peer-hover:flex peer-hover:items-center peer-hover:justify-center">
