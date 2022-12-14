@@ -9,12 +9,14 @@ import {
 import { useNavigate } from 'react-router-dom'
 import { XMarkIcon } from '@heroicons/react/20/solid'
 import _debounce from 'lodash/debounce'
+import CLoading from 'common/components/CLoading'
 
 function MHeader({ presentationId, refetchSlides }) {
     //#region data
     const navigate = useNavigate()
     const [presentation, setPresentation] = useState({})
     const [isLoadingUpdateName, setIsLoadingUpdateName] = useState('none')
+    const [isAddingSlide, setIsAddingSlide] = useState(false)
     const debounceFn = useCallback(_debounce(handleUpdatePresentation, 1000), [presentation?.name])
     //#endregion
 
@@ -58,6 +60,7 @@ function MHeader({ presentationId, refetchSlides }) {
 
     const handleAddSlide = async () => {
         try {
+            setIsAddingSlide(true)
             const res = await addSlide({
                 question: 'Question',
                 presentation_id: presentationId,
@@ -66,8 +69,11 @@ function MHeader({ presentationId, refetchSlides }) {
             if (res?.data) {
                 await refetchSlides()
                 navigate(`/presentation/${presentationId}/${res?.data?.id}/edit`)
+                setIsAddingSlide(false)
             }
+            setIsAddingSlide(false)
         } catch (error) {
+            setIsAddingSlide(false)
             console.log('Error', error)
         }
     }
@@ -153,6 +159,8 @@ function MHeader({ presentationId, refetchSlides }) {
                 <PlayIcon className="h-6 w-6 cursor-pointer pr-1.5 text-cyan-400" />
                 <h3> Present</h3>
             </button>
+
+            {isAddingSlide && <CLoading />}
         </div>
     )
 }
