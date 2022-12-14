@@ -41,7 +41,7 @@ function MPresentationCreate() {
     const handleAddSlide = async (presentationId) => {
         try {
             const res = await addSlide({
-                question: '',
+                question: 'Question',
                 presentation_id: presentationId,
             })
 
@@ -77,7 +77,7 @@ function MPresentationCreate() {
     return (
         <div className="flex justify-center pt-20">
             <div className="w-[40rem] rounded border bg-white p-5">
-                <h1 className="text-center text-2xl font-semibold">Create a Group</h1>
+                <h1 className="text-center text-2xl font-semibold">Create a Presentation</h1>
 
                 <div className="my-5">
                     <form onSubmit={handleSubmit(onSubmit)}>
