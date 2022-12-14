@@ -12,8 +12,8 @@ export const AUTH = {
 //#region USERS
 export const USERS = {
     GET_ALL: '/users',
-    GET_BY_ID: (id) => `/users${id}`,
-    PUT: (id) => `/users${id}`,
+    GET_BY_ID: (id) => `/users/${id}`,
+    PUT: (id) => `/users/${id}`,
 }
 //#endregion
 
@@ -38,8 +38,10 @@ export const PRESENTATIONS = {
     GET_ALL_BY_HOST_ID: (hostId) => `/presentations/${hostId}`,
     GET_ALL_SLIDES_BY_ID: (presentationId) => `/presentations/${presentationId}/slides`,
     DELETE_PRESENTATION: (presentationId) => `/presentations/${presentationId}`,
+    GET_PRESENTATION_BY_ID: (presentationId) => `/presentations/presentationId/${presentationId}`,
     POST_CHECK_CODE: '/presentations/checkCode',
     POST_ADD: '/presentations/add',
+    UPDATE_PRESENTATION_NAME: '/presentations/updateName',
 }
 
 //#region SLIDES

@@ -28,8 +28,6 @@ function MPresentationList() {
 
     //#endregion event
 
-    console.log(localUser)
-
     const handleDelPresentation = async (presentationId) => {
         const res = await deletePresentation(presentationId)
 

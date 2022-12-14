@@ -20,20 +20,6 @@ function MNavbar() {
                     setMsgError(null)
                     navigate(`/presentation-slide/${res?.data?.id}/guest`)
                 } else setMsgError('Number code invalid')
-
-                // const res = await axios.post(
-                //     `${process.env.REACT_APP_API_URL}/presentations/checkCode`,
-                //     { code: e.target.value }
-                // )
-                // console.log('abc: ', res?.response.data?.data)
-                // console.log('abc');
-                // if (res?.data?.data?.id) {
-                //     setMsgError(null)
-                //     navigate(`/presentation-slide/${res?.data?.data?.id}/guest`)
-                // } else {
-                //     console.log('123')
-                //     setMsgError('Number code invalid')
-                // }
             } else setMsgError('Number code include 8 number')
         }
     }

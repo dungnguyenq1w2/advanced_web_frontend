@@ -8,6 +8,12 @@ export const getAllByHostId = (hostId, params = {}) => {
     }).get(PRESENTATIONS.GET_ALL_BY_HOST_ID(hostId), params)
 }
 
+export const getPresentationById = (presentationId, params = {}) => {
+    return map(({ data, ...rest }) => {
+        return isSuccess(rest) ? { data: data.data } : { data: [] }
+    }).get(PRESENTATIONS.GET_PRESENTATION_BY_ID(presentationId), params)
+}
+
 export const getAllSlidesById = (presentationId, params = {}) => {
     return map(({ data, ...rest }) => {
         return isSuccess(rest) ? { data: data.data } : { data: [] }
@@ -30,4 +36,10 @@ export const postAddPresentation = (params = {}) => {
     return map(({ data, ...rest }) => {
         return isSuccess(rest) ? { data: data.data } : { data: [] }
     }).post(PRESENTATIONS.POST_ADD, params)
+}
+
+export const updatePresentationName = (params = {}) => {
+    return map(({ data, ...rest }) => {
+        return isSuccess(rest) ? { data: data.data } : { data: {} }
+    }).put(PRESENTATIONS.UPDATE_PRESENTATION_NAME, params)
 }
