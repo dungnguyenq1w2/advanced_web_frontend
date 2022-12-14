@@ -303,7 +303,13 @@ function MPresentationEdit() {
                         </button>
 
                         <button
-                            className="mx-2 mt-2 w-full rounded-lg bg-red-700 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800 sm:w-auto"
+                            className="mx-2 mt-2 w-full rounded-lg bg-red-700 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 disabled:cursor-not-allowed disabled:opacity-30 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800 sm:w-auto"
+                            disabled={slides?.length === 1}
+                            title={
+                                slides?.length === 1
+                                    ? 'Presentation must have at least 1 slide'
+                                    : ''
+                            }
                             onClick={() => {
                                 confirmationModalRef.current.open()
                             }}
