@@ -1,9 +1,13 @@
+import { forwardRef, useImperativeHandle, useState } from 'react'
+
+import { useNavigate } from 'react-router-dom'
+
+import { getFirst as getFirstSlide, remove as removeSlide } from 'apis/slide.api'
+
+import CModal from 'common/components/CModal'
+
 import { Dialog } from '@headlessui/react'
 import { XMarkIcon } from '@heroicons/react/24/outline'
-import { getFirst as getFirstSlide, remove as removeSlide } from 'apis/slide.api'
-import CModal from 'common/components/CModal'
-import { forwardRef, useImperativeHandle, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 
 const MConfirmationModal = forwardRef(({ slideId, refetchSlides, presentationId }, ref) => {
     //#region data

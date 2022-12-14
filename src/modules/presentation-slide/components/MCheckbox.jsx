@@ -4,18 +4,6 @@ import { useForm } from 'react-hook-form'
 
 import { Button } from 'flowbite-react'
 
-// const temp = [
-//     { id: '1', content: '1 eshfsijfewpifuew piwh fiewh fewihf wijf w' },
-//     { id: '2', content: '1' },
-//     { id: '3', content: '1' },
-//     { id: '4', content: '1' },
-//     { id: '5', content: '1' },
-//     { id: '6', content: '1' },
-//     { id: '7', content: '1' },
-//     { id: '8', content: '1' },
-//     { id: '9', content: '1' },
-//     { id: '10', content: '1' },
-// ]
 function MCheckbox({ choices, handleChoiceSendSocket }) {
     //#region data
     const [isError, setIsError] = useState(true)

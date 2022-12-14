@@ -6,14 +6,15 @@ import { useNavigate } from 'react-router-dom'
 import { ErrorMessage } from '@hookform/error-message'
 import { yupResolver } from '@hookform/resolvers/yup'
 
+import { add as addSlide } from 'apis/slide.api'
 import { postAddPresentation } from 'apis/presentation.api'
+
 import CLoading from 'common/components/CLoading'
+import CModal from 'common/components/CModal'
 
 import { Dialog } from '@headlessui/react'
-import CModal from 'common/components/CModal'
 import { Button, Label } from 'flowbite-react'
 import { presentationValidationSchema } from '../validation'
-import { add as addSlide } from 'apis/slide.api'
 
 function MPresentationCreate() {
     //#region data
@@ -51,7 +52,7 @@ function MPresentationCreate() {
     }
 
     const onSubmit = async (data) => {
-        data.hostId = user?.id;
+        data.hostId = user?.id
         setIsLoading(true)
         const res = await postAddPresentation(data)
 

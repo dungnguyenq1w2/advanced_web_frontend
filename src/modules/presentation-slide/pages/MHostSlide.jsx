@@ -18,8 +18,8 @@ import {
 import CLoading from 'common/components/CLoading'
 import { getAllSlidesById } from 'common/queries-fn/presentations.query'
 import { Bar } from 'react-chartjs-2'
-import { MSlide } from '../components'
 import { getRandomColor } from 'utils/func'
+import { MSlide } from '../components'
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, Colors)
 

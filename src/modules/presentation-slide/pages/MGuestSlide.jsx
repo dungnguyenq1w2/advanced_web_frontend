@@ -16,10 +16,10 @@ import {
     Tooltip,
 } from 'chart.js'
 import CLoading from 'common/components/CLoading'
+import { getAllSlidesById } from 'common/queries-fn/presentations.query'
 import { Bar } from 'react-chartjs-2'
 import { getIP, getRandomColor } from 'utils/func'
 import { MCheckbox, MSlide } from '../components'
-import { getAllSlidesById } from 'common/queries-fn/presentations.query'
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, Colors)
 

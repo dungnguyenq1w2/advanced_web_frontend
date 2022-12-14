@@ -1,19 +1,21 @@
 import { useEffect, useMemo } from 'react'
-import CLoading from 'common/components/CLoading'
-import { deletePresentation } from 'apis/presentation.api'
-import { getAllByHostId } from 'common/queries-fn/presentations.query'
-import { FireIcon, EllipsisVerticalIcon } from '@heroicons/react/24/outline'
+
 import { useNavigate } from 'react-router-dom'
-import { Dropdown } from 'flowbite-react'
-import { PlayIcon, XMarkIcon } from '@heroicons/react/20/solid'
+
+import { deletePresentation } from 'apis/presentation.api'
 import { getFirst as getFirstSlide } from 'apis/slide.api'
+import { getAllByHostId } from 'common/queries-fn/presentations.query'
+
+import { PlayIcon, XMarkIcon } from '@heroicons/react/20/solid'
+import { EllipsisVerticalIcon, FireIcon } from '@heroicons/react/24/outline'
+import CLoading from 'common/components/CLoading'
+import { Dropdown } from 'flowbite-react'
 
 function MPresentationList() {
     //#region data
     const navigate = useNavigate()
     const localUser = JSON.parse(localStorage.getItem('user'))
     useEffect(() => {
-
         if (!localUser) {
             alert('Login to use this feature')
             navigate('/auth/login')

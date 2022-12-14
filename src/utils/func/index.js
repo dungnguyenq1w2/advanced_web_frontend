@@ -15,6 +15,7 @@ export const getIP = async () => {
         .split('\n')
         .reduce(function (obj, pair) {
             pair = pair.split('=')
+            // eslint-disable-next-line no-sequences
             return (obj[pair[0]] = pair[1]), obj
         }, {})
     localStorage.setItem('ip', data.ip)

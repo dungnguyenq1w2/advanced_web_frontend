@@ -1,5 +1,7 @@
-import CLoading from 'common/components/CLoading'
 import React from 'react'
+
+import CLoading from 'common/components/CLoading'
+
 import { Bar } from 'react-chartjs-2'
 
 import {

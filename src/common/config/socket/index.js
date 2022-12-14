@@ -1,13 +1,13 @@
 // import { io } from 'socket.io-client'
+import { Manager } from 'socket.io-client'
 
-// const URL = 'http://localhost:5000'
+const URL = process.env.REACT_APP_BACKEND_URL
+
 // const socket = io(URL, { autoConnect: true })
 
 // export { socket }
 
-import { Manager } from 'socket.io-client'
-
-const manager = new Manager('http://localhost:5000', {
+const manager = new Manager(URL, {
     autoConnect: false,
 })
 

@@ -1,6 +1,6 @@
-import { CheckIcon, ChevronLeftIcon } from '@heroicons/react/24/outline'
-import { ChevronRightIcon } from '@heroicons/react/24/outline'
 import { useState } from 'react'
+
+import { CheckIcon, ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline'
 
 function MSlide({ children, question, code, presentationId, slidesId, slideIndex, onChangeSlide }) {
     //#region Data
