@@ -9,10 +9,6 @@ import { useNavigate } from 'react-router-dom'
 import { XMarkIcon } from '@heroicons/react/20/solid'
 import _debounce from 'lodash/debounce'
 
-import { add as addSlide } from 'apis/slide.api'
-
-import { PlayIcon } from '@heroicons/react/24/outline'
-
 function MHeader({ presentationId, refetchSlides }) {
     //#region data
     const navigate = useNavigate()
