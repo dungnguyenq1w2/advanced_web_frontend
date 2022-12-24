@@ -1,0 +1,10 @@
+#results__tab {
+    justify-content: space-around;
+    margin-bottom: -15px;
+    position: sticky;
+    top: 0px;
+    left: 0;
+    z-index: 10;
+    background-color: white;
+    box-shadow: 5px 0px 10px 1px rgba(192, 192, 192, 0.568);
+}

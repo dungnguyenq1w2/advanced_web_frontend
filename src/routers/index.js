@@ -7,7 +7,7 @@ import CSlideLayout from 'common/components/layouts/CSlideLayout'
 import { Home } from 'modules/home/pages'
 import { Login, Register, Verify } from 'modules/auth/pages'
 import { Group, GroupCreate, GroupInvite, GroupList } from 'modules/group/pages'
-import { GuestSlide, HostSlide } from 'modules/presentation-slide/pages'
+import { MemberSlide, HostSlide } from 'modules/presentation-slide/pages'
 import { EditProfile, Profile } from 'modules/user/pages'
 import C404 from 'common/components/layouts/C404'
 import { PresentationEdit, PresentationList, PresentationCreate } from 'modules/presentation/pages'
@@ -97,8 +97,8 @@ const router = createBrowserRouter([
                 element: <HostSlide />,
             },
             {
-                path: ':presentationId/guest',
-                element: <GuestSlide />,
+                path: ':presentationId/member',
+                element: <MemberSlide />,
             },
         ],
     },

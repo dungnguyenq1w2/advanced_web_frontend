@@ -29,14 +29,14 @@ function MSlide({ children, question, code, presentationId, slidesId, slideIndex
 
     const handleCopyShareLink = async () => {
         navigator.clipboard.writeText(
-            `${window.location.host}/presentation-slide/${presentationId}/guest`
+            `${window.location.host}/presentation-slide/${presentationId}/member`
         )
         setIsCopied(true)
     }
     //#endregion
     return (
         <div
-            className="relative mx-20 h-full bg-contain bg-center bg-no-repeat text-white"
+            className="relative mx-20 h-full min-w-[1700px] bg-contain bg-center bg-no-repeat text-white before:absolute before:top-0 before:h-screen before:w-[91vw] before:bg-black before:bg-opacity-40"
             style={{
                 backgroundImage:
                     'url(https://images.mentimeter.com/images/dfa03a55-5287-45a3-977e-f688148bd0aa.png?auto=compress%2Cformat&fm=png&w=2000)',
@@ -50,7 +50,7 @@ function MSlide({ children, question, code, presentationId, slidesId, slideIndex
                     </h1>
                     <div className="hidden p-2 pb-4 text-center hover:flex hover:items-center hover:justify-center peer-hover:flex peer-hover:items-center peer-hover:justify-center">
                         <span className="mr-2 border border-gray-700 p-1 text-center text-sm font-normal">
-                            {`${window.location.host}/presentation-slide/${presentationId}/guest`}
+                            {`${window.location.host}/presentation-slide/${presentationId}/member`}
                         </span>
                         <button
                             className="border border-gray-500 p-1 text-sm font-medium hover:border-black hover:bg-black"

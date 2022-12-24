@@ -15,10 +15,10 @@ function MNavbar() {
 
             if (/^[0-9]{8}$/.test(e.target.value)) {
                 const res = await postCheckCodePresentation({ code: e.target.value })
-                
+
                 if (res?.data?.id) {
                     setMsgError(null)
-                    navigate(`/presentation-slide/${res?.data?.id}/guest`)
+                    navigate(`/presentation-slide/${res?.data?.id}/member`)
                 } else setMsgError('Number code invalid')
             } else setMsgError('Number code include 8 number')
         }

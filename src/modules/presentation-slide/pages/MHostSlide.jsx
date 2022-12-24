@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 
 import { useNavigate, useParams } from 'react-router-dom'
 
@@ -18,8 +18,10 @@ import {
 import CLoading from 'common/components/CLoading'
 import { getAllSlidesById } from 'common/queries-fn/presentations.query'
 import { Bar } from 'react-chartjs-2'
+import { Bars3CenterLeftIcon } from '@heroicons/react/24/outline'
 import { getRandomColor } from 'utils/func'
 import { MSlide } from '../components'
+import MResultsModal from '../components/MResultsModal'
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, Colors)
 
@@ -76,6 +78,7 @@ function MHostSlide() {
     //#region data
     const { presentationId } = useParams()
     const navigate = useNavigate()
+    const resultModalRef = useRef()
     const { data: _slides, isLoading: isLoadingSlides } = getAllSlidesById(presentationId)
 
     const slidesId = useMemo(() => {
@@ -93,7 +96,7 @@ function MHostSlide() {
 
     const { data: _data, isLoading, set } = getForHost(slidesId[slideIndex.cur]?.id)
 
-    const [newNumOfChoices, setNewNumOfChoices] = useState()
+    const [newChoices, setNewChoices] = useState()
 
     const slide = useMemo(() => {
         return _data?.data
@@ -103,7 +106,7 @@ function MHostSlide() {
                       labels: _data.data.choices.map((e) => e.content),
                       datasets: [
                           {
-                              data: _data.data.choices.map((e) => e.n_choices),
+                              data: _data.data.choices.map((e) => e.user_choices.length),
                               backgroundColor: [
                                   getRandomColor(),
                                   getRandomColor(),
@@ -175,10 +178,10 @@ function MHostSlide() {
     }, [slidesId, slideIndex.cur])
 
     useEffect(() => {
-        hostSocket.on('server-send-choices', (choices) => {
+        hostSocket.on('server-send-choices', (memberId, choices) => {
             // Xử lí -> lưu state kết quả socket trả về
             // rồi tạo useEffect với dependency là state đó
-            setNewNumOfChoices(choices)
+            setNewChoices({ memberId, choices })
         })
         return () => {
             hostSocket.off('server-send-choices')
@@ -187,20 +190,24 @@ function MHostSlide() {
 
     // Xử lí cập nhật data
     useEffect(() => {
-        if (newNumOfChoices) {
+        if (newChoices) {
             const newData = { ..._data.data }
-            newNumOfChoices.forEach((addChoice) => {
+            newChoices.choices.forEach((addChoice) => {
                 const index = newData.choices.findIndex(
                     (choice) => choice.id.toString() === addChoice.toString()
                 )
                 if (index > -1) {
-                    newData.choices[index].n_choices += 1
+                    newData.choices[index].user_choices.push({
+                        id: new Date(),
+                        choice_id: addChoice,
+                        user_id: newChoices.memberId,
+                    })
                 }
             })
             set({ ..._data, data: newData })
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [newNumOfChoices])
+    }, [newChoices])
     //#endregion
 
     return (
@@ -215,7 +222,17 @@ function MHostSlide() {
             {isLoading || isLoadingSlides ? (
                 <CLoading />
             ) : (
-                <Bar options={options} data={slide.data} />
+                <>
+                    <Bar options={options} data={slide.data} />
+                    <div
+                        className="absolute bottom-12 right-20 flex cursor-pointer items-center rounded-lg bg-gray-600 px-2 py-1 shadow-lg hover:bg-gray-300 hover:text-black"
+                        onClick={() => resultModalRef.current.open()}
+                    >
+                        <Bars3CenterLeftIcon className="mr-3 h-8 w-8" />
+                        <span>Records</span>
+                    </div>
+                    <MResultsModal ref={resultModalRef} choices={_data?.data?.choices} />
+                </>
             )}
         </MSlide>
     )

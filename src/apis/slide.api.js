@@ -50,8 +50,8 @@ export const getForHost = (id, params = {}) => {
     }).get(SLIDES.GET_FOR_HOST(id), params)
 }
 
-export const getForGuest = (id, params = {}) => {
+export const getForMember = (id, params = {}) => {
     return map(({ data, ...rest }) => {
         return isSuccess(rest) ? { data: data.data } : { data: {} }
-    }).get(SLIDES.GET_FOR_GUEST(id), params)
+    }).get(SLIDES.GET_FOR_MEMBER(id), params)
 }

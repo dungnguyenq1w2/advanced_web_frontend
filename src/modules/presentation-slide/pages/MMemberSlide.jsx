@@ -2,8 +2,8 @@ import { useEffect, useMemo, useState } from 'react'
 
 import { useParams } from 'react-router-dom'
 
-import { guestSocket } from 'common/config/socket'
-import { getForGuest } from 'common/queries-fn/slides.query'
+import { memberSocket } from 'common/config/socket'
+import { getForMember } from 'common/queries-fn/slides.query'
 
 import {
     BarElement,
@@ -72,11 +72,11 @@ export const options = {
     },
 }
 
-function MGuestSlide() {
+function MMemberSlide() {
     //#region data
     const { presentationId } = useParams()
 
-    const [newNumOfChoices, setNewNumOfChoices] = useState()
+    const [newChoices, setNewChoices] = useState()
     const [isShowChart, setIsShowChart] = useState(false)
 
     const { data: _slides, isLoading: isLoadingSlides } = getAllSlidesById(presentationId)
@@ -94,13 +94,13 @@ function MGuestSlide() {
 
     const [slideIndex, setSlideIndex] = useState({ cur: 0, prev: null, next: null })
 
-    const [guestId, setGuestId] = useState()
+    const [memberId, setMemberId] = useState()
 
     const {
         data: _data,
         isLoading,
         set,
-    } = getForGuest(slidesId[slideIndex.cur]?.id, { guestId: guestId })
+    } = getForMember(slidesId[slideIndex.cur]?.id, { memberId: memberId })
 
     const slide = useMemo(() => {
         return _data?.data
@@ -156,32 +156,32 @@ function MGuestSlide() {
 
     useEffect(() => {
         if (slidesId[slideIndex.cur]?.id) {
-            guestSocket.open()
-            guestSocket.emit('subscribe', slidesId[slideIndex.cur].id)
+            memberSocket.open()
+            memberSocket.emit('subscribe', slidesId[slideIndex.cur].id)
         }
         return () => {
             if (slidesId[slideIndex.cur]?.id) {
-                guestSocket.emit('unsubscribe', slidesId[slideIndex.cur].id)
+                memberSocket.emit('unsubscribe', slidesId[slideIndex.cur].id)
             }
         }
     }, [slidesId, slideIndex.cur])
 
     useEffect(() => {
-        guestSocket.on('server-send-choices', (choices) => {
+        memberSocket.on('server-send-choices', (memberId, choices) => {
             // Xử lí -> lưu state kết quả socket trả về
             // rồi tạo useEffect với dependency là state đó
-            setNewNumOfChoices(choices)
+            setNewChoices({ memberId, choices })
         })
         return () => {
-            guestSocket.off('server-send-choices')
+            memberSocket.off('server-send-choices')
         }
     }, []) // Khi sử dụng socket.on thì bắt buộc phải để empty dependency
 
     // Xử lí cập nhật data
     useEffect(() => {
-        if (newNumOfChoices) {
+        if (newChoices) {
             const newData = { ..._data.data }
-            newNumOfChoices.forEach((addChoice) => {
+            newChoices.choices.forEach((addChoice) => {
                 const index = newData.choices.findIndex(
                     (choice) => choice.id.toString() === addChoice.toString()
                 )
@@ -193,28 +193,28 @@ function MGuestSlide() {
             set({ ..._data, data: newData })
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [newNumOfChoices])
+    }, [newChoices])
 
-    // Lấy guestId.
+    // Lấy memberId.
     // Nếu user đã đăng nhập thì lấy userId
     // Nếu là anonymous thì lấy IP
     useEffect(() => {
         if (localStorage.getItem('user')) {
-            setGuestId(JSON.parse(localStorage.getItem('user')).id)
+            setMemberId(JSON.parse(localStorage.getItem('user')).id)
             return
         } else if (localStorage.getItem('ip')) {
-            setGuestId(localStorage.getItem('ip'))
+            setMemberId(localStorage.getItem('ip'))
             return
         } else {
             const fetchIP = async () => {
                 const ip = await getIP()
-                setGuestId(ip)
+                setMemberId(ip)
             }
             fetchIP()
         }
     }, [])
 
-    // Kiểm tra guest đã chọn các lựa chọn chưa
+    // Kiểm tra member đã chọn các lựa chọn chưa
     useEffect(() => {
         if (_data?.data) {
             setIsShowChart(_data.data.isChosen)
@@ -222,7 +222,7 @@ function MGuestSlide() {
     }, [_data])
 
     const handleChoiceSendSocket = (choices) => {
-        guestSocket.emit('client-send-choices', slidesId[slideIndex.cur].id, guestId, choices)
+        memberSocket.emit('client-send-choices', slidesId[slideIndex.cur].id, memberId, choices)
         setIsShowChart(true)
     }
     //#endregion
@@ -272,4 +272,4 @@ function MGuestSlide() {
     )
 }
 
-export default MGuestSlide
+export default MMemberSlide

@@ -13,7 +13,7 @@ const manager = new Manager(URL, {
 
 const socket = manager.socket('/') // main namespace
 const hostSocket = manager.socket('/host') // host namespace
-const guestSocket = manager.socket('/guest') // guest namespace
-export { socket, hostSocket, guestSocket }
+const memberSocket = manager.socket('/member') // member namespace
+export { socket, hostSocket, memberSocket }
 
 // export default null

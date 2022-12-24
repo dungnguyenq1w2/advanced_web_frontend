@@ -55,7 +55,7 @@ export const SLIDES = {
     UPDATE: (id) => `/slides/${id}`,
     REMOVE: (id) => `/slides/${id}`,
     GET_FOR_HOST: (id) => `/slides/${id}/host`,
-    GET_FOR_GUEST: (id) => `/slides/${id}/guest`,
+    GET_FOR_MEMBER: (id) => `/slides/${id}/member`,
 }
 //#endregion
 

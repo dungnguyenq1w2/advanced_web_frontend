@@ -1,6 +1,6 @@
 import { lazy } from 'react'
 
 const HostSlide = lazy(() => import('./MHostSlide'))
-const GuestSlide = lazy(() => import('./MGuestSlide'))
+const MemberSlide = lazy(() => import('./MMemberSlide'))
 
-export { HostSlide, GuestSlide }
+export { HostSlide, MemberSlide }
