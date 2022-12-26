@@ -2,7 +2,7 @@ import { createQuery } from 'utils/react-query'
 
 import * as presentations from 'apis/presentation.api'
 
-export function getAllByHostId(params = {}, isLoading = false, options = {}) {
+export function getAllByHostId(isLoading = false, options = {}) {
     return createQuery(
         ['presentations'],
         ({ queryKey: [, _params] }) => presentations.getAllByHostId(_params),
@@ -13,10 +13,32 @@ export function getAllByHostId(params = {}, isLoading = false, options = {}) {
     )
 }
 
-export function getAllSlidesById(presentationId, params = {}, isLoading = false, options = {}) {
+export function getAllByGroupId(groupId, isLoading = false, options = {}) {
     return createQuery(
-        ['presentations-slides', presentationId],
-        ({ queryKey: [, _params] }) => presentations.getAllSlidesById(presentationId, _params),
+        ['presentations-group', groupId],
+        ({ queryKey: [, _params] }) => presentations.getAllByGroupId(groupId, _params),
+        {
+            enabled: !isLoading,
+            ...options,
+        }
+    )
+}
+
+export function getForHostById(presentationId, params = {}, isLoading = false, options = {}) {
+    return createQuery(
+        ['presentation-host', presentationId, params],
+        ({ queryKey: [, , _params] }) => presentations.getForHostById(presentationId, _params),
+        {
+            enabled: !isLoading,
+            ...options,
+        }
+    )
+}
+
+export function getForMemberById(presentationId, params = {}, isLoading = false, options = {}) {
+    return createQuery(
+        ['presentation-member', presentationId, params],
+        ({ queryKey: [, , _params] }) => presentations.getForMemberById(presentationId, _params),
         {
             enabled: !isLoading,
             ...options,

@@ -18,7 +18,7 @@ export const getIP = async () => {
             // eslint-disable-next-line no-sequences
             return (obj[pair[0]] = pair[1]), obj
         }, {})
-    localStorage.setItem('ip', data.ip)
+    localStorage.setItem('anonymous', JSON.stringify({ id: data.ip, name: 'Anonymous' }))
     return data.ip
 }
 

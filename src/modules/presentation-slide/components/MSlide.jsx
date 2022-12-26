@@ -2,7 +2,7 @@ import { useState } from 'react'
 
 import { CheckIcon, ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline'
 
-function MSlide({ children, question, code, presentationId, slidesId, slideIndex, onChangeSlide }) {
+function MSlide({ children, code, presentationId, slidesId, slideIndex, onChangeSlide }) {
     //#region Data
     const [isCopied, setIsCopied] = useState(false)
     //#endregion
@@ -62,9 +62,6 @@ function MSlide({ children, question, code, presentationId, slidesId, slideIndex
                 </div>
             </div>
             <div className="relative h-full">
-                <h1 className="absolute top-20 px-6 text-center text-[3.5rem] font-medium">
-                    {question}?
-                </h1>
                 {children}
                 <button
                     className={`absolute top-[45%] left-5 rounded-full bg-gray-500 bg-opacity-40 p-2 ${

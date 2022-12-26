@@ -1,9 +1,9 @@
-import { useEffect, useMemo, useState } from 'react'
+import { Suspense, useEffect, useMemo, useState } from 'react'
 
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 
-import { memberSocket } from 'common/config/socket'
-import { getForMember } from 'common/queries-fn/slides.query'
+import { getForMemberById as getPresentationForMemberById } from 'common/queries-fn/presentations.query'
+import { getForMemberById as getSlideForMemberById } from 'common/queries-fn/slides.query'
 
 import {
     BarElement,
@@ -16,10 +16,8 @@ import {
     Tooltip,
 } from 'chart.js'
 import CLoading from 'common/components/CLoading'
-import { getAllSlidesById } from 'common/queries-fn/presentations.query'
-import { Bar } from 'react-chartjs-2'
-import { getIP, getRandomColor } from 'utils/func'
-import { MCheckbox, MSlide } from '../components'
+import { MHeading, MMemberMultipleChoice, MParagraph, MSlide } from '../components'
+import { getIP } from 'utils/func'
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, Colors)
 
@@ -75,73 +73,53 @@ export const options = {
 function MMemberSlide() {
     //#region data
     const { presentationId } = useParams()
+    const [searchParams] = useSearchParams()
+    const navigate = useNavigate()
+    const [member, setMember] = useState()
+    const [isSubmitted, setIsSubmitted] = useState(false)
 
-    const [newChoices, setNewChoices] = useState()
-    const [isShowChart, setIsShowChart] = useState(false)
+    const { data: _presentation, isLoading: isPresentationLoading } = getPresentationForMemberById(
+        presentationId,
+        {
+            groupId: searchParams.get('groupId'),
+        }
+    )
 
-    const { data: _slides, isLoading: isLoadingSlides } = getAllSlidesById(presentationId)
-
+    // Slide id array: [null, slideId  1, slideId 2,.., null] of this presentation
     const slidesId = useMemo(() => {
-        if (_slides?.data?.slides) {
-            const result = _slides?.data?.slides
+        if (_presentation?.data?.slides) {
+            const result = [..._presentation?.data?.slides]
             result.unshift(null)
             result.push(null)
             return result
         } else {
             return []
         }
-    }, [_slides])
+    }, [_presentation])
 
-    const [slideIndex, setSlideIndex] = useState({ cur: 0, prev: null, next: null })
-
-    const [memberId, setMemberId] = useState()
+    const [slideIndex, setSlideIndex] = useState({ cur: 1, prev: null, next: null })
 
     const {
-        data: _data,
-        isLoading,
+        data: slide,
+        isLoading: isSlideLoading,
         set,
-    } = getForMember(slidesId[slideIndex.cur]?.id, { memberId: memberId })
-
-    const slide = useMemo(() => {
-        return _data?.data
-            ? {
-                  question: _data.data.question,
-                  data: {
-                      labels: _data.data.choices.map((e) => e.content),
-                      datasets: [
-                          {
-                              data: _data.data.choices.map((e) => e.n_choices),
-                              backgroundColor: [
-                                  getRandomColor(),
-                                  getRandomColor(),
-                                  getRandomColor(),
-                                  getRandomColor(),
-                              ],
-                              barThickness: 80,
-                              maxBarThickness: 100,
-                          },
-                      ],
-                  },
-              }
-            : {
-                  question: '',
-                  data: {
-                      labels: [],
-                      datasets: [
-                          {
-                              data: [],
-                              backgroundColor: [getRandomColor(), getRandomColor()],
-                              barThickness: 80,
-                              maxBarThickness: 100,
-                          },
-                      ],
-                  },
-              }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [_data, set])
+    } = getSlideForMemberById(slidesId[slideIndex.cur]?.id, { memberId: member?.id }, false, {
+        staleTime: 0,
+    })
     //#endregion
 
     //#region event
+    // Authorization
+    useEffect(() => {
+        if (_presentation?.data) {
+            if (_presentation.data.permission.isAllowed === false) {
+                alert(_presentation.data.permission.message)
+                navigate(-1)
+            }
+        }
+    }, [_presentation, navigate])
+
+    // Update slide index of this presentation when change slidesId
     useEffect(() => {
         if (slidesId.length) {
             setSlideIndex({
@@ -154,122 +132,62 @@ function MMemberSlide() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [slidesId])
 
-    useEffect(() => {
-        if (slidesId[slideIndex.cur]?.id) {
-            memberSocket.open()
-            memberSocket.emit('subscribe', slidesId[slideIndex.cur].id)
-        }
-        return () => {
-            if (slidesId[slideIndex.cur]?.id) {
-                memberSocket.emit('unsubscribe', slidesId[slideIndex.cur].id)
-            }
-        }
-    }, [slidesId, slideIndex.cur])
-
-    useEffect(() => {
-        memberSocket.on('server-send-choices', (memberId, choices) => {
-            // Xử lí -> lưu state kết quả socket trả về
-            // rồi tạo useEffect với dependency là state đó
-            setNewChoices({ memberId, choices })
-        })
-        return () => {
-            memberSocket.off('server-send-choices')
-        }
-    }, []) // Khi sử dụng socket.on thì bắt buộc phải để empty dependency
-
-    // Xử lí cập nhật data
-    useEffect(() => {
-        if (newChoices) {
-            const newData = { ..._data.data }
-            newChoices.choices.forEach((addChoice) => {
-                const index = newData.choices.findIndex(
-                    (choice) => choice.id.toString() === addChoice.toString()
-                )
-                if (index > -1) {
-                    newData.choices[index].n_choices += 1
-                    newData.choices[index].user_choices.push('temp')
-                }
-            })
-            set({ ..._data, data: newData })
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [newChoices])
-
     // Lấy memberId.
     // Nếu user đã đăng nhập thì lấy userId
     // Nếu là anonymous thì lấy IP
     useEffect(() => {
         if (localStorage.getItem('user')) {
-            setMemberId(JSON.parse(localStorage.getItem('user')).id)
-            return
+            const user = JSON.parse(localStorage.getItem('user'))
+            delete user.accessToken
+            delete user.refreshToken
+            setMember(user)
         } else if (localStorage.getItem('ip')) {
-            setMemberId(localStorage.getItem('ip'))
-            return
+            setMember(JSON.parse(localStorage.getItem('anonomous')))
         } else {
             const fetchIP = async () => {
                 const ip = await getIP()
-                setMemberId(ip)
+                setMember({ id: ip, name: 'Anonymous' })
             }
             fetchIP()
         }
     }, [])
-
-    // Kiểm tra member đã chọn các lựa chọn chưa
-    useEffect(() => {
-        if (_data?.data) {
-            setIsShowChart(_data.data.isChosen)
-        }
-    }, [_data])
-
-    const handleChoiceSendSocket = (choices) => {
-        memberSocket.emit('client-send-choices', slidesId[slideIndex.cur].id, memberId, choices)
-        setIsShowChart(true)
-    }
     //#endregion
-
     return (
         <MSlide
-            question={slide.question}
-            code={_slides?.data.code}
+            code={_presentation?.data.code}
             presentationId={presentationId}
             slidesId={slidesId}
             slideIndex={slideIndex}
             onChangeSlide={setSlideIndex}
         >
-            {isLoading || isLoadingSlides ? (
+            {isPresentationLoading ? (
                 <CLoading />
-            ) : isShowChart ? (
-                <div className="relative">
-                    <Bar options={options} data={slide.data} />
-                    <div
-                        style={{ minWidth: '300px' }}
-                        className="absolute right-20 top-40 max-h-[45rem] max-w-[20rem] rounded-lg bg-blue-900 bg-opacity-30 py-2 shadow-lg"
-                    >
-                        <h1 className="mb-3 py-3 text-center text-2xl font-bold">YOUR CHOICES</h1>
-                        <ul>
-                            {_data.data.choices
-                                .filter((e) => e.user_choices.length === 1)
-                                .map((e) => (
-                                    <li
-                                        key={e.id}
-                                        className="border-t border-gray-600 px-4 py-2 text-xl font-medium"
-                                    >
-                                        {e.content}
-                                    </li>
-                                ))}
-                        </ul>
-                    </div>
-                </div>
             ) : (
-                <div className="flex h-[90%] items-center justify-center">
-                    <MCheckbox
-                        choices={_data?.data.choices}
-                        handleChoiceSendSocket={handleChoiceSendSocket}
-                    />
-                </div>
+                <>
+                    {slidesId[slideIndex.cur]?.type === 1 && (
+                        <MHeading data={slide?.data} isLoading={isSlideLoading} />
+                    )}
+
+                    {slidesId[slideIndex.cur]?.type === 2 && (
+                        <MParagraph data={slide?.data} isLoading={isSlideLoading} />
+                    )}
+
+                    {slidesId[slideIndex.cur]?.type === 3 && (
+                        <Suspense fallback={<CLoading />}>
+                            <MMemberMultipleChoice
+                                slideId={slidesId[slideIndex.cur].id}
+                                member={member}
+                                data={slide}
+                                isLoading={isSlideLoading}
+                                set={set}
+                                isSubmitted={isSubmitted}
+                                onSubmit={setIsSubmitted}
+                            />
+                        </Suspense>
+                    )}
+                </>
             )}
         </MSlide>
     )
 }
-
 export default MMemberSlide

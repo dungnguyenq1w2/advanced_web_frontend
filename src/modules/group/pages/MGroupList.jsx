@@ -1,9 +1,12 @@
 import React, { useEffect, useMemo, useState } from 'react'
+
+import { Link, useNavigate } from 'react-router-dom'
+
 import { getAll as getAllGroup } from 'common/queries-fn/groups.query'
 import CLoading from 'common/components/CLoading'
+
 import { ROLE } from 'common/constant'
-import { FireIcon, UserGroupIcon } from '@heroicons/react/24/outline'
-import { Link, useNavigate } from 'react-router-dom'
+import { FireIcon, UserGroupIcon, PlusCircleIcon } from '@heroicons/react/24/outline'
 
 function MGroupList() {
     //#region data
@@ -42,21 +45,32 @@ function MGroupList() {
     return (
         <div className="mx-2 pt-10 md:mx-10 lg:mx-20 xl:mx-40 2xl:mx-60">
             <div className="bg-white p-5">
-                <div className="flex items-center justify-end">
-                    <label htmlFor="my-role" className="mr-2 text-base font-medium text-gray-900">
-                        Role
-                    </label>
-                    <select
-                        id="my-role"
-                        className="w-40 rounded-lg border border-gray-300 bg-gray-50 p-2 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
-                        defaultValue="0"
-                        onChange={(e) => setRoleOption(parseInt(e.target.value))}
-                    >
-                        <option value="0">All</option>
-                        <option value="1">Owner</option>
-                        <option value="2">Co-owner</option>
-                        <option value="3">Member</option>
-                    </select>
+                <div className="flex items-center justify-between px-4">
+                    <Link to="/group/create">
+                        <button className="flex items-center rounded bg-blue-600 py-1 pr-4 text-sm font-semibold text-white">
+                            <PlusCircleIcon className="mx-2 h-8 w-8" />
+                            Create group
+                        </button>
+                    </Link>
+                    <div>
+                        <label
+                            htmlFor="my-role"
+                            className="mr-2 text-base font-medium text-gray-900"
+                        >
+                            Role
+                        </label>
+                        <select
+                            id="my-role"
+                            className="w-40 rounded-lg border border-gray-300 bg-gray-50 p-2 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
+                            defaultValue="0"
+                            onChange={(e) => setRoleOption(parseInt(e.target.value))}
+                        >
+                            <option value="0">All</option>
+                            <option value="1">Owner</option>
+                            <option value="2">Co-owner</option>
+                            <option value="3">Member</option>
+                        </select>
+                    </div>
                 </div>
 
                 <div className="container grid grid-cols-1 gap-4 p-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">

@@ -1,38 +1,22 @@
 import 'modules/presentation-slide/assets/style/index.css'
 
-import { forwardRef, useImperativeHandle, useState } from 'react'
-
 import CModal from 'common/components/CModal'
 
 import { Dialog } from '@headlessui/react'
 import { XMarkIcon } from '@heroicons/react/20/solid'
-import { Avatar, Tabs } from 'flowbite-react'
+import { Avatar, Tabs, Tooltip } from 'flowbite-react'
+import moment from 'moment'
 
-const MResultsModal = forwardRef(({ choices }, ref) => {
-    // console.log('🚀 ~ choices', choices)
+const MResultsModal = ({ isOpen, onClose, choices }) => {
     //#region data
-    const [isOpen, setIsOpen] = useState(false)
     //#endregion
 
     //#region event
-    useImperativeHandle(
-        ref,
-        () => ({
-            open: (id) => {
-                setIsOpen(true)
-            },
-        }),
-        []
-    )
-
-    const handleClose = () => {
-        setIsOpen(false)
-    }
     //#endregion
 
     return (
         <>
-            <CModal isOpen={isOpen} onClose={handleClose}>
+            <CModal isOpen={isOpen} onClose={onClose}>
                 <Dialog.Panel className="max-w-2xl transform overflow-hidden rounded-2xl bg-white text-left align-middle shadow-xl transition-all">
                     <Dialog.Title
                         as="h3"
@@ -42,7 +26,7 @@ const MResultsModal = forwardRef(({ choices }, ref) => {
                     </Dialog.Title>
                     <XMarkIcon
                         className="absolute top-2 right-2 h-10 w-10 cursor-pointer text-gray-700"
-                        onClick={handleClose}
+                        onClick={onClose}
                     />
                     <hr />
                     <div className="h-[450px] overflow-auto">
@@ -55,7 +39,7 @@ const MResultsModal = forwardRef(({ choices }, ref) => {
                             {choices?.map((choice, index) => (
                                 <Tabs.Item
                                     key={choice.id}
-                                    title={choice.content}
+                                    title={`${choice.content} (${choice.user_choices.length})`}
                                     active={index === 0 && true}
                                     // id="tab__item"
                                 >
@@ -66,14 +50,28 @@ const MResultsModal = forwardRef(({ choices }, ref) => {
                                     {choice.user_choices.map((e, i) => (
                                         <div
                                             key={e.id}
-                                            className={`flex items-center border-b py-1 px-2`}
+                                            className={`flex items-center justify-between border-b py-1 px-2`}
                                         >
-                                            <Avatar
-                                                img={e.user ? e.user.image : null}
-                                                rounded={true}
-                                                className="mr-3"
-                                            />
-                                            {e.user ? e.user.name : 'Anonymous'}
+                                            <div className="flex items-center">
+                                                <Avatar
+                                                    img={e.member ? e.member.image : null}
+                                                    rounded={true}
+                                                    className="mr-3"
+                                                />
+                                                <span>
+                                                    {e.member ? e.member.name : 'Anonymous'}
+                                                </span>
+                                            </div>
+
+                                            <span className="cursor-default text-sm text-gray-600">
+                                                <Tooltip
+                                                    content={moment(e.created_at)
+                                                        .utc()
+                                                        .format('hh:mm:ss MM/DD/YY')}
+                                                >
+                                                    {moment(e.created_at).utc().fromNow()}
+                                                </Tooltip>
+                                            </span>
                                         </div>
                                     ))}
                                 </Tabs.Item>
@@ -84,6 +82,6 @@ const MResultsModal = forwardRef(({ choices }, ref) => {
             </CModal>
         </>
     )
-})
+}
 
 export default MResultsModal

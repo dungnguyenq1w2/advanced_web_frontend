@@ -2,10 +2,16 @@ import { map } from 'utils/axios'
 import { isSuccess } from 'utils/func'
 import { PRESENTATIONS } from './_constant'
 
-export const getAllByHostId = ( params = {}) => {
+export const getAllByHostId = (params = {}) => {
     return map(({ data, ...rest }) => {
         return isSuccess(rest) ? { data: data.data } : { data: [] }
     }).get(PRESENTATIONS.GET_ALL_BY_HOST_ID, params)
+}
+
+export const getAllByGroupId = (groupId, params = {}) => {
+    return map(({ data, ...rest }) => {
+        return isSuccess(rest) ? { data: data.data } : { data: [] }
+    }).get(PRESENTATIONS.GET_ALL_BY_GROUP_ID(groupId), params)
 }
 
 export const getPresentationById = (presentationId, params = {}) => {
@@ -14,10 +20,16 @@ export const getPresentationById = (presentationId, params = {}) => {
     }).get(PRESENTATIONS.GET_PRESENTATION_BY_ID(presentationId), params)
 }
 
-export const getAllSlidesById = (presentationId, params = {}) => {
+export const getForHostById = (presentationId, params = {}) => {
     return map(({ data, ...rest }) => {
-        return isSuccess(rest) ? { data: data.data } : { data: [] }
-    }).get(PRESENTATIONS.GET_ALL_SLIDES_BY_ID(presentationId), params)
+        return isSuccess(rest) ? { data: data.data } : { data: {} }
+    }).get(PRESENTATIONS.GET_PRESENTATION_FOR_HOST_ID(presentationId), params)
+}
+
+export const getForMemberById = (presentationId, params = {}) => {
+    return map(({ data, ...rest }) => {
+        return isSuccess(rest) ? { data: data.data } : { data: {} }
+    }).get(PRESENTATIONS.GET_PRESENTATION_FOR_MEMBER_ID(presentationId), params)
 }
 
 export const deletePresentation = (presentationId, params = {}) => {

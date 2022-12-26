@@ -16,17 +16,17 @@ export function getById(id, isLoading = false, options = {}) {
     })
 }
 
-export function getForHost(id, isLoading = false, options = {}) {
-    return createQuery(['slides-host', id], () => slides.getForHost(id), {
+export function getForHostById(id, isLoading = false, options = {}) {
+    return createQuery(['slides-host', id], () => slides.getForHostById(id), {
         enabled: !isLoading,
         ...options,
     })
 }
 
-export function getForMember(id, params = {}, isLoading = false, options = {}) {
+export function getForMemberById(id, params = {}, isLoading = false, options = {}) {
     return createQuery(
         ['slides-member', id, params],
-        ({ queryKey: [, , _params] }) => slides.getForMember(id, _params),
+        ({ queryKey: [, , _params] }) => slides.getForMemberById(id, _params),
         {
             enabled: !isLoading,
             ...options,

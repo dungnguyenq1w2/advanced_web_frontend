@@ -1,12 +1,12 @@
 import { useEffect, useMemo } from 'react'
 
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 import { deletePresentation } from 'apis/presentation.api'
 import { getFirst as getFirstSlide } from 'apis/slide.api'
 import { getAllByHostId } from 'common/queries-fn/presentations.query'
 
-import { PlayIcon, XMarkIcon } from '@heroicons/react/20/solid'
+import { PlayIcon, PlusCircleIcon, XMarkIcon } from '@heroicons/react/20/solid'
 import { EllipsisVerticalIcon, FireIcon } from '@heroicons/react/24/outline'
 import CLoading from 'common/components/CLoading'
 import { Dropdown } from 'flowbite-react'
@@ -59,8 +59,14 @@ function MPresentationList() {
     }
 
     return (
-        <div className="mx-2 cursor-pointer pt-10 md:mx-10 lg:mx-20 xl:mx-40 2xl:mx-60">
+        <div className="mx-2 pt-10 md:mx-10 lg:mx-20 xl:mx-40 2xl:mx-60">
             <div className="bg-white p-5">
+                <Link to="/presentation/create">
+                    <button className="ml-4 flex items-center rounded bg-blue-600 py-1 pr-4 text-sm font-semibold text-white">
+                        <PlusCircleIcon className="mx-2 h-8 w-8" />
+                        Create presentation
+                    </button>
+                </Link>
                 <div className="container grid grid-cols-1 gap-4 p-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
                     {presentations.map((presentation, index) => {
                         return (

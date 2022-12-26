@@ -36,7 +36,9 @@ export const GROUPS = {
 //#region PRESENTATIONS
 export const PRESENTATIONS = {
     GET_ALL_BY_HOST_ID: '/presentations',
-    GET_ALL_SLIDES_BY_ID: (presentationId) => `/presentations/${presentationId}/slides`,
+    GET_ALL_BY_GROUP_ID: (groupId) => `/presentations/group/${groupId}`,
+    GET_PRESENTATION_FOR_HOST_ID: (presentationId) => `/presentations/${presentationId}/host`,
+    GET_PRESENTATION_FOR_MEMBER_ID: (presentationId) => `/presentations/${presentationId}/member`,
     DELETE_PRESENTATION: (presentationId) => `/presentations/${presentationId}`,
     GET_PRESENTATION_BY_ID: (presentationId) => `/presentations/${presentationId}`,
     POST_CHECK_CODE: '/presentations/checkCode',
@@ -54,8 +56,8 @@ export const SLIDES = {
     ADD: '/slides/add',
     UPDATE: (id) => `/slides/${id}`,
     REMOVE: (id) => `/slides/${id}`,
-    GET_FOR_HOST: (id) => `/slides/${id}/host`,
-    GET_FOR_MEMBER: (id) => `/slides/${id}/member`,
+    GET_FOR_HOST_BY_ID: (id) => `/slides/${id}/host`,
+    GET_FOR_MEMBER_BY_ID: (id) => `/slides/${id}/member`,
 }
 //#endregion
 

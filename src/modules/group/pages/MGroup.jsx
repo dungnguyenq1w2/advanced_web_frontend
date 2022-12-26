@@ -1,12 +1,14 @@
-import { useEffect, useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 
-import { useNavigate, useParams } from 'react-router-dom'
+import { createSearchParams, useNavigate, useParams } from 'react-router-dom'
 
 import { getById } from 'common/queries-fn/groups.query'
+import { getAllByGroupId as getAllPresentationByGroupId } from 'common/queries-fn/presentations.query'
 
 import {
     Bars3BottomLeftIcon,
     FireIcon,
+    PlusCircleIcon,
     UserGroupIcon,
     UserPlusIcon,
     ViewfinderCircleIcon,
@@ -14,6 +16,8 @@ import {
 import CLoading from 'common/components/CLoading'
 import { ROLE, ROLE_ASSIGNMENT } from 'common/constant'
 import { Button } from 'flowbite-react'
+import MResultsModal from '../components/MResultsModal'
+import MAddPresentationModal from '../components/MAddPresentationModal'
 import MParticipantsModal from '../components/MParticipantsModal'
 import MShareModal from '../components/MShareModal'
 
@@ -23,8 +27,15 @@ function MGroup() {
     const navigate = useNavigate()
     const shareModalRef = useRef()
     const participantsModalRef = useRef()
-    const { data, isLoading, set, refetch } = getById(groupId)
-    const group = useMemo(() => data?.data ?? {}, [data])
+    const addPresentationModalRef = useRef()
+    const [isResultModalOpen, setIsResultModalOpen] = useState(false)
+    const [presentationIdSelected, setPresentationIdSelected] = useState(null)
+    const { data: groupData, isLoading: isGroupLoading, set, refetch } = getById(groupId)
+    const { data: presentationsData, isLoading: isPresentationsLoading } =
+        getAllPresentationByGroupId(groupId)
+    const group = useMemo(() => groupData?.data ?? {}, [groupData])
+    const presentations = useMemo(() => presentationsData?.data ?? {}, [presentationsData])
+    console.log('🚀 ~ presentations', presentations)
     //#endregion
 
     //#region event
@@ -61,16 +72,16 @@ function MGroup() {
             default:
                 break
         }
-        set({ ...data, data: newGroup })
+        set({ ...groupData, data: newGroup })
     }
     //#endregion
 
-    if (isLoading) return <CLoading />
+    if (isGroupLoading) return <CLoading />
 
     return (
         <div className="flex flex-col items-center pt-20">
             <div className="mb-1 w-[25rem] rounded border bg-white p-5 sm:w-[35rem] lg:w-[52rem]">
-                <h1 className="text-lg font-semibold md:text-xl">Still waiting for responses</h1>
+                <h1 className="text-sm font-semibold md:text-lg">Still waiting for responses</h1>
                 <p className="mb-2 text-sm text-gray-500 md:text-base">
                     If you haven't shared your invite, copy the link or email to your participants.
                 </p>
@@ -84,11 +95,11 @@ function MGroup() {
                     </Button>
                 </div>
             </div>
-            <div className="w-[25rem] rounded border bg-white p-5 sm:w-[35rem] lg:w-[52rem]">
+            <div className="mb-1 w-[25rem] rounded border bg-white p-5 sm:w-[35rem] lg:w-[52rem]">
                 <h1 className="mb-10 text-xl font-semibold">{group.name}</h1>
                 <div className="">
                     <div className="my-1 flex items-center">
-                        <FireIcon className="mr-2 h-5 w-5" />
+                        <FireIcon className="mr-2 h-5 w-5 text-red-600" />
                         {ROLE[group.my_role]}
                     </div>
                     <div className="my-1 flex items-center">
@@ -96,13 +107,64 @@ function MGroup() {
                         {group.description}
                     </div>
                     <div className="my-1 flex items-center">
-                        <UserGroupIcon className="mr-2 h-5 w-5" />
+                        <UserGroupIcon className="mr-2 h-5 w-5 text-blue-600" />
                         Participants ({group?.participants?.length ?? 0})
                         <ViewfinderCircleIcon
                             onClick={() => participantsModalRef.current.open()}
                             className="ml-2 h-6 w-6 cursor-pointer text-blue-500"
                         />
                     </div>
+                </div>
+            </div>
+            <div className="w-[25rem] rounded border bg-white p-5 sm:w-[35rem] lg:w-[52rem]">
+                <div className="flex justify-between">
+                    <h1 className="text-md mb-10 font-semibold md:text-lg">
+                        Group's Presentations
+                    </h1>
+                    <Button
+                        disabled={group.my_role === 3}
+                        size="md"
+                        onClick={() => addPresentationModalRef.current.open()}
+                    >
+                        <PlusCircleIcon className="mr-2 h-6 w-6" /> Add presentation
+                    </Button>
+                </div>
+                <div className="">
+                    {isPresentationsLoading ? (
+                        <CLoading />
+                    ) : (
+                        <div>
+                            {presentations.map((row) => (
+                                <div key={row.id} className="flex">
+                                    {row.presentation.name}
+                                    <Button
+                                        disabled={group.my_role === 3}
+                                        size="md"
+                                        onClick={() =>
+                                            navigate({
+                                                pathname: `/presentation-slide/${row.presentation.id}/host`,
+                                                search: createSearchParams({
+                                                    groupId,
+                                                }).toString(),
+                                            })
+                                        }
+                                    >
+                                        Present
+                                    </Button>
+                                    <Button
+                                        disabled={group.my_role === 3}
+                                        size="md"
+                                        onClick={() => {
+                                            setIsResultModalOpen(true)
+                                            setPresentationIdSelected(row.presentation.id)
+                                        }}
+                                    >
+                                        View results
+                                    </Button>
+                                </div>
+                            ))}
+                        </div>
+                    )}
                 </div>
             </div>
 
@@ -114,6 +176,14 @@ function MGroup() {
                 set={set}
                 refetch={refetch}
             />
+            <MAddPresentationModal ref={addPresentationModalRef} />
+            {isResultModalOpen && (
+                <MResultsModal
+                    isOpen={isResultModalOpen}
+                    onClose={() => setIsResultModalOpen(false)}
+                    presentationId={presentationIdSelected}
+                />
+            )}
         </div>
     )
 }

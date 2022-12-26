@@ -10,7 +10,7 @@ import { update as updateSlide } from 'apis/slide.api'
 import { getAll as getAllChoices } from 'common/queries-fn/choices.query'
 import {
     getAll as getAllSlides,
-    getForHost as getSlideForHost,
+    getForHostById as getSlideForHost,
 } from 'common/queries-fn/slides.query'
 
 import { PlayIcon, XMarkIcon } from '@heroicons/react/20/solid'
@@ -50,7 +50,7 @@ function MPresentationEdit() {
     } = getSlideForHost(slideId)
 
     const slideData = useMemo(() => {
-        return _slideData?.data
+        return _slideData?.data?.id
             ? {
                   question: _slideData.data.question,
                   data: {
