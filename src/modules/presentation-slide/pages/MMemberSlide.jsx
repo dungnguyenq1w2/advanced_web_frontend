@@ -78,24 +78,25 @@ function MMemberSlide() {
     const [member, setMember] = useState()
     const [isSubmitted, setIsSubmitted] = useState(false)
 
-    const { data: _presentation, isLoading: isPresentationLoading } = getPresentationForMemberById(
+    const { data: presentation, isLoading: isPresentationLoading } = getPresentationForMemberById(
         presentationId,
         {
-            groupId: searchParams.get('groupId'),
+            presentationGroupId: searchParams.get('id'), // presentation_group_id
+            userId: JSON.parse(localStorage.getItem('user'))?.id,
         }
     )
 
     // Slide id array: [null, slideId  1, slideId 2,.., null] of this presentation
     const slidesId = useMemo(() => {
-        if (_presentation?.data?.slides) {
-            const result = [..._presentation?.data?.slides]
+        if (presentation?.data?.slides) {
+            const result = [...presentation?.data?.slides]
             result.unshift(null)
             result.push(null)
             return result
         } else {
             return []
         }
-    }, [_presentation])
+    }, [presentation])
 
     const [slideIndex, setSlideIndex] = useState({ cur: 1, prev: null, next: null })
 
@@ -103,19 +104,22 @@ function MMemberSlide() {
         data: slide,
         isLoading: isSlideLoading,
         set,
-    } = getSlideForMemberById(slidesId[slideIndex.cur]?.id, { memberId: member?.id })
+    } = getSlideForMemberById(slidesId[slideIndex.cur]?.id, {
+        presentationGroupId: searchParams.get('id'), // presentation_group_id,
+        memberId: member?.id,
+    })
     //#endregion
 
     //#region event
     // Authorization
     useEffect(() => {
-        if (_presentation?.data) {
-            if (_presentation.data.permission.isAllowed === false) {
-                alert(_presentation.data.permission.message)
+        if (presentation?.data?.permission) {
+            if (presentation.data.permission.isAllowed === false) {
+                alert(presentation.data.permission.message)
                 navigate(-1)
             }
         }
-    }, [_presentation, navigate])
+    }, [presentation, navigate])
 
     // Update slide index of this presentation when change slidesId
     useEffect(() => {
@@ -153,7 +157,8 @@ function MMemberSlide() {
     return (
         <MSlide
             type={slidesId[slideIndex.cur]?.type}
-            code={_presentation?.data.code}
+            code={presentation?.data.code}
+            presentationGroupId={searchParams.get('id')}
             presentationId={presentationId}
             slidesId={slidesId}
             slideIndex={slideIndex}
@@ -176,6 +181,7 @@ function MMemberSlide() {
                             <MMemberMultipleChoice
                                 slideId={slidesId[slideIndex.cur].id}
                                 member={member}
+                                presentation_group_id={searchParams.get('id')}
                                 data={slide}
                                 isLoading={isSlideLoading}
                                 set={set}

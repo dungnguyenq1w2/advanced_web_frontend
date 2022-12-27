@@ -9,7 +9,16 @@ import {
 } from '@heroicons/react/24/outline'
 import { MChatboxModal, MQuestionModal } from '.'
 
-function MSlide({ children, type, code, presentationId, slidesId, slideIndex, onChangeSlide }) {
+function MSlide({
+    children,
+    type,
+    code,
+    presentationGroupId,
+    presentationId,
+    slidesId,
+    slideIndex,
+    onChangeSlide,
+}) {
     //#region Data
     const [isCopied, setIsCopied] = useState(false)
 
@@ -39,14 +48,16 @@ function MSlide({ children, type, code, presentationId, slidesId, slideIndex, on
 
     const handleCopyShareLink = async () => {
         navigator.clipboard.writeText(
-            `${window.location.host}/presentation-slide/${presentationId}/member`
+            `${window.location.host}/presentation-slide/${presentationId}/member${
+                presentationGroupId ? `?id=${presentationGroupId}` : ''
+            }`
         )
         setIsCopied(true)
     }
     //#endregion
     return (
         <div
-            className="relative mx-20 h-full min-w-[1700px] bg-cover bg-center bg-no-repeat text-white before:absolute before:top-0 before:h-screen before:w-[91vw] before:bg-black before:bg-opacity-40"
+            className="relative mx-20 h-full min-w-[1700px] animate-[show-slow_0.25s_ease-in] bg-cover bg-center bg-no-repeat text-white before:absolute before:top-0 before:h-screen before:w-[91vw] before:bg-black before:bg-opacity-40"
             style={{
                 backgroundImage:
                     type === 1
@@ -64,7 +75,9 @@ function MSlide({ children, type, code, presentationId, slidesId, slideIndex, on
                     </h1>
                     <div className="hidden p-2 pb-4 text-center hover:flex hover:items-center hover:justify-center peer-hover:flex peer-hover:items-center peer-hover:justify-center">
                         <span className="mr-2 border border-gray-700 p-1 text-center text-sm font-normal">
-                            {`${window.location.host}/presentation-slide/${presentationId}/member`}
+                            {`${window.location.host}/presentation-slide/${presentationId}/member${
+                                presentationGroupId ? `?id=${presentationGroupId}` : ''
+                            }`}
                         </span>
                         <button
                             className="border border-gray-500 p-1 text-sm font-medium hover:border-black hover:bg-black"
@@ -101,39 +114,41 @@ function MSlide({ children, type, code, presentationId, slidesId, slideIndex, on
 
                 {/* Button Chatbox*/}
                 <button
-                    className={`absolute bottom-44 right-10 rounded-full bg-gray-500 bg-opacity-40 p-2 ${
-                        !slidesId[slideIndex.next] && 'opacity-20'
-                    }`}
+                    className={`absolute bottom-44 right-10 rounded-full bg-gray-500 bg-opacity-40 p-2`}
                     onClick={() => {
                         setIsChatboxModalOpen(true)
                     }}
                 >
                     <div className="relative">
                         <ChatBubbleBottomCenterTextIcon className="h-8 w-8" />
-                        <span class="absolute -top-2 -right-2 flex h-3 w-3">
-                            <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-sky-400 opacity-75"></span>
-                            <span class="relative inline-flex h-3 w-3 rounded-full bg-sky-500"></span>
+                        <span className="absolute -top-2 -right-2 flex h-3 w-3">
+                            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-sky-400 opacity-75"></span>
+                            <span className="relative inline-flex h-3 w-3 rounded-full bg-sky-500"></span>
                         </span>
                     </div>
                 </button>
 
                 {/* Button Question slide */}
                 <button
-                    className={`absolute bottom-28 right-10 rounded-full bg-gray-500 bg-opacity-40 p-2 ${
-                        !slidesId[slideIndex.next] && 'opacity-20'
-                    }`}
+                    className="absolute bottom-28 right-10 rounded-full bg-gray-500 bg-opacity-40 p-2"
                     onClick={() => {
                         setIsQuestionModalOpen(true)
                     }}
                 >
                     <div className="relative">
                         <QuestionMarkCircleIcon className="h-8 w-8" />
-                        <span class="absolute -top-2 -right-2 flex h-3 w-3">
-                            <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-sky-400 opacity-75"></span>
-                            <span class="relative inline-flex h-3 w-3 rounded-full bg-sky-500"></span>
+                        <span className="absolute -top-2 -right-2 flex h-3 w-3">
+                            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-sky-400 opacity-75"></span>
+                            <span className="relative inline-flex h-3 w-3 rounded-full bg-sky-500"></span>
                         </span>
                     </div>
                 </button>
+
+                {presentationGroupId && (
+                    <span className="absolute bottom-4 left-1/2 -translate-x-1/2 text-2xl font-semibold">
+                        *This presentation is presenting in group
+                    </span>
+                )}
             </div>
             {isChatboxModalOpen && (
                 <MChatboxModal

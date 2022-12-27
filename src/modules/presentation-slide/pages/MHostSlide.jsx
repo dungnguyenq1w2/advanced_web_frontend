@@ -15,24 +15,24 @@ function MHostSlide() {
     const [searchParams] = useSearchParams()
     const navigate = useNavigate()
 
-    const { data: _presentation, isLoading: isPresentationLoading } = getPresentationForHostById(
+    const { data: presentation, isLoading: isPresentationLoading } = getPresentationForHostById(
         presentationId,
         {
-            groupId: searchParams.get('groupId'),
+            presentationGroupId: searchParams.get('id'), // presentation_group_id
         }
     )
 
     // Slide id array: [null, slideId  1, slideId 2,.., null] of this presentation
     const slidesId = useMemo(() => {
-        if (_presentation?.data?.slides) {
-            const result = [..._presentation?.data?.slides]
+        if (presentation?.data?.slides) {
+            const result = [...presentation?.data?.slides]
             result.unshift(null)
             result.push(null)
             return result
         } else {
             return []
         }
-    }, [_presentation])
+    }, [presentation])
 
     const [slideIndex, setSlideIndex] = useState({ cur: 1, prev: null, next: null })
 
@@ -40,17 +40,19 @@ function MHostSlide() {
         data: slide,
         isLoading: isSlideLoading,
         set,
-    } = getSlideForHostById(slidesId[slideIndex.cur]?.id)
+    } = getSlideForHostById(slidesId[slideIndex.cur]?.id, {
+        presentationGroupId: searchParams.get('id'), // presentation_group_id
+    })
     //#endregion
 
     //#region event
     // Authorization
     useEffect(() => {
-        if (_presentation?.data) {
+        if (presentation?.data) {
             const user = JSON.parse(localStorage.getItem('user'))
             if (user) {
-                if (_presentation.data.permission.isAllowed === false) {
-                    alert(_presentation.data.permission.message)
+                if (presentation.data.permission.isAllowed === false) {
+                    alert(presentation.data.permission.message)
                     navigate(-1)
                 }
             } else {
@@ -58,7 +60,7 @@ function MHostSlide() {
                 navigate('/')
             }
         }
-    }, [_presentation, navigate])
+    }, [presentation, navigate])
 
     // Update slide index of this presentation when change slidesId
     useEffect(() => {
@@ -77,7 +79,8 @@ function MHostSlide() {
     return (
         <MSlide
             type={slidesId[slideIndex.cur]?.type}
-            code={_presentation?.data.code}
+            code={presentation?.data.code}
+            presentationGroupId={searchParams.get('id')}
             presentationId={presentationId}
             slidesId={slidesId}
             slideIndex={slideIndex}

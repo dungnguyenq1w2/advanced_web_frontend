@@ -148,7 +148,7 @@ function MGroup() {
                                             navigate({
                                                 pathname: `/presentation-slide/${row.presentation.id}/host`,
                                                 search: createSearchParams({
-                                                    groupId,
+                                                    id: row.id, // presentation_group_id
                                                 }).toString(),
                                             })
                                         }

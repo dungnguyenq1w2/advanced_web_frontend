@@ -16,11 +16,15 @@ export function getById(id, isLoading = false, options = {}) {
     })
 }
 
-export function getForHostById(id, isLoading = false, options = {}) {
-    return createQuery(['slides-host', id], () => slides.getForHostById(id), {
-        enabled: !isLoading,
-        ...options,
-    })
+export function getForHostById(id, params = {}, isLoading = false, options = {}) {
+    return createQuery(
+        ['slides-host', id, params],
+        ({ queryKey: [, , _params] }) => slides.getForHostById(id, _params),
+        {
+            enabled: !isLoading,
+            ...options,
+        }
+    )
 }
 
 export function getForMemberById(id, params = {}, isLoading = false, options = {}) {

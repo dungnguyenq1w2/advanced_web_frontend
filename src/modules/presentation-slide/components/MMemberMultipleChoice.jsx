@@ -69,7 +69,16 @@ export const options = {
     },
 }
 
-function MMultipleChoice({ slideId, member, data, isLoading, set, isSubmitted, onSubmit }) {
+function MMemberMultipleChoice({
+    slideId,
+    member,
+    presentation_group_id,
+    data,
+    isLoading,
+    set,
+    isSubmitted,
+    onSubmit,
+}) {
     //#region Data
     // Save data from socket 'server-send-choices'
     const [newChoices, setNewChoices] = useState()
@@ -180,7 +189,7 @@ function MMultipleChoice({ slideId, member, data, isLoading, set, isSubmitted, o
     }, [data, onSubmit])
 
     const handleChoiceSendSocket = (choices) => {
-        memberSocket.emit('client-send-choices', slideId, member, choices)
+        memberSocket.emit('client-send-choices', slideId, member, choices, presentation_group_id)
         onSubmit(true)
     }
     //#endregion
@@ -227,4 +236,4 @@ function MMultipleChoice({ slideId, member, data, isLoading, set, isSubmitted, o
     )
 }
 
-export default MMultipleChoice
+export default MMemberMultipleChoice

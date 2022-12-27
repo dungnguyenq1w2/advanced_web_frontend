@@ -8,10 +8,8 @@ import CModal from 'common/components/CModal'
 import { getFirst as getFirstSlide } from 'apis/slide.api'
 import { getAllByHostId } from 'common/queries-fn/presentations.query'
 
-import { Dialog } from '@headlessui/react'
-import { XMarkIcon } from '@heroicons/react/20/solid'
-import { Tooltip } from 'flowbite-react'
 import { PlusCircleIcon } from '@heroicons/react/24/outline'
+import { Tooltip } from 'flowbite-react'
 
 // eslint-disable-next-line no-empty-pattern
 const MAddPresentationModal = forwardRef(({}, ref) => {
@@ -51,42 +49,29 @@ const MAddPresentationModal = forwardRef(({}, ref) => {
 
     return (
         <>
-            <CModal isOpen={isOpen} onClose={handleClose}>
-                <Dialog.Panel className="w-80 max-w-lg transform overflow-hidden rounded-2xl bg-white text-left align-middle shadow-xl transition-all">
-                    <Dialog.Title
-                        as="h3"
-                        className="px-8 py-4 text-center text-xl font-medium leading-6 text-gray-900"
-                    >
-                        Add presentation
-                    </Dialog.Title>
-                    <XMarkIcon
-                        className="absolute top-2 right-2 h-10 w-10 cursor-pointer text-gray-700"
-                        onClick={handleClose}
-                    />
-                    <hr />
-                    <div className="p-4 text-left">
-                        {isLoading ? (
-                            <CLoading />
-                        ) : (
-                            data.data.map((presentation) => (
-                                <div
-                                    key={presentation.id}
-                                    className="flex justify-between border-b py-2"
+            <CModal title="Add presentation" isOpen={isOpen} onClose={handleClose}>
+                <div className="h-[400px] overflow-auto p-4 text-left">
+                    {isLoading ? (
+                        <CLoading />
+                    ) : (
+                        data.data.map((presentation) => (
+                            <div
+                                key={presentation.id}
+                                className="flex justify-between border-b py-2"
+                            >
+                                <span
+                                    className="cursor-pointer font-semibold hover:text-blue-600"
+                                    onClick={handleViewPresentation(presentation.id)}
                                 >
-                                    <span
-                                        className="cursor-pointer font-semibold hover:text-blue-600"
-                                        onClick={handleViewPresentation(presentation.id)}
-                                    >
-                                        <Tooltip content="View this presentation">
-                                            {presentation.name}
-                                        </Tooltip>
-                                    </span>
-                                    <PlusCircleIcon className="h-6 w-6 cursor-pointer text-blue-600" />
-                                </div>
-                            ))
-                        )}
-                    </div>
-                </Dialog.Panel>
+                                    <Tooltip content="View this presentation">
+                                        {presentation.name}
+                                    </Tooltip>
+                                </span>
+                                <PlusCircleIcon className="h-6 w-6 cursor-pointer text-blue-600" />
+                            </div>
+                        ))
+                    )}
+                </div>
             </CModal>
         </>
     )

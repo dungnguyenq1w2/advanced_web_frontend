@@ -26,6 +26,18 @@ export const getById = (id, params = {}) => {
     }).get(SLIDES.GET_BY_ID(id), params)
 }
 
+export const getForHostById = (id, params = {}) => {
+    return map(({ data, ...rest }) => {
+        return isSuccess(rest) ? { data: data.data } : { data: {} }
+    }).get(SLIDES.GET_FOR_HOST_BY_ID(id), params)
+}
+
+export const getForMemberById = (id, params = {}) => {
+    return map(({ data, ...rest }) => {
+        return isSuccess(rest) ? { data: data.data } : { data: {} }
+    }).get(SLIDES.GET_FOR_MEMBER_BY_ID(id), params)
+}
+
 export const add = (params = {}) => {
     return map(({ data, ...rest }) => {
         return isSuccess(rest) ? { data: data?.data } : { data: {} }
@@ -42,16 +54,4 @@ export const remove = (id, params = {}) => {
     return map(({ data, ...rest }) => {
         return isSuccess(rest) ? { data: data } : { data: {} }
     }).remove(SLIDES.REMOVE(id), params)
-}
-
-export const getForHostById = (id, params = {}) => {
-    return map(({ data, ...rest }) => {
-        return isSuccess(rest) ? { data: data.data } : { data: {} }
-    }).get(SLIDES.GET_FOR_HOST_BY_ID(id), params)
-}
-
-export const getForMemberById = (id, params = {}) => {
-    return map(({ data, ...rest }) => {
-        return isSuccess(rest) ? { data: data.data } : { data: {} }
-    }).get(SLIDES.GET_FOR_MEMBER_BY_ID(id), params)
 }

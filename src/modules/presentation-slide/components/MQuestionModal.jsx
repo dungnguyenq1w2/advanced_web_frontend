@@ -16,21 +16,8 @@ const MQuestionModal = ({ isOpen, onClose }) => {
 
     return (
         <>
-            <CModal isOpen={isOpen} onClose={onClose}>
-                <Dialog.Panel className="max-w-2xl transform overflow-hidden rounded-2xl bg-white text-left align-middle shadow-xl transition-all">
-                    <Dialog.Title
-                        as="h3"
-                        className="px-40 py-4 text-center text-xl font-medium leading-6 text-gray-900"
-                    >
-                        Question
-                    </Dialog.Title>
-                    <XMarkIcon
-                        className="absolute top-2 right-2 h-10 w-10 cursor-pointer text-gray-700"
-                        onClick={onClose}
-                    />
-                    <hr />
-                    <div className="h-[450px] overflow-auto">Question</div>
-                </Dialog.Panel>
+            <CModal title="Question" isOpen={isOpen} onClose={onClose}>
+                <div className="h-[450px] overflow-auto">Question</div>
             </CModal>
         </>
     )
