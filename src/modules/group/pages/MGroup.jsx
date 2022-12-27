@@ -25,17 +25,21 @@ function MGroup() {
     //#region data
     const { groupId } = useParams()
     const navigate = useNavigate()
+
     const shareModalRef = useRef()
     const participantsModalRef = useRef()
     const addPresentationModalRef = useRef()
+
     const [isResultModalOpen, setIsResultModalOpen] = useState(false)
     const [presentationIdSelected, setPresentationIdSelected] = useState(null)
+
     const { data: groupData, isLoading: isGroupLoading, set, refetch } = getById(groupId)
+    const group = useMemo(() => groupData?.data ?? {}, [groupData])
+
     const { data: presentationsData, isLoading: isPresentationsLoading } =
         getAllPresentationByGroupId(groupId)
-    const group = useMemo(() => groupData?.data ?? {}, [groupData])
+
     const presentations = useMemo(() => presentationsData?.data ?? {}, [presentationsData])
-    console.log('🚀 ~ presentations', presentations)
     //#endregion
 
     //#region event

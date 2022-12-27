@@ -167,35 +167,31 @@ function MHostMultipleChoice({ slideId, data, isLoading, set }) {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [newChoices])
     //#endregion
+
+    if (isLoading) return <CLoading />
     return (
-        <>
-            {isLoading ? (
-                <CLoading />
-            ) : (
-                <>
-                    <h1 className="absolute top-20 px-6 text-center text-[3.5rem] font-medium">
-                        {data.data.question}?
-                    </h1>
-                    <Bar options={options} data={slide.data} />
-                    <div
-                        className="absolute bottom-12 right-20 flex cursor-pointer items-center rounded-lg bg-gray-600 px-2 py-1 shadow-lg hover:bg-gray-300 hover:text-black"
-                        onClick={() => {
-                            setIsResultModalOpen(true)
-                        }}
-                    >
-                        <Bars3CenterLeftIcon className="mr-3 h-8 w-8" />
-                        <span>Records</span>
-                    </div>
-                    {isResultModalOpen && (
-                        <MResultsModal
-                            isOpen={isResultModalOpen}
-                            onClose={() => setIsResultModalOpen(false)}
-                            choices={data.data.choices}
-                        />
-                    )}
-                </>
+        <div className="animate-[show-slow_0.5s_ease-in]">
+            <h1 className="absolute top-20 px-6 text-center text-[3.5rem] font-medium">
+                {data.data.question}?
+            </h1>
+            <Bar options={options} data={slide.data} />
+            <div
+                className="absolute bottom-12 right-10 flex cursor-pointer items-center rounded-lg bg-gray-600 px-2 py-1 shadow-lg hover:bg-gray-300 hover:text-black"
+                onClick={() => {
+                    setIsResultModalOpen(true)
+                }}
+            >
+                <Bars3CenterLeftIcon className="mr-3 h-8 w-8" />
+                <span>Records</span>
+            </div>
+            {isResultModalOpen && (
+                <MResultsModal
+                    isOpen={isResultModalOpen}
+                    onClose={() => setIsResultModalOpen(false)}
+                    choices={data.data.choices}
+                />
             )}
-        </>
+        </div>
     )
 }
 

@@ -13,6 +13,11 @@ module.exports = {
                     '70%': { opacity: 1 },
                     '100%': { top: '4.5rem' },
                 },
+                'show-slow': {
+                    '0%': { opacity: 0 },
+                    '50%': { opacity: 0 },
+                    '100%': { opacity: 1 },
+                },
             },
         },
     },

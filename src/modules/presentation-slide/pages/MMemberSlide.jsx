@@ -103,9 +103,7 @@ function MMemberSlide() {
         data: slide,
         isLoading: isSlideLoading,
         set,
-    } = getSlideForMemberById(slidesId[slideIndex.cur]?.id, { memberId: member?.id }, false, {
-        staleTime: 0,
-    })
+    } = getSlideForMemberById(slidesId[slideIndex.cur]?.id, { memberId: member?.id })
     //#endregion
 
     //#region event
@@ -154,6 +152,7 @@ function MMemberSlide() {
     //#endregion
     return (
         <MSlide
+            type={slidesId[slideIndex.cur]?.type}
             code={_presentation?.data.code}
             presentationId={presentationId}
             slidesId={slidesId}

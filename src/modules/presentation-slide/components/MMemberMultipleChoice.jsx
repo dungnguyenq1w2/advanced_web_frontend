@@ -73,6 +73,7 @@ function MMultipleChoice({ slideId, member, data, isLoading, set, isSubmitted, o
     //#region Data
     // Save data from socket 'server-send-choices'
     const [newChoices, setNewChoices] = useState()
+    const [permission, setPermission] = useState(false)
 
     const slide = useMemo(() => {
         return data?.data?.id
@@ -131,12 +132,23 @@ function MMultipleChoice({ slideId, member, data, isLoading, set, isSubmitted, o
 
     // Wait socket
     useEffect(() => {
+        // Xử lí -> lưu state kết quả socket trả về
+        // rồi tạo useEffect với dependency là state đó
+
+        // Check permission for host
+        memberSocket.on('server-send-permission', (hostPermission) => {
+            setPermission(hostPermission)
+        })
+
+        // Realtime update new choices
         memberSocket.on('server-send-choices', (member, choices) => {
             // Xử lí -> lưu state kết quả socket trả về
             // rồi tạo useEffect với dependency là state đó
             setNewChoices({ member, choices })
         })
+
         return () => {
+            memberSocket.off('server-send-permission')
             memberSocket.off('server-send-choices')
         }
     }, []) // Khi sử dụng socket.on thì bắt buộc phải để empty dependency
@@ -172,13 +184,17 @@ function MMultipleChoice({ slideId, member, data, isLoading, set, isSubmitted, o
         onSubmit(true)
     }
     //#endregion
-
+    if (isLoading) return <CLoading />
     return (
         <>
-            {isLoading ? (
-                <CLoading />
+            {!permission ? (
+                <div className="flex h-full flex-col items-center justify-center">
+                    <h1 className="mb-10 animate-[show-slow_2s_ease-in] px-20 text-center text-6xl">
+                        Waiting for host present this slide
+                    </h1>
+                </div>
             ) : isSubmitted ? (
-                <div className="relative">
+                <div className="relative animate-[show-slow_0.5s_ease-in]">
                     <Bar options={options} data={slide.data} />
                     <div
                         style={{ minWidth: '300px' }}

@@ -80,7 +80,7 @@ const MResultsModal = ({ isOpen, onClose, presentationId }) => {
     return (
         <>
             <CModal isOpen={isOpen} onClose={onClose}>
-                <Dialog.Panel className="max-w-2xl transform overflow-hidden rounded-2xl bg-white text-left align-middle shadow-xl transition-all">
+                <Dialog.Panel className="w-[30rem] max-w-2xl transform overflow-hidden rounded-2xl bg-white text-left align-middle shadow-xl transition-all">
                     <Dialog.Title
                         as="h3"
                         className="px-40 py-4 text-center text-xl font-medium leading-6 text-gray-900"
@@ -92,7 +92,7 @@ const MResultsModal = ({ isOpen, onClose, presentationId }) => {
                         onClick={onClose}
                     />
                     <hr />
-                    <div className="h-[450px] overflow-auto">
+                    <div className="h-[550px] overflow-auto">
                         {isSlideLoading || isPresentationLoading ? (
                             <CLoading />
                         ) : (
@@ -104,61 +104,70 @@ const MResultsModal = ({ isOpen, onClose, presentationId }) => {
                                     <h1 className="pt-5 text-center text-3xl">Paragraph slide</h1>
                                 )}
                                 {slide.data.type === 3 && (
-                                    <Tabs.Group
-                                        aria-label="Tabs with underline"
-                                        // eslint-disable-next-line react/style-prop-object
-                                        style="underline"
-                                        id="results__tab"
-                                    >
-                                        {slide.data.choices?.map((choice, index) => (
-                                            <Tabs.Item
-                                                key={choice.id}
-                                                title={`${choice.content} (${choice.user_choices.length})`}
-                                                active={index === 0 && true}
-                                                // id="tab__item"
-                                            >
-                                                <span className="block text-right text-sm text-gray-500">
-                                                    {choice.user_choices.length}{' '}
-                                                    {choice.user_choices.length > 1
-                                                        ? 'records'
-                                                        : 'record'}
-                                                </span>
-                                                {choice.user_choices.map((e, i) => (
-                                                    <div
-                                                        key={e.id}
-                                                        className={`flex items-center justify-between border-b py-1 px-2`}
-                                                    >
-                                                        <div className="flex items-center">
-                                                            <Avatar
-                                                                img={
-                                                                    e.member ? e.member.image : null
-                                                                }
-                                                                rounded={true}
-                                                                className="mr-3"
-                                                            />
-                                                            <span>
-                                                                {e.member
-                                                                    ? e.member.name
-                                                                    : 'Anonymous'}
+                                    <>
+                                        <div className="bg-gray-50 p-3">
+                                            <h3 className="text-lg">{slide.data.question}</h3>
+                                        </div>
+                                        <Tabs.Group
+                                            aria-label="Tabs with underline"
+                                            // eslint-disable-next-line react/style-prop-object
+                                            style="underline"
+                                            id="results__tab"
+                                        >
+                                            {slide.data.choices?.map((choice, index) => (
+                                                <Tabs.Item
+                                                    key={choice.id}
+                                                    title={`${choice.content} (${choice.user_choices.length})`}
+                                                    active={index === 0 && true}
+                                                    // id="tab__item"
+                                                >
+                                                    <span className="block text-right text-sm text-gray-500">
+                                                        {choice.user_choices.length}{' '}
+                                                        {choice.user_choices.length > 1
+                                                            ? 'records'
+                                                            : 'record'}
+                                                    </span>
+                                                    {choice.user_choices.map((e, i) => (
+                                                        <div
+                                                            key={e.id}
+                                                            className={`flex items-center justify-between border-b py-1 px-2`}
+                                                        >
+                                                            <div className="flex items-center">
+                                                                <Avatar
+                                                                    img={
+                                                                        e.member
+                                                                            ? e.member.image
+                                                                            : null
+                                                                    }
+                                                                    rounded={true}
+                                                                    className="mr-3"
+                                                                />
+                                                                <span>
+                                                                    {e.member
+                                                                        ? e.member.name
+                                                                        : 'Anonymous'}
+                                                                </span>
+                                                            </div>
+
+                                                            <span className="cursor-default text-sm text-gray-600">
+                                                                <Tooltip
+                                                                    content={moment(e.created_at)
+                                                                        .utc()
+                                                                        .format(
+                                                                            'hh:mm:ss MM/DD/YY'
+                                                                        )}
+                                                                >
+                                                                    {moment(e.created_at)
+                                                                        .utc()
+                                                                        .fromNow()}
+                                                                </Tooltip>
                                                             </span>
                                                         </div>
-
-                                                        <span className="cursor-default text-sm text-gray-600">
-                                                            <Tooltip
-                                                                content={moment(e.created_at)
-                                                                    .utc()
-                                                                    .format('hh:mm:ss MM/DD/YY')}
-                                                            >
-                                                                {moment(e.created_at)
-                                                                    .utc()
-                                                                    .fromNow()}
-                                                            </Tooltip>
-                                                        </span>
-                                                    </div>
-                                                ))}
-                                            </Tabs.Item>
-                                        ))}
-                                    </Tabs.Group>
+                                                    ))}
+                                                </Tabs.Item>
+                                            ))}
+                                        </Tabs.Group>
+                                    </>
                                 )}
                             </>
                         )}

@@ -1,10 +1,20 @@
 import { useState } from 'react'
 
-import { CheckIcon, ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline'
+import {
+    ChatBubbleBottomCenterTextIcon,
+    CheckIcon,
+    ChevronLeftIcon,
+    ChevronRightIcon,
+    QuestionMarkCircleIcon,
+} from '@heroicons/react/24/outline'
+import { MChatboxModal, MQuestionModal } from '.'
 
-function MSlide({ children, code, presentationId, slidesId, slideIndex, onChangeSlide }) {
+function MSlide({ children, type, code, presentationId, slidesId, slideIndex, onChangeSlide }) {
     //#region Data
     const [isCopied, setIsCopied] = useState(false)
+
+    const [isChatboxModalOpen, setIsChatboxModalOpen] = useState(false)
+    const [isQuestionModalOpen, setIsQuestionModalOpen] = useState(false)
     //#endregion
 
     //#region Event
@@ -36,10 +46,14 @@ function MSlide({ children, code, presentationId, slidesId, slideIndex, onChange
     //#endregion
     return (
         <div
-            className="relative mx-20 h-full min-w-[1700px] bg-contain bg-center bg-no-repeat text-white before:absolute before:top-0 before:h-screen before:w-[91vw] before:bg-black before:bg-opacity-40"
+            className="relative mx-20 h-full min-w-[1700px] bg-cover bg-center bg-no-repeat text-white before:absolute before:top-0 before:h-screen before:w-[91vw] before:bg-black before:bg-opacity-40"
             style={{
                 backgroundImage:
-                    'url(https://images.mentimeter.com/images/dfa03a55-5287-45a3-977e-f688148bd0aa.png?auto=compress%2Cformat&fm=png&w=2000)',
+                    type === 1
+                        ? 'url(https://images.unsplash.com/photo-1497864149936-d3163f0c0f4b?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1469&q=80)'
+                        : type === 2
+                        ? 'url(https://images.unsplash.com/photo-1510936111840-65e151ad71bb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1490&q=80)'
+                        : 'url(https://images.unsplash.com/photo-1530305408560-82d13781b33a?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1472&q=80)',
             }}
         >
             <div className="absolute top-0 left-0 z-10 flex w-full flex-col items-center">
@@ -63,6 +77,7 @@ function MSlide({ children, code, presentationId, slidesId, slideIndex, onChange
             </div>
             <div className="relative h-full">
                 {children}
+                {/* Button previous slide */}
                 <button
                     className={`absolute top-[45%] left-5 rounded-full bg-gray-500 bg-opacity-40 p-2 ${
                         !slidesId[slideIndex.prev] && 'opacity-20'
@@ -72,6 +87,8 @@ function MSlide({ children, code, presentationId, slidesId, slideIndex, onChange
                 >
                     <ChevronLeftIcon className="h-10 w-10" />
                 </button>
+
+                {/* Button next slide */}
                 <button
                     className={`absolute top-[45%] right-5 rounded-full bg-gray-500 bg-opacity-40 p-2 ${
                         !slidesId[slideIndex.next] && 'opacity-20'
@@ -81,7 +98,55 @@ function MSlide({ children, code, presentationId, slidesId, slideIndex, onChange
                 >
                     <ChevronRightIcon className="h-10 w-10" />
                 </button>
+
+                {/* Button Chatbox*/}
+                <button
+                    className={`absolute bottom-44 right-10 rounded-full bg-gray-500 bg-opacity-40 p-2 ${
+                        !slidesId[slideIndex.next] && 'opacity-20'
+                    }`}
+                    onClick={() => {
+                        setIsChatboxModalOpen(true)
+                    }}
+                >
+                    <div className="relative">
+                        <ChatBubbleBottomCenterTextIcon className="h-8 w-8" />
+                        <span class="absolute -top-2 -right-2 flex h-3 w-3">
+                            <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-sky-400 opacity-75"></span>
+                            <span class="relative inline-flex h-3 w-3 rounded-full bg-sky-500"></span>
+                        </span>
+                    </div>
+                </button>
+
+                {/* Button Question slide */}
+                <button
+                    className={`absolute bottom-28 right-10 rounded-full bg-gray-500 bg-opacity-40 p-2 ${
+                        !slidesId[slideIndex.next] && 'opacity-20'
+                    }`}
+                    onClick={() => {
+                        setIsQuestionModalOpen(true)
+                    }}
+                >
+                    <div className="relative">
+                        <QuestionMarkCircleIcon className="h-8 w-8" />
+                        <span class="absolute -top-2 -right-2 flex h-3 w-3">
+                            <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-sky-400 opacity-75"></span>
+                            <span class="relative inline-flex h-3 w-3 rounded-full bg-sky-500"></span>
+                        </span>
+                    </div>
+                </button>
             </div>
+            {isChatboxModalOpen && (
+                <MChatboxModal
+                    isOpen={isChatboxModalOpen}
+                    onClose={() => setIsChatboxModalOpen(false)}
+                />
+            )}
+            {isQuestionModalOpen && (
+                <MQuestionModal
+                    isOpen={isQuestionModalOpen}
+                    onClose={() => setIsQuestionModalOpen(false)}
+                />
+            )}
         </div>
     )
 }

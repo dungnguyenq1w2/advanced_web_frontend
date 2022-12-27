@@ -40,7 +40,7 @@ function MHostSlide() {
         data: slide,
         isLoading: isSlideLoading,
         set,
-    } = getSlideForHostById(slidesId[slideIndex.cur]?.id, false, { staleTime: 0 })
+    } = getSlideForHostById(slidesId[slideIndex.cur]?.id)
     //#endregion
 
     //#region event
@@ -76,6 +76,7 @@ function MHostSlide() {
 
     return (
         <MSlide
+            type={slidesId[slideIndex.cur]?.type}
             code={_presentation?.data.code}
             presentationId={presentationId}
             slidesId={slidesId}
