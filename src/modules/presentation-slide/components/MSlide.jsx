@@ -1,5 +1,8 @@
 import { useState } from 'react'
 
+import CChatboxModal from 'common/components/CChatbox/CChatboxModal'
+import CQuestionModal from 'common/components/CQuestion/CQuestionModal'
+
 import {
     ChatBubbleBottomCenterTextIcon,
     CheckIcon,
@@ -7,7 +10,6 @@ import {
     ChevronRightIcon,
     QuestionMarkCircleIcon,
 } from '@heroicons/react/24/outline'
-import { MChatboxModal, MQuestionModal } from '.'
 
 function MSlide({
     children,
@@ -151,15 +153,19 @@ function MSlide({
                 )}
             </div>
             {isChatboxModalOpen && (
-                <MChatboxModal
+                <CChatboxModal
                     isOpen={isChatboxModalOpen}
                     onClose={() => setIsChatboxModalOpen(false)}
+                    presentationId={presentationId}
+                    presentationGroupId={presentationGroupId}
                 />
             )}
             {isQuestionModalOpen && (
-                <MQuestionModal
+                <CQuestionModal
                     isOpen={isQuestionModalOpen}
                     onClose={() => setIsQuestionModalOpen(false)}
+                    presentationId={presentationId}
+                    presentationGroupId={presentationGroupId}
                 />
             )}
         </div>

@@ -2,7 +2,7 @@ import { Avatar, Tooltip } from 'flowbite-react'
 import moment from 'moment'
 import React from 'react'
 
-function MAnswer({ answer, me }) {
+function CAnswer({ answer, me }) {
     const isMe = parseInt(answer.user.id) === parseInt(me.id)
 
     return (
@@ -33,4 +33,4 @@ function MAnswer({ answer, me }) {
     )
 }
 
-export default MAnswer
+export default CAnswer

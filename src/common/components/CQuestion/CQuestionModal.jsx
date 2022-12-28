@@ -1,13 +1,14 @@
 import 'modules/presentation-slide/assets/style/index.css'
 
+import { useMemo, useState } from 'react'
+
 import CModal from 'common/components/CModal'
 
 import { PaperAirplaneIcon } from '@heroicons/react/20/solid'
+import { HandThumbUpIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import { Avatar, Tooltip } from 'flowbite-react'
 import moment from 'moment'
-import { useMemo, useState } from 'react'
-import { HandThumbUpIcon, XMarkIcon } from '@heroicons/react/24/outline'
-import MAnswer from './MAnswer'
+import CAnswer from './CAnswer'
 
 const data = [
     {
@@ -151,7 +152,7 @@ const data = [
         },
     },
 ]
-const MQuestionModal = ({ isOpen, onClose }) => {
+const CQuestionModal = ({ isOpen, onClose }) => {
     //#region data
     const [question, setQuestion] = useState('')
     const [replyQuestion, setReplyQuestion] = useState(null)
@@ -289,7 +290,7 @@ const MQuestionModal = ({ isOpen, onClose }) => {
                                         {isOpenAnswers[question.id] && (
                                             <div className="mt-2">
                                                 {question.answers.map((answer) => (
-                                                    <MAnswer
+                                                    <CAnswer
                                                         key={answer.id}
                                                         answer={answer}
                                                         me={me}
@@ -343,4 +344,4 @@ const MQuestionModal = ({ isOpen, onClose }) => {
     )
 }
 
-export default MQuestionModal
+export default CQuestionModal

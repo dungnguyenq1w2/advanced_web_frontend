@@ -83,7 +83,7 @@ const data = [
     },
 ]
 
-const MChatboxModal = ({ isOpen, onClose }) => {
+const CChatboxModal = ({ isOpen, onClose }) => {
     //#region data
     const [message, setMessage] = useState('')
     const me = useMemo(() => JSON.parse(localStorage.getItem('user')), [])
@@ -161,4 +161,4 @@ const MChatboxModal = ({ isOpen, onClose }) => {
     )
 }
 
-export default MChatboxModal
+export default CChatboxModal

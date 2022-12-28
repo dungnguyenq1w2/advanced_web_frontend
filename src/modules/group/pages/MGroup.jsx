@@ -5,6 +5,10 @@ import { createSearchParams, useNavigate, useParams } from 'react-router-dom'
 import { getById } from 'common/queries-fn/groups.query'
 import { getAllByGroupId as getAllPresentationByGroupId } from 'common/queries-fn/presentations.query'
 
+import CChatboxModal from 'common/components/CChatbox/CChatboxModal'
+import CLoading from 'common/components/CLoading'
+import CQuestionModal from 'common/components/CQuestion/CQuestionModal'
+
 import {
     Bars3BottomLeftIcon,
     FireIcon,
@@ -13,13 +17,14 @@ import {
     UserPlusIcon,
     ViewfinderCircleIcon,
 } from '@heroicons/react/24/outline'
-import CLoading from 'common/components/CLoading'
 import { ROLE, ROLE_ASSIGNMENT } from 'common/constant'
 import { Button } from 'flowbite-react'
-import MResultsModal from '../components/MResultsModal'
-import MAddPresentationModal from '../components/MAddPresentationModal'
-import MParticipantsModal from '../components/MParticipantsModal'
-import MShareModal from '../components/MShareModal'
+import {
+    MAddPresentationModal,
+    MParticipantsModal,
+    MResultsModal,
+    MShareModal,
+} from '../components'
 
 function MGroup() {
     //#region data
@@ -31,6 +36,9 @@ function MGroup() {
     const addPresentationModalRef = useRef()
 
     const [isResultModalOpen, setIsResultModalOpen] = useState(false)
+    const [isChatboxModalOpen, setIsChatboxModalOpen] = useState(false)
+    const [isQuestionModalOpen, setIsQuestionModalOpen] = useState(false)
+
     const [presentationIdSelected, setPresentationIdSelected] = useState(null)
     const [presentationGroupIdSelected, setPresentationGroupIdSelected] = useState(null)
 
@@ -167,6 +175,28 @@ function MGroup() {
                                     >
                                         View results
                                     </Button>
+                                    <Button
+                                        disabled={group.my_role === 3}
+                                        size="md"
+                                        onClick={() => {
+                                            setIsQuestionModalOpen(true)
+                                            setPresentationIdSelected(row.presentation.id)
+                                            setPresentationGroupIdSelected(row.id)
+                                        }}
+                                    >
+                                        Open question
+                                    </Button>
+                                    <Button
+                                        disabled={group.my_role === 3}
+                                        size="md"
+                                        onClick={() => {
+                                            setIsChatboxModalOpen(true)
+                                            setPresentationIdSelected(row.presentation.id)
+                                            setPresentationGroupIdSelected(row.id)
+                                        }}
+                                    >
+                                        Open chatbox
+                                    </Button>
                                 </div>
                             ))}
                         </div>
@@ -187,6 +217,22 @@ function MGroup() {
                 <MResultsModal
                     isOpen={isResultModalOpen}
                     onClose={() => setIsResultModalOpen(false)}
+                    presentationId={presentationIdSelected}
+                    presentationGroupId={presentationGroupIdSelected}
+                />
+            )}
+            {isChatboxModalOpen && (
+                <CChatboxModal
+                    isOpen={isChatboxModalOpen}
+                    onClose={() => setIsChatboxModalOpen(false)}
+                    presentationId={presentationIdSelected}
+                    presentationGroupId={presentationGroupIdSelected}
+                />
+            )}
+            {isQuestionModalOpen && (
+                <CQuestionModal
+                    isOpen={isQuestionModalOpen}
+                    onClose={() => setIsQuestionModalOpen(false)}
                     presentationId={presentationIdSelected}
                     presentationGroupId={presentationGroupIdSelected}
                 />
