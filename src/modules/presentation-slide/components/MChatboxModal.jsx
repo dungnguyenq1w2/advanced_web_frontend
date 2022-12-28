@@ -101,7 +101,10 @@ const MChatboxModal = ({ isOpen, onClose }) => {
 
                         return (
                             <div
-                                className={`my-2 flex items-end ${isMe ? 'flex-row-reverse' : ''}`}
+                                key={message.id}
+                                className={`my-2 flex items-start ${
+                                    isMe ? 'flex-row-reverse' : ''
+                                }`}
                             >
                                 <Avatar
                                     img={message.member ? message.member.image : null}
@@ -109,7 +112,7 @@ const MChatboxModal = ({ isOpen, onClose }) => {
                                     className="mx-3"
                                 />
                                 <div
-                                    className={`flex max-w-[300px] flex-col rounded-xl  py-2 px-4 ${
+                                    className={`flex max-w-[350px] flex-col rounded-xl  py-2 px-4 ${
                                         isMe ? 'bg-green-100' : 'bg-gray-100'
                                     }`}
                                 >
@@ -147,7 +150,7 @@ const MChatboxModal = ({ isOpen, onClose }) => {
                     <input
                         type="text"
                         className="w-full border-none bg-transparent px-5 text-sm outline-none focus:outline-none focus:ring-transparent"
-                        placeHolder="Write a message"
+                        placeholder="Write a message"
                         value={message}
                         onChange={(e) => setMessage(e.target.value)}
                     />
