@@ -21,6 +21,12 @@ function MLogin() {
     const [loginError, setLoginError] = useState()
     const [isLoading, setIsLoading] = useState(false)
     const navigate = useNavigate()
+
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+    } = useForm(formOptions)
     // #endregion
 
     // #region event
@@ -64,12 +70,6 @@ function MLogin() {
         }
         if (localStorage.getItem('user')) navigate('/')
     }, [navigate])
-
-    const {
-        register,
-        handleSubmit,
-        formState: { errors },
-    } = useForm(formOptions)
 
     const onSubmit = async (data) => {
         setIsLoading(true)

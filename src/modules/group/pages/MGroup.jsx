@@ -32,6 +32,7 @@ function MGroup() {
 
     const [isResultModalOpen, setIsResultModalOpen] = useState(false)
     const [presentationIdSelected, setPresentationIdSelected] = useState(null)
+    const [presentationGroupIdSelected, setPresentationGroupIdSelected] = useState(null)
 
     const { data: groupData, isLoading: isGroupLoading, set, refetch } = getById(groupId)
     const group = useMemo(() => groupData?.data ?? {}, [groupData])
@@ -161,6 +162,7 @@ function MGroup() {
                                         onClick={() => {
                                             setIsResultModalOpen(true)
                                             setPresentationIdSelected(row.presentation.id)
+                                            setPresentationGroupIdSelected(row.id)
                                         }}
                                     >
                                         View results
@@ -186,6 +188,7 @@ function MGroup() {
                     isOpen={isResultModalOpen}
                     onClose={() => setIsResultModalOpen(false)}
                     presentationId={presentationIdSelected}
+                    presentationGroupId={presentationGroupIdSelected}
                 />
             )}
         </div>

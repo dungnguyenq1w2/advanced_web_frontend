@@ -2,25 +2,22 @@ import 'modules/presentation-slide/assets/style/index.css'
 
 import { useEffect, useMemo, useState } from 'react'
 
-import { useParams } from 'react-router-dom'
-
 import { getForHostById as getPresentationForHostById } from 'common/queries-fn/presentations.query'
 import { getForHostById as getSlideForHostById } from 'common/queries-fn/slides.query'
 
-import CModal from 'common/components/CModal'
 import CLoading from 'common/components/CLoading'
+import CModal from 'common/components/CModal'
 
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline'
 import { Avatar, Tabs, Tooltip } from 'flowbite-react'
 import moment from 'moment'
 
-const MResultsModal = ({ isOpen, onClose, presentationId }) => {
+const MResultsModal = ({ isOpen, onClose, presentationId, presentationGroupId }) => {
     //#region data
-    const { groupId } = useParams()
     const { data: _presentation, isLoading: isPresentationLoading } = getPresentationForHostById(
         presentationId,
         {
-            groupId,
+            presentationGroupId,
         }
     )
 
@@ -39,7 +36,10 @@ const MResultsModal = ({ isOpen, onClose, presentationId }) => {
     const [slideIndex, setSlideIndex] = useState({ cur: 1, prev: null, next: null })
 
     const { data: slide, isLoading: isSlideLoading } = getSlideForHostById(
-        slidesId[slideIndex.cur]?.id
+        slidesId[slideIndex.cur]?.id,
+        {
+            presentationGroupId,
+        }
     )
     //#endregion
 
