@@ -54,7 +54,7 @@ const MAddPresentationModal = forwardRef(({}, ref) => {
                     {isLoading ? (
                         <CLoading />
                     ) : (
-                        data.data.map((presentation) => (
+                        data?.data.map((presentation) => (
                             <div
                                 key={presentation.id}
                                 className="flex justify-between border-b py-2"

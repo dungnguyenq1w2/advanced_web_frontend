@@ -70,3 +70,15 @@ export const CHOICES = {
     REMOVE: (id) => `/choices/${id}`,
 }
 //#endregion
+
+//#region MESSAGES
+export const MESSAGES = {
+    GET_ALL: '/messages',
+}
+//#endregion
+
+//#region QUESTIONS
+export const QUESTIONS = {
+    GET_ALL: '/questions',
+}
+//#endregion
