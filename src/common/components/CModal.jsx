@@ -6,7 +6,7 @@ import { XMarkIcon } from '@heroicons/react/24/outline'
 function CModal({ children, title = '', isOpen, onClose }) {
     return (
         <Transition appear show={isOpen} as={Fragment}>
-            <Dialog as="div" className="relative z-10" onClose={onClose}>
+            <Dialog as="div" className="relative z-10 max-h-[550px]" onClose={onClose}>
                 <Transition.Child
                     as={Fragment}
                     enter="ease-out duration-300"

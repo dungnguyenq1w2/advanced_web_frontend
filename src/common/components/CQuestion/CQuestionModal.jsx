@@ -1,159 +1,18 @@
 import 'modules/presentation-slide/assets/style/index.css'
 
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState, useCallback } from 'react'
+
+import { getAll } from 'common/queries-fn/question.query'
+import { add as addQuestion } from 'apis/question.api'
+import { add as addAnswer } from 'apis/answer.api'
 
 import CModal from 'common/components/CModal'
 
-import { PaperAirplaneIcon } from '@heroicons/react/20/solid'
-import { HandThumbUpIcon, XMarkIcon } from '@heroicons/react/24/outline'
-import { Avatar, Label, Radio, Tooltip } from 'flowbite-react'
+import { HandThumbUpIcon, XMarkIcon, PaperAirplaneIcon } from '@heroicons/react/24/outline'
+import { Avatar, Label, Radio } from 'flowbite-react'
 import moment from 'moment'
-import CAnswer from './CAnswer'
-import { getAll } from 'common/queries-fn/question.query'
 import CLoading from '../CLoading'
-
-// const data = [
-//     {
-//         id: 1,
-//         content: 'test 1',
-//         vote: 1,
-//         is_marked: false,
-//         created_at: '2022-12-28T09:31:41.000Z',
-//         user: {
-//             id: 3,
-//             name: 'Dũng 3',
-//             image: null,
-//         },
-//     },
-//     {
-//         id: 2,
-//         content: 'test 2',
-//         vote: 0,
-//         is_marked: false,
-//         created_at: '2022-12-28T09:31:41.000Z',
-//         user: {
-//             id: 1,
-//             name: 'Dũng 1',
-//             image: null,
-//         },
-//         answers: [
-//             {
-//                 id: 1,
-//                 content: 'Lorem ipsum dolor sit amet consectetur adipisicing elit.',
-//                 created_at: '2022-12-28T09:31:41.000Z',
-//                 user: {
-//                     id: 2,
-//                     name: 'Dũng 2',
-//                     image: null,
-//                 },
-//             },
-//             {
-//                 id: 2,
-//                 content: 'Lorem ipsum dolor sit amet consectetur adipisicing elit.',
-//                 created_at: '2022-12-28T09:31:41.000Z',
-//                 user: {
-//                     id: 2,
-//                     name: 'Dũng 2',
-//                     image: null,
-//                 },
-//             },
-//         ],
-//     },
-//     {
-//         id: 3,
-//         content:
-//             'Lorem ipsum dolor sit amet consectetur adipisicing elit. Temporibus itaque odio, incidunt eveniet maiores amet autem enim labore aliquam corporis totam officia omnis porro, earum suscipit, consequuntur alias? Possimus, sapiente!',
-//         is_marked: true,
-//         vote: 10,
-//         created_at: '2022-12-28T09:31:41.000Z',
-//         user: {
-//             id: 27,
-//             name: 'Dũng Nguyễn',
-//             image: null,
-//         },
-//         answers: [
-//             {
-//                 id: 1,
-//                 content: 'Lorem ipsum dolor sit amet consectetur adipisicing elit.',
-//                 created_at: '2022-12-28T09:31:41.000Z',
-//                 user: {
-//                     id: 2,
-//                     name: 'Dũng 2',
-//                     image: null,
-//                 },
-//             },
-//             {
-//                 id: 2,
-//                 content: 'Lorem ipsum dolor sit amet consectetur adipisicing elit.',
-//                 created_at: '2022-12-28T09:31:41.000Z',
-//                 user: {
-//                     id: 1,
-//                     name: 'Dũng 1',
-//                     image: null,
-//                 },
-//             },
-//             {
-//                 id: 3,
-//                 content: 'Lorem ipsum dolor sit amet consectetur adipisicing elit.',
-//                 created_at: '2022-12-28T09:31:41.000Z',
-//                 user: {
-//                     id: 2,
-//                     name: 'Dũng 2',
-//                     image: null,
-//                 },
-//             },
-//         ],
-//     },
-//     {
-//         id: 4,
-//         content: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Aut, numquam!',
-//         vote: 1,
-//         is_marked: true,
-//         created_at: '2022-12-28T09:31:41.000Z',
-//         user: {
-//             id: 27,
-//             name: 'Dũng Nguyễn',
-//             image: null,
-//         },
-//     },
-//     {
-//         id: 5,
-//         content: 'Lorem ipsum dolor sit amet.',
-//         vote: 1,
-//         is_marked: true,
-//         created_at: '2022-12-28T09:31:41.000Z',
-//         user: {
-//             id: 28,
-//             name: 'Dũng Nguyễn 11',
-//             image: null,
-//         },
-//     },
-//     {
-//         id: 6,
-//         content:
-//             'Lorem ipsum dolor sit amet consectetur adipisicing elit. Cum aperiam tenetur perferendis rerum, laudantium vitae.',
-//         vote: 1,
-//         is_marked: true,
-//         created_at: '2022-12-28T09:31:41.000Z',
-//         user: {
-//             id: 2,
-//             name: 'Dũng 2',
-//             image: null,
-//         },
-//     },
-//     {
-//         id: 7,
-//         content: 'Lorem ipsum dolor sit amet.',
-//         vote: 1,
-//         is_marked: true,
-//         created_at: '2022-12-28T09:31:41.000Z',
-//         user: {
-//             id: 1,
-//             name: 'Dũng 1',
-//             image: null,
-//         },
-//     },
-// ]
+import CAnswer from './CAnswer'
 
 const AlwaysScrollToBottom = () => {
     const elementRef = useRef()
@@ -165,6 +24,7 @@ const CQuestionModal = ({ isOpen, onClose, presentationId, presentationGroupId }
     //#region data
     // const questionRef = useRef(null)
     const scrollToBottomRef = useRef(null)
+    const inputRef = useRef(null)
     const [filter, setFilter] = useState('all')
     const [input, setInput] = useState('')
     const [replyQuestion, setReplyQuestion] = useState(null)
@@ -186,17 +46,17 @@ const CQuestionModal = ({ isOpen, onClose, presentationId, presentationGroupId }
     //#endregion
 
     //#region event
-    // useEffect(() => {
-    //     if (questionRef) {
-    //         questionRef.current.addEventListener('DOMNodeInserted', async (event) => {
-    //             const { currentTarget: target } = event
-    //             await target.scroll({ top: target.scrollHeight, behavior: 'smooth' })
-    //         })
-    //     }
-    // }, [])
+    useEffect(() => {
+        inputRef.current.focus()
+    }, [])
 
     const handleFilterChange = (e) => {
         setFilter(e.target.value)
+    }
+
+    const handleReplyQuestion = (question) => {
+        setReplyQuestion(question)
+        inputRef.current.focus()
     }
     const handleUpvote = (questionId) => {
         const newData = [...data]
@@ -225,44 +85,63 @@ const CQuestionModal = ({ isOpen, onClose, presentationId, presentationGroupId }
             [questionId]: cur[questionId] ? !cur[questionId] : true,
         }))
     }
-    const handlePostQuestion = async (e) => {
-        e.preventDefault()
+    const handlePostQuestion = useCallback(
+        async (e) => {
+            e.preventDefault()
 
-        const newData = [...data]
+            const newData = [..._data.data]
 
-        // Case ANSWER the question
-        if (replyQuestion) {
-            // api post question
+            // Case ANSWER the question
+            if (replyQuestion) {
+                const questionAnsweredIndex = newData.findIndex((e) => e.id === replyQuestion.id)
+                // api post answer
+                const res = await addAnswer({
+                    content: input,
+                    question_id: newData[questionAnsweredIndex].id,
+                })
+                if (res?.data?.id) {
+                    // set query
+                    newData[questionAnsweredIndex].answers.push({
+                        id: new Date(),
+                        content: input,
+                        created_at: new Date(),
+                        user: me,
+                    })
+                    setisOpenAnswers((cur) => ({ ...cur, [replyQuestion.id]: true }))
+                    set({ ..._data, data: newData })
+                }
 
-            // set query
-            const questionAnsweredIndex = newData.findIndex((e) => e.id === replyQuestion.id)
-            newData[questionAnsweredIndex].answers.push({
-                id: new Date(),
-                content: input,
-                created_at: new Date(),
-                user: me,
-            })
-            setisOpenAnswers((cur) => ({ ...cur, [replyQuestion.id]: true }))
-            setReplyQuestion(null)
-        } else {
-            // Case QUESTION
-            // api post question
-
-            // set query
-            newData.push({
-                id: new Date(),
-                content: input,
-                vote: 0,
-                is_marked: false,
-                created_at: new Date(),
-                user: me,
-            })
-            setTimeout(() => scrollToBottomRef.current.scrollIntoView({ behavior: 'smooth' }), [50])
-        }
-
-        set({ ..._data, data: newData })
-        setInput('')
-    }
+                setReplyQuestion(null)
+                setInput('')
+            } else {
+                // Case QUESTION
+                // api post question
+                const res = await addQuestion({
+                    content: input,
+                    presentation_id: presentationId,
+                    presentation_group_id: presentationGroupId,
+                })
+                if (res?.data?.id) {
+                    // set query
+                    newData.push({
+                        id: new Date(),
+                        content: input,
+                        vote: 0,
+                        is_marked: false,
+                        created_at: new Date(),
+                        user: me,
+                    })
+                    setTimeout(
+                        () => scrollToBottomRef.current.scrollIntoView({ behavior: 'smooth' }),
+                        [50]
+                    )
+                }
+                set({ ..._data, data: newData })
+                setInput('')
+            }
+        },
+        [_data, input, me, replyQuestion, set, presentationId, presentationGroupId]
+    )
     //#endregion
 
     return (
@@ -356,8 +235,16 @@ const CQuestionModal = ({ isOpen, onClose, presentationId, presentationGroupId }
                                                     } flex gap-1 `}
                                                 >
                                                     <span
-                                                        className="cursor-pointer text-xs text-blue-600 hover:underline hover:underline-offset-1"
-                                                        onClick={() => setReplyQuestion(question)}
+                                                        className={`text-xs ${
+                                                            question.is_marked
+                                                                ? 'text-gray-400'
+                                                                : 'cursor-pointer text-blue-600 hover:underline hover:underline-offset-1'
+                                                        }`}
+                                                        onClick={() =>
+                                                            !question?.is_marked
+                                                                ? handleReplyQuestion(question)
+                                                                : null
+                                                        }
                                                     >
                                                         Reply
                                                     </span>
@@ -396,7 +283,6 @@ const CQuestionModal = ({ isOpen, onClose, presentationId, presentationGroupId }
                                                                         ? handleMark(question.id)
                                                                         : null
                                                                 }
-                                                                disabled={question.is_marked}
                                                             >
                                                                 {question.is_marked
                                                                     ? 'Marked'
@@ -411,17 +297,7 @@ const CQuestionModal = ({ isOpen, onClose, presentationId, presentationGroupId }
                                                         isMe ? 'items-start' : 'justify-end'
                                                     }`}
                                                 >
-                                                    <Tooltip
-                                                        content={moment(question.created_at)
-                                                            .utc()
-                                                            .format('hh:mm:ss MM/DD/YY')}
-                                                        placement={isMe ? 'left' : 'right'}
-                                                        className="text-[10px]"
-                                                    >
-                                                        {moment(question.created_at)
-                                                            .utc()
-                                                            .fromNow()}
-                                                    </Tooltip>
+                                                    {moment(question.created_at).utc().fromNow()}
                                                 </span>
                                             </div>
 
@@ -458,7 +334,7 @@ const CQuestionModal = ({ isOpen, onClose, presentationId, presentationGroupId }
                                             <div
                                                 className={`${
                                                     isOpenAnswers[question.id]
-                                                        ? `visible mt-2 rounded-lg px-2 ${
+                                                        ? `visible mt-2 rounded-lg ${
                                                               isMe
                                                                   ? 'bg-green-50 bg-opacity-80'
                                                                   : 'bg-slate-50'
@@ -508,6 +384,7 @@ const CQuestionModal = ({ isOpen, onClose, presentationId, presentationGroupId }
                         className="flex items-center bg-blue-50 py-2 pr-2"
                     >
                         <input
+                            ref={inputRef}
                             type="text"
                             className="w-full border-none bg-transparent px-5 text-sm outline-none focus:outline-none focus:ring-transparent"
                             placeholder={

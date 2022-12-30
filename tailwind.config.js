@@ -18,6 +18,10 @@ module.exports = {
                     '50%': { opacity: 0 },
                     '100%': { opacity: 1 },
                 },
+                'pulse-once': {
+                    '0%': { opacity: 0.5, backgroundColor: '#dedede', borderRadius: '10px' },
+                    '100%': { opacity: 1, backgroundColor: 'transparent' },
+                },
             },
         },
     },

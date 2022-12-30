@@ -74,11 +74,19 @@ export const CHOICES = {
 //#region MESSAGES
 export const MESSAGES = {
     GET_ALL: '/messages',
+    ADD: '/messages',
 }
 //#endregion
 
 //#region QUESTIONS
 export const QUESTIONS = {
     GET_ALL: '/questions',
+    ADD: '/questions',
+}
+//#endregion
+
+//#region ASNWERS
+export const ASNWERS = {
+    ADD: '/answers',
 }
 //#endregion

@@ -2,88 +2,16 @@ import 'modules/presentation-slide/assets/style/index.css'
 
 import { useEffect, useMemo, useRef, useState } from 'react'
 
+import { getAll } from 'common/queries-fn/messge.query'
+import { add as addMessage } from 'apis/message.api'
+
 import CModal from 'common/components/CModal'
 
-import { Avatar, Tooltip } from 'flowbite-react'
-import moment from 'moment'
 import { PaperAirplaneIcon } from '@heroicons/react/24/outline'
-import { getAll } from 'common/queries-fn/messge.query'
+import { Avatar } from 'flowbite-react'
+import moment from 'moment'
 import CLoading from '../CLoading'
-
-// const data = [
-//     {
-//         id: 1,
-//         content: 'test 1',
-//         created_at: '2022-12-28T09:31:41.000Z',
-//         user: {
-//             id: 3,
-//             name: 'Dũng 3',
-//             image: null,
-//         },
-//     },
-//     {
-//         id: 2,
-//         content: 'test 2',
-//         created_at: '2022-12-28T09:31:41.000Z',
-//         user: {
-//             id: 1,
-//             name: 'Dũng 1',
-//             image: null,
-//         },
-//     },
-//     {
-//         id: 3,
-//         content:
-//             'Lorem ipsum dolor sit amet consectetur adipisicing elit. Temporibus itaque odio, incidunt eveniet maiores amet autem enim labore aliquam corporis totam officia omnis porro, earum suscipit, consequuntur alias? Possimus, sapiente!',
-//         created_at: '2022-12-28T09:31:41.000Z',
-//         user: {
-//             id: 27,
-//             name: 'Dũng Nguyễn',
-//             image: null,
-//         },
-//     },
-//     {
-//         id: 4,
-//         content: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Aut, numquam!',
-//         created_at: '2022-12-28T09:31:41.000Z',
-//         user: {
-//             id: 27,
-//             name: 'Dũng Nguyễn',
-//             image: null,
-//         },
-//     },
-//     {
-//         id: 5,
-//         content: 'Lorem ipsum dolor sit amet.',
-//         created_at: '2022-12-28T09:31:41.000Z',
-//         user: {
-//             id: 28,
-//             name: 'Dũng Nguyễn 11',
-//             image: null,
-//         },
-//     },
-//     {
-//         id: 6,
-//         content:
-//             'Lorem ipsum dolor sit amet consectetur adipisicing elit. Cum aperiam tenetur perferendis rerum, laudantium vitae.',
-//         created_at: '2022-12-28T09:31:41.000Z',
-//         user: {
-//             id: 2,
-//             name: 'Dũng 2',
-//             image: null,
-//         },
-//     },
-//     {
-//         id: 7,
-//         content: 'Lorem ipsum dolor sit amet.',
-//         created_at: '2022-12-28T09:31:41.000Z',
-//         user: {
-//             id: 1,
-//             name: 'Dũng 1',
-//             image: null,
-//         },
-//     },
-// ]
+import { v4 as uuidv4 } from 'uuid'
 
 const AlwaysScrollToBottom = () => {
     const elementRef = useRef()
@@ -93,9 +21,9 @@ const AlwaysScrollToBottom = () => {
 
 const CChatboxModal = ({ isOpen, onClose, presentationId, presentationGroupId }) => {
     //#region data
-    // const messageRef = useRef(null)
     const scrollToBottomRef = useRef(null)
-    const [message, setMessage] = useState('')
+    const [input, setInput] = useState('')
+
     const me = useMemo(() => JSON.parse(localStorage.getItem('user')), [])
 
     const {
@@ -127,36 +55,31 @@ const CChatboxModal = ({ isOpen, onClose, presentationId, presentationGroupId })
     //#endregion
 
     //#region event
-    // useEffect(() => {
-    //     if (messageRef) {
-    //         messageRef.current.addEventListener('DOMNodeInserted', (event) => {
-    //             const { currentTarget: target } = event
-    //             target.scroll({ top: target.scrollHeight, behavior: 'smooth' })
-    //         })
-    //     }
-    // }, [])
-
-    const handlePostMessage = (e) => {
+    const handlePostMessage = async (e) => {
         e.preventDefault()
-        // api post message
 
-        // set query
         const newData = [..._data.data]
-
-        newData.push({
-            id: new Date(),
-            content: message,
-            vote: 0,
-            is_marked: false,
-            created_at: new Date(),
-            user: me,
+        // api post message
+        const res = await addMessage({
+            content: input,
+            presentation_id: presentationId,
+            presentation_group_id: presentationGroupId,
         })
-        set({ ..._data, data: newData })
-        setTimeout(() => scrollToBottomRef.current.scrollIntoView({ behavior: 'smooth' }), [50])
+        console.log('🚀 ~ res', res)
+        if (res?.data?.id) {
+            // set query
+            newData.push({
+                id: uuidv4(),
+                content: input,
+                created_at: new Date(),
+                user: me,
+            })
 
-        setMessage('')
+            set({ ..._data, data: newData })
+            setTimeout(() => scrollToBottomRef.current.scrollIntoView({ behavior: 'smooth' }), [50])
+        }
+        setInput('')
     }
-    //#endregion
 
     return (
         <>
@@ -212,17 +135,7 @@ const CChatboxModal = ({ isOpen, onClose, presentationId, presentationGroupId })
                                                         isMe ? 'items-start' : 'justify-end'
                                                     }`}
                                                 >
-                                                    <Tooltip
-                                                        content={moment(messages[0].created_at)
-                                                            .utc()
-                                                            .format('hh:mm:ss MM/DD/YY')}
-                                                        placement={isMe ? 'left' : 'right'}
-                                                        className="text-[10px]"
-                                                    >
-                                                        {moment(messages[0].created_at)
-                                                            .utc()
-                                                            .fromNow()}
-                                                    </Tooltip>
+                                                    {moment(messages[0].created_at).utc().fromNow()}
                                                 </span>
                                             </div>
                                         ) : (
@@ -267,17 +180,9 @@ const CChatboxModal = ({ isOpen, onClose, presentationId, presentationGroupId })
                                                                 isMe ? 'items-start' : 'justify-end'
                                                             }`}
                                                         >
-                                                            <Tooltip
-                                                                content={moment(message.created_at)
-                                                                    .utc()
-                                                                    .format('hh:mm:ss MM/DD/YY')}
-                                                                placement={isMe ? 'left' : 'right'}
-                                                                className="text-[10px]"
-                                                            >
-                                                                {moment(message.created_at)
-                                                                    .utc()
-                                                                    .fromNow()}
-                                                            </Tooltip>
+                                                            {moment(message.created_at)
+                                                                .utc()
+                                                                .fromNow()}
                                                         </span>
                                                     </div>
                                                 ))}
@@ -292,8 +197,8 @@ const CChatboxModal = ({ isOpen, onClose, presentationId, presentationGroupId })
                     <div ref={scrollToBottomRef} />
                 </div>
 
-                {/* Form control */}
                 <div>
+                    {/* Form control */}
                     <form
                         onSubmit={handlePostMessage}
                         className="flex items-center bg-blue-50 py-2 pr-2"
@@ -302,9 +207,9 @@ const CChatboxModal = ({ isOpen, onClose, presentationId, presentationGroupId })
                             type="text"
                             className="w-full border-none bg-transparent px-5 text-sm outline-none focus:outline-none focus:ring-transparent"
                             placeholder="Write a message"
-                            value={message}
+                            value={input}
                             required
-                            onChange={(e) => setMessage(e.target.value)}
+                            onChange={(e) => setInput(e.target.value)}
                         />
                         <button type="submit">
                             <PaperAirplaneIcon className="h-7 w-7 cursor-pointer text-blue-600" />
