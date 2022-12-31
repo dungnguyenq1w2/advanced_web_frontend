@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 
-import { memberSocket } from 'common/config/socket'
+import { memberSocket } from 'common/socket'
 
 import CLoading from 'common/components/CLoading'
 
@@ -72,7 +72,7 @@ export const options = {
 function MMemberMultipleChoice({
     slideId,
     member,
-    presentation_group_id,
+    presentationGroupId,
     data,
     isLoading,
     set,
@@ -130,14 +130,14 @@ function MMemberMultipleChoice({
     useEffect(() => {
         if (slideId) {
             memberSocket.open()
-            memberSocket.emit('subscribe', slideId)
+            memberSocket.emit('subscribe', slideId, presentationGroupId)
         }
         return () => {
             if (slideId) {
-                memberSocket.emit('unsubscribe', slideId)
+                memberSocket.emit('unsubscribe', slideId, presentationGroupId)
             }
         }
-    }, [slideId])
+    }, [slideId, presentationGroupId])
 
     // Wait socket
     useEffect(() => {
@@ -151,8 +151,6 @@ function MMemberMultipleChoice({
 
         // Realtime update new choices
         memberSocket.on('server-send-choices', (member, choices) => {
-            // Xử lí -> lưu state kết quả socket trả về
-            // rồi tạo useEffect với dependency là state đó
             setNewChoices({ member, choices })
         })
 
@@ -189,7 +187,7 @@ function MMemberMultipleChoice({
     }, [data, onSubmit])
 
     const handleChoiceSendSocket = (choices) => {
-        memberSocket.emit('client-send-choices', slideId, member, choices, presentation_group_id)
+        memberSocket.emit('client-send-choices', slideId, presentationGroupId, member, choices)
         onSubmit(true)
     }
     //#endregion

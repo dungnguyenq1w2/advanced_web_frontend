@@ -42,7 +42,12 @@ function MGroup() {
     const [presentationIdSelected, setPresentationIdSelected] = useState(null)
     const [presentationGroupIdSelected, setPresentationGroupIdSelected] = useState(null)
 
-    const { data: groupData, isLoading: isGroupLoading, set, refetch } = getById(groupId)
+    const {
+        data: groupData,
+        isLoading: isGroupLoading,
+        set,
+        refetch,
+    } = getById(groupId, false, { staleTime: 0 })
     const group = useMemo(() => groupData?.data ?? {}, [groupData])
 
     const { data: presentationsData, isLoading: isPresentationsLoading } =
@@ -176,7 +181,6 @@ function MGroup() {
                                         View results
                                     </Button>
                                     <Button
-                                        disabled={group.my_role === 3}
                                         size="md"
                                         onClick={() => {
                                             setIsQuestionModalOpen(true)
@@ -187,7 +191,6 @@ function MGroup() {
                                         Open question
                                     </Button>
                                     <Button
-                                        disabled={group.my_role === 3}
                                         size="md"
                                         onClick={() => {
                                             setIsChatboxModalOpen(true)

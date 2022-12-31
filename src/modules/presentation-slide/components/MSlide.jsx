@@ -92,6 +92,7 @@ function MSlide({
             </div>
             <div className="relative h-full">
                 {children}
+
                 {/* Button previous slide */}
                 <button
                     className={`absolute top-[45%] left-5 rounded-full bg-gray-500 bg-opacity-40 p-2 ${

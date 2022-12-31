@@ -181,7 +181,7 @@ function MMemberSlide() {
                             <MMemberMultipleChoice
                                 slideId={slidesId[slideIndex.cur].id}
                                 member={member}
-                                presentation_group_id={searchParams.get('id')}
+                                presentationGroupId={searchParams.get('id')}
                                 data={slide}
                                 isLoading={isSlideLoading}
                                 set={set}

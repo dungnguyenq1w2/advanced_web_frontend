@@ -102,6 +102,7 @@ function MHostSlide() {
                         <Suspense fallback={<CLoading />}>
                             <MHostMultipleChoice
                                 slideId={slidesId[slideIndex.cur].id}
+                                presentationGroupId={searchParams.get('id')}
                                 data={slide}
                                 isLoading={isSlideLoading}
                                 set={set}

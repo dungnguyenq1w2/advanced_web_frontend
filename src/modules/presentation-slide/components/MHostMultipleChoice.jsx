@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 
-import { hostSocket } from 'common/config/socket'
+import { hostSocket } from 'common/socket'
 
 import CLoading from 'common/components/CLoading'
 
@@ -70,7 +70,7 @@ export const options = {
     },
 }
 
-function MHostMultipleChoice({ slideId, data, isLoading, set }) {
+function MHostMultipleChoice({ slideId, presentationGroupId, data, isLoading, set }) {
     //#region Data
     const [isResultModalOpen, setIsResultModalOpen] = useState(false)
 
@@ -123,20 +123,20 @@ function MHostMultipleChoice({ slideId, data, isLoading, set }) {
     useEffect(() => {
         if (slideId) {
             hostSocket.open()
-            hostSocket.emit('subscribe', slideId)
+            hostSocket.emit('subscribe', slideId, presentationGroupId)
         }
         return () => {
             if (slideId) {
-                hostSocket.emit('unsubscribe', slideId)
+                hostSocket.emit('unsubscribe', slideId, presentationGroupId)
             }
         }
-    }, [slideId])
+    }, [slideId, presentationGroupId])
 
     // Wait socket
     useEffect(() => {
+        // Xử lí -> lưu state kết quả socket trả về
+        // rồi tạo useEffect với dependency là state đó
         hostSocket.on('server-send-choices', (member, choices) => {
-            // Xử lí -> lưu state kết quả socket trả về
-            // rồi tạo useEffect với dependency là state đó
             setNewChoices({ member, choices })
         })
         return () => {

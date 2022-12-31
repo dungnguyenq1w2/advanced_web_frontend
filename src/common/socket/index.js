@@ -14,6 +14,8 @@ const manager = new Manager(URL, {
 const socket = manager.socket('/') // main namespace
 const hostSocket = manager.socket('/host') // host namespace
 const memberSocket = manager.socket('/member') // member namespace
-export { socket, hostSocket, memberSocket }
+const messageSocket = manager.socket('/message') // message namespace
+const questionSocket = manager.socket('/question') // question namespace
+export { socket, hostSocket, memberSocket, messageSocket, questionSocket }
 
 // export default null

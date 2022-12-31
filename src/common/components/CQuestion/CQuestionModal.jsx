@@ -2,15 +2,17 @@ import 'modules/presentation-slide/assets/style/index.css'
 
 import { useEffect, useMemo, useRef, useState, useCallback } from 'react'
 
+import { questionSocket } from 'common/socket'
+
 import { getAll } from 'common/queries-fn/question.query'
-import { add as addQuestion } from 'apis/question.api'
-import { add as addAnswer } from 'apis/answer.api'
 
 import CModal from 'common/components/CModal'
 
 import { HandThumbUpIcon, XMarkIcon, PaperAirplaneIcon } from '@heroicons/react/24/outline'
 import { Avatar, Label, Radio } from 'flowbite-react'
 import moment from 'moment'
+import { v4 as uuidv4 } from 'uuid'
+
 import CLoading from '../CLoading'
 import CAnswer from './CAnswer'
 
@@ -29,6 +31,7 @@ const CQuestionModal = ({ isOpen, onClose, presentationId, presentationGroupId }
     const [input, setInput] = useState('')
     const [replyQuestion, setReplyQuestion] = useState(null)
     const [isOpenAnswers, setisOpenAnswers] = useState({})
+    const [newQuestion, setNewQuestion] = useState(null)
 
     const me = useMemo(() => JSON.parse(localStorage.getItem('user')), [])
 
@@ -49,9 +52,79 @@ const CQuestionModal = ({ isOpen, onClose, presentationId, presentationGroupId }
     useEffect(() => {
         inputRef.current.focus()
     }, [])
+    // Connect socket
+    useEffect(() => {
+        if (presentationId) {
+            questionSocket.open()
+            questionSocket.emit('subscribe', presentationId, presentationGroupId)
+        }
+        return () => {
+            if (presentationId) {
+                questionSocket.emit('unsubscribe', presentationId, presentationGroupId)
+            }
+        }
+    }, [presentationId, presentationGroupId])
+
+    // Wait socket
+    useEffect(() => {
+        // Xử lí -> lưu state kết quả socket trả về
+        // rồi tạo useEffect với dependency là state đó
+        // Realtime update new question
+        questionSocket.on('server-send-question', (question) => {
+            setNewQuestion(question)
+        })
+
+        return () => {
+            questionSocket.off('server-send-question')
+        }
+    }, []) // Khi sử dụng socket.on thì bắt buộc phải để empty dependency
+
+    //Xử lí cập nhật data
+    useEffect(() => {
+        if (newQuestion) {
+            const newData = [..._data.data]
+
+            if (newQuestion.isAnswer) {
+                const questionAnsweredIndex = newData.findIndex((e) => e.id === newQuestion.id)
+                if (newData[questionAnsweredIndex]?.answers) {
+                    // set query
+                    newData[questionAnsweredIndex].answers.push({
+                        id: uuidv4(),
+                        content: newQuestion.content,
+                        created_at: newQuestion.created_at,
+                        user: newQuestion.user,
+                    })
+                } else {
+                    newData[questionAnsweredIndex].answers = [
+                        {
+                            id: uuidv4(),
+                            content: newQuestion.content,
+                            created_at: newQuestion.created_at,
+                            user: newQuestion.user,
+                        },
+                    ]
+                }
+            } else {
+                newData.push({
+                    id: newQuestion.id,
+                    content: newQuestion.content,
+                    created_at: newQuestion.created_at,
+                    user: newQuestion.user,
+                })
+                setTimeout(
+                    () => scrollToBottomRef.current.scrollIntoView({ behavior: 'smooth' }),
+                    [50]
+                )
+            }
+
+            set({ ..._data, data: newData })
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [newQuestion])
 
     const handleFilterChange = (e) => {
         setFilter(e.target.value)
+        setTimeout(() => scrollToBottomRef.current.scrollIntoView({ behavior: 'smooth' }), [50])
     }
 
     const handleReplyQuestion = (question) => {
@@ -89,58 +162,37 @@ const CQuestionModal = ({ isOpen, onClose, presentationId, presentationGroupId }
         async (e) => {
             e.preventDefault()
 
-            const newData = [..._data.data]
+            const inputValue = input.trim()
 
+            if (!inputValue) {
+                setInput('')
+                return
+            }
+
+            const question = {
+                content: inputValue,
+                created_at: new Date(),
+                user: me,
+                isAnswer: false,
+            }
             // Case ANSWER the question
             if (replyQuestion) {
-                const questionAnsweredIndex = newData.findIndex((e) => e.id === replyQuestion.id)
-                // api post answer
-                const res = await addAnswer({
-                    content: input,
-                    question_id: newData[questionAnsweredIndex].id,
-                })
-                if (res?.data?.id) {
-                    // set query
-                    newData[questionAnsweredIndex].answers.push({
-                        id: new Date(),
-                        content: input,
-                        created_at: new Date(),
-                        user: me,
-                    })
-                    setisOpenAnswers((cur) => ({ ...cur, [replyQuestion.id]: true }))
-                    set({ ..._data, data: newData })
-                }
+                question.isAnswer = true
+                question.id = replyQuestion.id
+                setisOpenAnswers((cur) => ({ ...cur, [replyQuestion.id]: true }))
 
                 setReplyQuestion(null)
-                setInput('')
-            } else {
-                // Case QUESTION
-                // api post question
-                const res = await addQuestion({
-                    content: input,
-                    presentation_id: presentationId,
-                    presentation_group_id: presentationGroupId,
-                })
-                if (res?.data?.id) {
-                    // set query
-                    newData.push({
-                        id: new Date(),
-                        content: input,
-                        vote: 0,
-                        is_marked: false,
-                        created_at: new Date(),
-                        user: me,
-                    })
-                    setTimeout(
-                        () => scrollToBottomRef.current.scrollIntoView({ behavior: 'smooth' }),
-                        [50]
-                    )
-                }
-                set({ ..._data, data: newData })
-                setInput('')
             }
+
+            questionSocket.emit(
+                'client-send-question',
+                presentationId,
+                presentationGroupId,
+                question
+            )
+            setInput('')
         },
-        [_data, input, me, replyQuestion, set, presentationId, presentationGroupId]
+        [input, me, replyQuestion, presentationId, presentationGroupId]
     )
     //#endregion
 
@@ -206,11 +258,16 @@ const CQuestionModal = ({ isOpen, onClose, presentationId, presentationGroupId }
                                             className={`relative flex max-w-[350px] flex-col rounded-xl  py-2 px-4 ${
                                                 isMe ? 'bg-green-100' : 'bg-gray-100'
                                             }`}
+                                            title={moment(question.created_at)
+                                                .locale('vi')
+                                                .format('hh:mm DD/MM/YY')}
                                         >
                                             <span
                                                 className={`mb-1 flex text-xs font-semibold ${
                                                     isMe
-                                                        ? 'justify-end text-blue-600'
+                                                        ? `justify-end text-blue-600 ${
+                                                              question.vote > 0 ? 'pl-10' : ''
+                                                          }`
                                                         : 'text-sky-600'
                                                 }`}
                                             >
@@ -231,7 +288,7 @@ const CQuestionModal = ({ isOpen, onClose, presentationId, presentationGroupId }
                                             >
                                                 <div
                                                     className={`${
-                                                        isMe ? 'ml-3' : 'mr-3'
+                                                        isMe ? 'ml-3 flex-row-reverse' : 'mr-3'
                                                     } flex gap-1 `}
                                                 >
                                                     <span
@@ -269,27 +326,27 @@ const CQuestionModal = ({ isOpen, onClose, presentationId, presentationGroupId }
                                                                     ? 'Upvoted'
                                                                     : 'Upvote'}
                                                             </span>
-                                                            <span className="mx-1 text-xs text-blue-600">
-                                                                |
-                                                            </span>
-                                                            <span
-                                                                className={`text-xs ${
-                                                                    question.is_marked
-                                                                        ? 'text-gray-400'
-                                                                        : 'cursor-pointer text-blue-600 hover:underline hover:underline-offset-1'
-                                                                }`}
-                                                                onClick={() =>
-                                                                    !question?.is_marked
-                                                                        ? handleMark(question.id)
-                                                                        : null
-                                                                }
-                                                            >
-                                                                {question.is_marked
-                                                                    ? 'Marked'
-                                                                    : 'Mark'}
-                                                            </span>
                                                         </>
                                                     )}
+                                                    <span className="mx-1 text-xs text-blue-600">
+                                                        |
+                                                    </span>
+                                                    <span
+                                                        className={`text-xs ${
+                                                            question.is_marked
+                                                                ? 'text-gray-400'
+                                                                : `cursor-pointer text-blue-600 hover:underline hover:underline-offset-1 ${
+                                                                      isMe ? 'hidden' : 'visible'
+                                                                  }`
+                                                        }`}
+                                                        onClick={() =>
+                                                            !question?.is_marked
+                                                                ? handleMark(question.id)
+                                                                : null
+                                                        }
+                                                    >
+                                                        {question.is_marked ? 'Marked' : 'Mark'}
+                                                    </span>
                                                 </div>
 
                                                 <span
@@ -302,54 +359,51 @@ const CQuestionModal = ({ isOpen, onClose, presentationId, presentationGroupId }
                                             </div>
 
                                             {/* Vote number */}
-                                            <span
-                                                className={`${
-                                                    question.vote > 0
-                                                        ? `visible absolute top-1 flex items-center rounded-full bg-blue-200 p-1 text-xs font-medium text-[#0c1ae0] ${
-                                                              isMe ? 'left-1' : 'right-1'
-                                                          }`
-                                                        : 'hidden'
-                                                } `}
-                                            >
-                                                <HandThumbUpIcon className="mr-1 h-4 w-4" />
-                                                {question.vote}
-                                            </span>
+                                            {question.vote > 0 && (
+                                                <span
+                                                    className={`absolute top-1 flex items-center rounded-full bg-blue-200 p-1 text-xs font-medium text-[#0c1ae0] ${
+                                                        isMe ? 'left-1' : 'right-1'
+                                                    }`}
+                                                >
+                                                    <HandThumbUpIcon className="mr-1 h-4 w-4" />
+                                                    {question.vote}
+                                                </span>
+                                            )}
 
                                             {/* Answers of this question */}
-                                            <div
-                                                className={`${
-                                                    question?.answers?.length > 0
-                                                        ? 'visible mt-2 flex justify-center border-t pt-2'
-                                                        : 'hidden'
-                                                }`}
-                                            >
-                                                <span
-                                                    className="cursor-pointer text-xs font-medium text-[#0c1ae0]"
-                                                    onClick={handleOpenAnswers(question.id)}
+                                            {question?.answers?.length > 0 && (
+                                                <div
+                                                    className={`mt-2 flex justify-center border-t pt-2`}
                                                 >
-                                                    {question?.answers?.length} replies
-                                                </span>
-                                            </div>
-
-                                            <div
-                                                className={`${
-                                                    isOpenAnswers[question.id]
-                                                        ? `visible mt-2 rounded-lg ${
-                                                              isMe
-                                                                  ? 'bg-green-50 bg-opacity-80'
-                                                                  : 'bg-slate-50'
-                                                          }`
-                                                        : 'hidden'
-                                                }`}
-                                            >
-                                                {question?.answers?.map((answer) => (
-                                                    <CAnswer
-                                                        key={answer.id}
-                                                        answer={answer}
-                                                        me={me}
-                                                    />
-                                                ))}
-                                            </div>
+                                                    <span
+                                                        className="cursor-pointer text-xs font-medium text-[#0c1ae0]"
+                                                        onClick={handleOpenAnswers(question.id)}
+                                                    >
+                                                        {question?.answers?.length}{' '}
+                                                        {question?.answers?.length > 1
+                                                            ? 'replies'
+                                                            : 'reply'}
+                                                    </span>
+                                                </div>
+                                            )}
+                                            {isOpenAnswers[question.id] && (
+                                                <div
+                                                    className={`mt-2 rounded-lg ${
+                                                        isMe
+                                                            ? 'bg-green-50 bg-opacity-80'
+                                                            : 'bg-slate-50'
+                                                    }
+                                                `}
+                                                >
+                                                    {question?.answers?.map((answer) => (
+                                                        <CAnswer
+                                                            key={answer.id}
+                                                            answer={answer}
+                                                            me={me}
+                                                        />
+                                                    ))}
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                 )

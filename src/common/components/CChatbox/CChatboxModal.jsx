@@ -2,16 +2,18 @@ import 'modules/presentation-slide/assets/style/index.css'
 
 import { useEffect, useMemo, useRef, useState } from 'react'
 
+import { messageSocket } from 'common/socket'
+
 import { getAll } from 'common/queries-fn/messge.query'
-import { add as addMessage } from 'apis/message.api'
 
 import CModal from 'common/components/CModal'
 
 import { PaperAirplaneIcon } from '@heroicons/react/24/outline'
 import { Avatar } from 'flowbite-react'
 import moment from 'moment'
-import CLoading from '../CLoading'
 import { v4 as uuidv4 } from 'uuid'
+
+import CLoading from '../CLoading'
 
 const AlwaysScrollToBottom = () => {
     const elementRef = useRef()
@@ -23,6 +25,7 @@ const CChatboxModal = ({ isOpen, onClose, presentationId, presentationGroupId })
     //#region data
     const scrollToBottomRef = useRef(null)
     const [input, setInput] = useState('')
+    const [newMessage, setNewMessage] = useState(null)
 
     const me = useMemo(() => JSON.parse(localStorage.getItem('user')), [])
 
@@ -55,29 +58,64 @@ const CChatboxModal = ({ isOpen, onClose, presentationId, presentationGroupId })
     //#endregion
 
     //#region event
-    const handlePostMessage = async (e) => {
-        e.preventDefault()
+    // Connect socket
+    useEffect(() => {
+        if (presentationId) {
+            messageSocket.open()
+            messageSocket.emit('subscribe', presentationId, presentationGroupId)
+        }
+        return () => {
+            if (presentationId) {
+                messageSocket.emit('unsubscribe', presentationId, presentationGroupId)
+            }
+        }
+    }, [presentationId, presentationGroupId])
 
-        const newData = [..._data.data]
-        // api post message
-        const res = await addMessage({
-            content: input,
-            presentation_id: presentationId,
-            presentation_group_id: presentationGroupId,
+    // Wait socket
+    useEffect(() => {
+        // Xử lí -> lưu state kết quả socket trả về
+        // rồi tạo useEffect với dependency là state đó
+        // Realtime update new message
+        messageSocket.on('server-send-message', (message) => {
+            setNewMessage(message)
         })
-        console.log('🚀 ~ res', res)
-        if (res?.data?.id) {
-            // set query
+
+        return () => {
+            messageSocket.off('server-send-message')
+        }
+    }, []) // Khi sử dụng socket.on thì bắt buộc phải để empty dependency
+
+    //Xử lí cập nhật data
+    useEffect(() => {
+        if (newMessage) {
+            const newData = [..._data.data]
+
             newData.push({
                 id: uuidv4(),
-                content: input,
-                created_at: new Date(),
-                user: me,
+                content: newMessage.content,
+                created_at: newMessage.created_at,
+                user: newMessage.user,
             })
 
             set({ ..._data, data: newData })
             setTimeout(() => scrollToBottomRef.current.scrollIntoView({ behavior: 'smooth' }), [50])
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [newMessage])
+
+    const handlePostMessage = async (e) => {
+        e.preventDefault()
+
+        const inputValue = input.trim()
+
+        if (!inputValue) {
+            setInput('')
+            return
+        }
+        const message = { content: inputValue, created_at: new Date(), user: me }
+
+        messageSocket.emit('client-send-message', presentationId, presentationGroupId, message)
+
         setInput('')
     }
 
@@ -111,6 +149,10 @@ const CChatboxModal = ({ isOpen, onClose, presentationId, presentationGroupId })
                                                 className={`flex max-w-[350px] flex-col rounded-lg  py-2 px-4 ${
                                                     isMe ? 'bg-green-100' : 'bg-gray-100'
                                                 }`}
+                                                title={moment(messages[0].created_at)
+                                                    // .utc()
+                                                    .locale('vi')
+                                                    .format('hh:mm DD/MM/YY')}
                                             >
                                                 <span
                                                     className={`mb-1 flex text-xs font-semibold ${
@@ -140,7 +182,11 @@ const CChatboxModal = ({ isOpen, onClose, presentationId, presentationGroupId })
                                             </div>
                                         ) : (
                                             // Group messages
-                                            <div className={`flex flex-col items-end rounded-lg`}>
+                                            <div
+                                                className={`flex flex-col ${
+                                                    isMe ? 'items-end' : 'items-start'
+                                                } rounded-lg`}
+                                            >
                                                 {messages.map((message, index) => (
                                                     <div
                                                         key={message.id}
@@ -153,6 +199,9 @@ const CChatboxModal = ({ isOpen, onClose, presentationId, presentationGroupId })
                                                                 ? 'rounded-l-lg bg-green-100'
                                                                 : 'rounded-r-lg bg-gray-100'
                                                         }`}
+                                                        title={moment(message.created_at)
+                                                            .locale('vi')
+                                                            .format('hh:mm DD/MM/YY')}
                                                     >
                                                         {index === 0 && (
                                                             <span
