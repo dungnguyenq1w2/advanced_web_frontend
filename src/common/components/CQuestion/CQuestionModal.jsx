@@ -33,7 +33,15 @@ const CQuestionModal = ({ isOpen, onClose, presentationId, presentationGroupId }
     const [isOpenAnswers, setisOpenAnswers] = useState({})
     const [newQuestion, setNewQuestion] = useState(null)
 
-    const me = useMemo(() => JSON.parse(localStorage.getItem('user')), [])
+    const me = useMemo(() => {
+        const user = JSON.parse(localStorage.getItem('user'))
+        if (user) {
+            delete user.accessToken
+            delete user.refreshTokenToken
+            delete user.email
+            return user
+        } else return null
+    }, [])
 
     const {
         data: _data,
@@ -179,6 +187,7 @@ const CQuestionModal = ({ isOpen, onClose, presentationId, presentationGroupId }
             if (replyQuestion) {
                 question.isAnswer = true
                 question.id = replyQuestion.id
+                question.userAnsweredId = replyQuestion.user.id
                 setisOpenAnswers((cur) => ({ ...cur, [replyQuestion.id]: true }))
 
                 setReplyQuestion(null)

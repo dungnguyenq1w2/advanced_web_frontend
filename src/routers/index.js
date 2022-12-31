@@ -11,11 +11,12 @@ import { MemberSlide, HostSlide } from 'modules/presentation-slide/pages'
 import { EditProfile, Profile } from 'modules/user/pages'
 import C404 from 'common/components/layouts/C404'
 import { PresentationEdit, PresentationList, PresentationCreate } from 'modules/presentation/pages'
+import CMainLayout from 'common/components/layouts/CMainLayout'
 
 const router = createBrowserRouter([
     {
         path: '/',
-        element: <App />,
+        element: <CMainLayout />,
         children: [
             {
                 index: true,

@@ -27,7 +27,15 @@ const CChatboxModal = ({ isOpen, onClose, presentationId, presentationGroupId })
     const [input, setInput] = useState('')
     const [newMessage, setNewMessage] = useState(null)
 
-    const me = useMemo(() => JSON.parse(localStorage.getItem('user')), [])
+    const me = useMemo(() => {
+        const user = JSON.parse(localStorage.getItem('user'))
+        if (user) {
+            delete user.accessToken
+            delete user.refreshTokenToken
+            delete user.email
+            return user
+        } else return null
+    }, [])
 
     const {
         data: _data,

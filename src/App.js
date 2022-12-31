@@ -1,23 +1,22 @@
-import { Suspense } from 'react'
-import { Outlet } from 'react-router-dom'
+import { useEffect } from 'react'
 
-import CFooter from 'common/components/CFooter'
-import CHeader from 'common/components/CHeader'
-import CLoading from 'common/components/CLoading'
+import { notificationSocket } from 'common/socket'
 
-function App() {
-    return (
-        <>
-            <CHeader />
-            <div className="min-h-[85vh] bg-slate-100">
-                <Suspense fallback={<CLoading />}>
-                    <Outlet />
-                </Suspense>
-            </div>
+function App({ children }) {
+    const me = JSON.parse(localStorage.getItem('user'))
 
-            <CFooter />
-        </>
-    )
+    useEffect(() => {
+        if (me) {
+            notificationSocket.open()
+            notificationSocket.emit('subscribe', me.id)
+            window.addEventListener('beforeunload', (ev) => {
+                ev.preventDefault()
+                notificationSocket.emit('unsubscribe', me.id)
+            })
+        }
+    }, [me])
+
+    return <>{children}</>
 }
 
 export default App

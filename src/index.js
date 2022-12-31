@@ -10,6 +10,7 @@ import { RouterProvider } from 'react-router-dom'
 
 import router from './routers'
 import client from 'utils/react-query'
+import App from 'App'
 // import { GoogleOAuthProvider } from '@react-oauth/google'
 
 const root = ReactDOM.createRoot(document.getElementById('root'))
@@ -24,7 +25,9 @@ const root = ReactDOM.createRoot(document.getElementById('root'))
 // )
 root.render(
     <QueryClientProvider client={client}>
-        <RouterProvider router={router} />
+        <App>
+            <RouterProvider router={router} />
+        </App>
     </QueryClientProvider>
 )
 // If you want to start measuring performance in your app, pass a function

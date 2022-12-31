@@ -59,7 +59,7 @@ function MSlide({
     //#endregion
     return (
         <div
-            className="relative mx-20 h-full min-w-[1700px] animate-[show-slow_0.25s_ease-in] bg-cover bg-center bg-no-repeat text-white before:absolute before:top-0 before:h-screen before:w-[91vw] before:bg-black before:bg-opacity-40"
+            className="relative mx-20 h-full min-w-[1700px] animate-[show-slow_0.25s_ease-in] bg-cover bg-center bg-no-repeat text-white before:absolute before:top-0 before:h-screen before:w-full before:bg-black before:bg-opacity-40"
             style={{
                 backgroundImage:
                     type === 1

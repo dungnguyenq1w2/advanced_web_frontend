@@ -90,3 +90,11 @@ export const ASNWERS = {
     ADD: '/answers',
 }
 //#endregion
+
+//#region NOTIFICATIONS
+export const NOTIFICATIONS = {
+    GET_ALL: '/notifications',
+    ADD: '/notifications',
+    PUT: '/notifications',
+}
+//#endregion
