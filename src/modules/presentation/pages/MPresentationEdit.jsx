@@ -131,37 +131,55 @@ function MPresentationEdit() {
 
     const handleSaveSlide = async () => {
         try {
-            const isChoicesChange = slideChoices.findIndex((choice) => choice?.action) !== -1
+            const type = currentSlide?.type
             const isSlideChange = typeof currentSlide?.change !== 'undefined'
 
             if (isSlideChange) {
-                await updateSlide(slideId, { question: currentSlide?.question })
+                const changeParams =
+                    type === 3
+                        ? { question: currentSlide?.question }
+                        : type === 2
+                        ? {
+                              heading: currentSlide?.heading,
+                              paragraph: currentSlide?.paragraph,
+                          }
+                        : {
+                              heading: currentSlide?.heading,
+                              subheading: currentSlide?.subheading,
+                          }
+
+                await updateSlide(slideId, changeParams)
                 refetchSlides()
                 refetchSlideData()
             }
 
-            if (isChoicesChange) {
-                for (const choice of slideChoices) {
-                    if (choice?.action) {
-                        const { action, id, ...choiceData } = choice
-                        switch (choice?.action) {
-                            case 'ADD':
-                                await addChoice(choiceData)
-                                break
-                            case 'UPDATE':
-                                await updateChoice(id, choiceData)
-                                break
-                            case 'DELETE':
-                                await removeChoice(id)
-                                break
-                            default:
-                                break
+            // if Multiple choice slide: save choices
+            if (type === 3) {
+                const isChoicesChange = slideChoices.findIndex((choice) => choice?.action) !== -1
+
+                if (isChoicesChange) {
+                    for (const choice of slideChoices) {
+                        if (choice?.action) {
+                            const { action, id, ...choiceData } = choice
+                            switch (choice?.action) {
+                                case 'ADD':
+                                    await addChoice(choiceData)
+                                    break
+                                case 'UPDATE':
+                                    await updateChoice(id, choiceData)
+                                    break
+                                case 'DELETE':
+                                    await removeChoice(id)
+                                    break
+                                default:
+                                    break
+                            }
                         }
                     }
-                }
 
-                refetchChoices()
-                refetchSlideData()
+                    refetchChoices()
+                    refetchSlideData()
+                }
             }
         } catch (error) {
             console.log('Error:', error)
@@ -196,19 +214,62 @@ function MPresentationEdit() {
                                                 <PlayIcon className="h-12 w-12 cursor-pointer text-cyan-600" />
                                             )}
                                         </div>
-                                        <div className="m-2 flex h-40 w-60 items-center justify-center rounded-sm bg-white p-2 text-center">
-                                            <svg
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                viewBox="0 0 24 24"
-                                                fill="currentColor"
-                                                className="h-16 w-16"
-                                            >
-                                                <path d="M18.375 2.25c-1.035 0-1.875.84-1.875 1.875v15.75c0 1.035.84 1.875 1.875 1.875h.75c1.035 0 1.875-.84 1.875-1.875V4.125c0-1.036-.84-1.875-1.875-1.875h-.75zM9.75 8.625c0-1.036.84-1.875 1.875-1.875h.75c1.036 0 1.875.84 1.875 1.875v11.25c0 1.035-.84 1.875-1.875 1.875h-.75a1.875 1.875 0 01-1.875-1.875V8.625zM3 13.125c0-1.036.84-1.875 1.875-1.875h.75c1.036 0 1.875.84 1.875 1.875v6.75c0 1.035-.84 1.875-1.875 1.875h-.75A1.875 1.875 0 013 19.875v-6.75z" />
-                                            </svg>
+                                        <div className="m-2 flex h-40 w-60 flex-col items-center justify-center rounded-sm bg-white p-2 text-center">
+                                            {slide?.type === 3 ? (
+                                                <>
+                                                    <svg
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        viewBox="0 0 24 24"
+                                                        fill="currentColor"
+                                                        className="h-16 w-16"
+                                                    >
+                                                        <path d="M18.375 2.25c-1.035 0-1.875.84-1.875 1.875v15.75c0 1.035.84 1.875 1.875 1.875h.75c1.035 0 1.875-.84 1.875-1.875V4.125c0-1.036-.84-1.875-1.875-1.875h-.75zM9.75 8.625c0-1.036.84-1.875 1.875-1.875h.75c1.036 0 1.875.84 1.875 1.875v11.25c0 1.035-.84 1.875-1.875 1.875h-.75a1.875 1.875 0 01-1.875-1.875V8.625zM3 13.125c0-1.036.84-1.875 1.875-1.875h.75c1.036 0 1.875.84 1.875 1.875v6.75c0 1.035-.84 1.875-1.875 1.875h-.75A1.875 1.875 0 013 19.875v-6.75z" />
+                                                    </svg>
 
-                                            <span className="text-lg font-medium">
-                                                Multiple Choice
-                                            </span>
+                                                    <span className="text-lg font-medium">
+                                                        Multiple choice
+                                                    </span>
+                                                </>
+                                            ) : slide?.type === 2 ? (
+                                                <>
+                                                    <svg
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        viewBox="0 0 24 24"
+                                                        fill="currentColor"
+                                                        className="h-16 w-16"
+                                                    >
+                                                        <path
+                                                            fillRule="evenodd"
+                                                            d="M5.625 1.5c-1.036 0-1.875.84-1.875 1.875v17.25c0 1.035.84 1.875 1.875 1.875h12.75c1.035 0 1.875-.84 1.875-1.875V12.75A3.75 3.75 0 0016.5 9h-1.875a1.875 1.875 0 01-1.875-1.875V5.25A3.75 3.75 0 009 1.5H5.625zM7.5 15a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5A.75.75 0 017.5 15zm.75 2.25a.75.75 0 000 1.5H12a.75.75 0 000-1.5H8.25z"
+                                                            clipRule="evenodd"
+                                                        />
+                                                        <path d="M12.971 1.816A5.23 5.23 0 0114.25 5.25v1.875c0 .207.168.375.375.375H16.5a5.23 5.23 0 013.434 1.279 9.768 9.768 0 00-6.963-6.963z" />
+                                                    </svg>
+
+                                                    <span className="text-lg font-medium">
+                                                        Paragraph
+                                                    </span>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <svg
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        viewBox="0 0 24 24"
+                                                        fill="currentColor"
+                                                        className="h-16 w-16"
+                                                    >
+                                                        <path
+                                                            fillRule="evenodd"
+                                                            d="M3 9a.75.75 0 01.75-.75h16.5a.75.75 0 010 1.5H3.75A.75.75 0 013 9zm0 6.75a.75.75 0 01.75-.75h16.5a.75.75 0 010 1.5H3.75a.75.75 0 01-.75-.75z"
+                                                            clipRule="evenodd"
+                                                        />
+                                                    </svg>
+
+                                                    <span className="text-lg font-medium">
+                                                        Heading
+                                                    </span>
+                                                </>
+                                            )}
                                         </div>
                                     </div>
                                 </Link>
@@ -225,78 +286,169 @@ function MPresentationEdit() {
 
                     {/* Phần Description */}
                     <div className="flex w-[350px] flex-none flex-col">
-                        <div className="mx-3 flex-none py-2">
-                            <label
-                                htmlFor="question"
-                                className="mb-2 block text-lg font-bold text-gray-900 dark:text-white"
-                            >
-                                Your question:
-                            </label>
-                            <input
-                                type="text"
-                                id="question"
-                                className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
-                                placeholder="Your question"
-                                autoFocus
-                                value={currentSlide?.question ?? 'Question'}
-                                onChange={(e) => {
-                                    setCurrentSlide({
-                                        ...currentSlide,
-                                        question: e.target.value,
-                                        change: true,
-                                    })
-                                }}
-                                required
-                            />
-                        </div>
-                        <b className="mx-3 mt-1 mb-2 flex-none text-lg">Options: </b>
-                        {/* choices.map((choice, index) => { */}
-                        <div className="custom-scrollbar flex-1 overflow-auto">
-                            {isChoicesDataLoading && slideChoices?.length === 0 ? (
-                                <></>
-                            ) : (
-                                slideChoices.map((choice, index) => {
-                                    return choice?.action && choice?.action === 'DELETE' ? (
-                                        <div key={index}></div>
+                        {currentSlide?.type === 3 ? (
+                            <>
+                                <div className="mx-3 flex-none py-2">
+                                    <label
+                                        htmlFor="question"
+                                        className="mb-2 block text-lg font-bold text-gray-900 dark:text-white"
+                                    >
+                                        Your question:
+                                    </label>
+                                    <input
+                                        type="text"
+                                        id="question"
+                                        className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+                                        placeholder="Your question"
+                                        autoFocus
+                                        value={currentSlide?.question ?? 'Question'}
+                                        onChange={(e) => {
+                                            setCurrentSlide({
+                                                ...currentSlide,
+                                                question: e.target.value,
+                                                change: true,
+                                            })
+                                        }}
+                                        required
+                                    />
+                                </div>
+                                <b className="mx-3 mb-2 flex-none text-lg">Options: </b>
+                                {/* choices.map((choice, index) => { */}
+                                <div className="custom-scrollbar flex-1 overflow-auto">
+                                    {isChoicesDataLoading && slideChoices?.length === 0 ? (
+                                        <></>
                                     ) : (
-                                        <div key={index} className="flex flex-none flex-row">
-                                            <div className="ml-3 mb-3 flex-1">
-                                                <input
-                                                    type="text"
-                                                    id={`option${index + 1}`}
-                                                    className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
-                                                    placeholder="Input option"
-                                                    value={choice?.content ?? `Option`}
-                                                    onChange={(e) => {
-                                                        const newChoice = {
-                                                            ...choice,
-                                                            content: e.target.value,
-                                                            action: choice?.id ? 'UPDATE' : 'ADD',
-                                                        }
-                                                        const cloneChoices = [...slideChoices]
+                                        slideChoices.map((choice, index) => {
+                                            return choice?.action && choice?.action === 'DELETE' ? (
+                                                <div key={index}></div>
+                                            ) : (
+                                                <div
+                                                    key={index}
+                                                    className="flex flex-none flex-row"
+                                                >
+                                                    <div className="ml-3 mb-3 flex-1">
+                                                        <input
+                                                            type="text"
+                                                            id={`option${index + 1}`}
+                                                            className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+                                                            placeholder="Input option"
+                                                            value={choice?.content ?? `Option`}
+                                                            onChange={(e) => {
+                                                                const newChoice = {
+                                                                    ...choice,
+                                                                    content: e.target.value,
+                                                                    action: choice?.id
+                                                                        ? 'UPDATE'
+                                                                        : 'ADD',
+                                                                }
+                                                                const cloneChoices = [
+                                                                    ...slideChoices,
+                                                                ]
 
-                                                        cloneChoices[index] = newChoice
-                                                        setSlideChoices(cloneChoices)
-                                                    }}
-                                                    required
-                                                />
-                                            </div>
-                                            <XMarkIcon
-                                                className="mr-3 h-8 w-8 cursor-pointer text-[#F20000]"
-                                                onClick={handleRemoveChoice(index)}
-                                            />
-                                        </div>
-                                    )
-                                })
-                            )}
-                        </div>
+                                                                cloneChoices[index] = newChoice
+                                                                setSlideChoices(cloneChoices)
+                                                            }}
+                                                            required
+                                                        />
+                                                    </div>
+                                                    <XMarkIcon
+                                                        className="mr-3 h-8 w-8 cursor-pointer text-[#F20000]"
+                                                        onClick={handleRemoveChoice(index)}
+                                                    />
+                                                </div>
+                                            )
+                                        })
+                                    )}
+                                </div>
 
-                        <button
-                            className="bg-white-700 mx-24 mt-3 w-full rounded-lg border border-indigo-600 px-5 py-2.5 text-center text-sm font-medium text-indigo-600 hover:bg-blue-100 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 sm:w-auto"
-                            onClick={handleAddChoice}
-                        >
-                            + Add option
-                        </button>
+                                <button
+                                    className="bg-white-700 mx-24 mt-3 w-full rounded-lg border border-indigo-600 px-5 py-2.5 text-center text-sm font-medium text-indigo-600 hover:bg-blue-100 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 sm:w-auto"
+                                    onClick={handleAddChoice}
+                                >
+                                    + Add option
+                                </button>
+                            </>
+                        ) : (
+                            <>
+                                <div className="mx-3 flex-none py-2">
+                                    <label
+                                        htmlFor="heading"
+                                        className="mb-2 block text-lg font-bold text-gray-900"
+                                    >
+                                        Heading:
+                                    </label>
+                                    <input
+                                        type="text"
+                                        id="heading"
+                                        className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
+                                        placeholder="Your heading"
+                                        autoFocus
+                                        value={currentSlide?.heading ?? 'Heading'}
+                                        onChange={(e) => {
+                                            setCurrentSlide({
+                                                ...currentSlide,
+                                                heading: e.target.value,
+                                                change: true,
+                                            })
+                                        }}
+                                        required
+                                    />
+                                </div>
+                                {/* <b className="mx-3 mt-1 mb-2 flex-none text-lg">Paragraph: </b> */}
+
+                                {currentSlide?.type === 2 ? (
+                                    <div className="mx-3 flex-1">
+                                        <label
+                                            htmlFor="paragraph"
+                                            className="mb-2 text-lg font-bold text-gray-900"
+                                        >
+                                            Paragraph:
+                                        </label>
+                                        <input
+                                            type="text"
+                                            id="paragraph"
+                                            className="mt-2 w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
+                                            placeholder="Your paragraph"
+                                            autoFocus
+                                            value={currentSlide?.paragraph ?? 'Heading'}
+                                            onChange={(e) => {
+                                                setCurrentSlide({
+                                                    ...currentSlide,
+                                                    paragraph: e.target.value,
+                                                    change: true,
+                                                })
+                                            }}
+                                            required
+                                        />
+                                    </div>
+                                ) : (
+                                    <div className="mx-3 flex-1">
+                                        <label
+                                            htmlFor="subheading"
+                                            className="mb-2 text-lg font-bold text-gray-900"
+                                        >
+                                            Subheading:
+                                        </label>
+                                        <input
+                                            type="text"
+                                            id="subheading"
+                                            className="mt-2 w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
+                                            placeholder="Your subheading"
+                                            autoFocus
+                                            value={currentSlide?.subheading ?? 'Heading'}
+                                            onChange={(e) => {
+                                                setCurrentSlide({
+                                                    ...currentSlide,
+                                                    subheading: e.target.value,
+                                                    change: true,
+                                                })
+                                            }}
+                                            required
+                                        />
+                                    </div>
+                                )}
+                            </>
+                        )}
 
                         <button
                             className="mx-2 mt-6 w-full rounded-lg bg-blue-700 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 sm:w-auto"

@@ -20,7 +20,7 @@ function MPresentationCreate() {
     //#region data
     const [isLoading, setIsLoading] = useState(false)
     const [PresentationId, setPresentationId] = useState(0)
-    const [sildeId, setSildeId] = useState(0)
+    const [slideId, setSlideId] = useState(0)
     const navigate = useNavigate()
     const {
         register,
@@ -43,9 +43,10 @@ function MPresentationCreate() {
             const res = await addSlide({
                 question: 'Question',
                 presentation_id: presentationId,
+                type: 3,
             })
 
-            if (res?.data) setSildeId(res?.data?.id)
+            if (res?.data) setSlideId(res?.data?.id)
         } catch (error) {
             console.log('Error', error)
         }
@@ -57,8 +58,8 @@ function MPresentationCreate() {
         const res = await postAddPresentation(data)
 
         if (res?.data) {
-            await handleAddSlide(res?.data?.id)
             setPresentationId(res?.data?.id)
+            await handleAddSlide(res?.data?.id)
             setTimeout(() => {
                 setIsLoading(false)
             }, 600)
@@ -70,7 +71,7 @@ function MPresentationCreate() {
     }
 
     const closeModal = () => {
-        navigate(`/presentation/${PresentationId}/${sildeId}/edit`)
+        navigate(`/presentation/${PresentationId}/${slideId}/edit`)
     }
     //#endregion
 

@@ -10,6 +10,7 @@ import { useNavigate } from 'react-router-dom'
 import { XMarkIcon } from '@heroicons/react/20/solid'
 import _debounce from 'lodash/debounce'
 import CLoading from 'common/components/CLoading'
+import { Dropdown } from 'flowbite-react'
 
 function MHeader({ presentationId, refetchSlides }) {
     //#region data
@@ -17,6 +18,7 @@ function MHeader({ presentationId, refetchSlides }) {
     const [presentation, setPresentation] = useState({})
     const [isLoadingUpdateName, setIsLoadingUpdateName] = useState('none')
     const [isAddingSlide, setIsAddingSlide] = useState(false)
+    const [addSlideType, setAddSlideType] = useState(0)
     const debounceFn = useCallback(_debounce(handleUpdatePresentation, 1000), [presentation?.name])
     //#endregion
 
@@ -58,13 +60,41 @@ function MHeader({ presentationId, refetchSlides }) {
         }
     }
 
-    const handleAddSlide = async () => {
+    const handleAddSlide = async (type) => {
         try {
             setIsAddingSlide(true)
-            const res = await addSlide({
-                question: 'Question',
-                presentation_id: presentationId,
-            })
+
+            let slideData
+            // Multiple choice
+            if (type === 3) {
+                slideData = {
+                    question: 'Question',
+                    presentation_id: presentationId,
+                    type: type,
+                }
+            }
+            // Paragraph
+            else if (type === 2) {
+                slideData = {
+                    heading: 'Heading',
+                    paragraph: 'Paragraph',
+                    presentation_id: presentationId,
+                    type: type,
+                }
+            }
+            // Heading
+            else if (type === 1) {
+                slideData = {
+                    heading: 'Heading',
+                    subheading: 'Subheading',
+                    presentation_id: presentationId,
+                    type: type,
+                }
+            } else {
+                return
+            }
+
+            const res = await addSlide(slideData)
 
             if (res?.data) {
                 await refetchSlides()
@@ -126,12 +156,11 @@ function MHeader({ presentationId, refetchSlides }) {
                         </div>
                     )}
                 </div>
-                <button
-                    className="mr-22 w-full rounded-lg bg-blue-700 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 sm:w-auto"
-                    onClick={handleAddSlide}
-                >
-                    + Add Slide
-                </button>
+                <Dropdown label="+ New slide" dismissOnClick={true} arrowIcon={false}>
+                    <Dropdown.Item onClick={() => handleAddSlide(3)}>Multiple choice</Dropdown.Item>
+                    <Dropdown.Item onClick={() => handleAddSlide(2)}>Paragraph</Dropdown.Item>
+                    <Dropdown.Item onClick={() => handleAddSlide(1)}>Heading</Dropdown.Item>
+                </Dropdown>
             </div>
 
             <div className="flex w-96 flex-1 shrink flex-row justify-center">
