@@ -21,6 +21,7 @@ function MLogin() {
     const [loginError, setLoginError] = useState()
     const [isLoading, setIsLoading] = useState(false)
     const navigate = useNavigate()
+    const flag = (localStorage.getItem('flagResetPasswoord') === 'true')
 
     const {
         register,
@@ -40,7 +41,13 @@ function MLogin() {
             if (result?.data) {
                 setTimeout(() => {
                     setIsLoading(false)
-                    navigate(-1)
+                    if (flag) {
+                        localStorage.removeItem('flagResetPasswoord')
+                        navigate('/')
+                    }else{
+                        navigate(-1)
+                    }
+                    
                 }, 600)
             } else {
                 setLoginError(result.error.message)
@@ -78,7 +85,12 @@ function MLogin() {
         if (res?.data) {
             setTimeout(() => {
                 setIsLoading(false)
-                navigate(-1)
+                if (flag) {
+                    localStorage.removeItem('flagResetPasswoord')
+                    navigate('/')
+                } else {
+                    navigate(-1)
+                }
             }, 600)
         } else {
             setLoginError(res.error.message)
@@ -161,7 +173,10 @@ function MLogin() {
                 <Button type="submit">Submit</Button>
 
                 <div className="mx-auto text-sm text-gray-500">
-                    <span className="cursor-pointer hover:text-gray-800">Forget password</span> /{' '}
+                    <Link to="/auth/identify">
+                        <span className="cursor-pointer hover:text-gray-800">Forget password</span>
+                    </Link>
+                    /
                     <Link to="/auth/register">
                         <span className="hover:text-gray-800">Register</span>
                     </Link>

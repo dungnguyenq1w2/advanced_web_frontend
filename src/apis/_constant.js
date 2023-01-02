@@ -6,6 +6,8 @@ export const AUTH = {
     VERIFY: '/auth/verify',
     LOGOUT: '/auth/logout',
     GOOGLE_LOGIN: '/auth/google-login',
+    IDENTIFY: '/auth/identify',
+    RESET_PASSWORD: '/auth/reset-password',
 }
 //#endregion
 

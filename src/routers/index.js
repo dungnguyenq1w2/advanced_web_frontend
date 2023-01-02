@@ -5,7 +5,7 @@ import CAuthLayout from 'common/components/layouts/CAuthLayout'
 import CSlideLayout from 'common/components/layouts/CSlideLayout'
 
 import { Home } from 'modules/home/pages'
-import { Login, Register, Verify } from 'modules/auth/pages'
+import { Login, Register, Verify, Identify, ResetPassword } from 'modules/auth/pages'
 import { Group, GroupCreate, GroupInvite, GroupList } from 'modules/group/pages'
 import { MemberSlide, HostSlide } from 'modules/presentation-slide/pages'
 import { EditProfile, Profile } from 'modules/user/pages'
@@ -87,6 +87,8 @@ const router = createBrowserRouter([
             { path: 'login', element: <Login /> },
             { path: 'register', element: <Register /> },
             { path: 'verify', element: <Verify /> },
+            { path: 'identify', element: <Identify /> },
+            { path: 'resetPassword', element: <ResetPassword /> },
         ],
     },
     {

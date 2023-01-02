@@ -6,14 +6,16 @@ import { verify } from 'apis/auth.api'
 import { Button, Card, Spinner } from 'flowbite-react'
 
 function MVerify() {
-    // eslint-disable-next-line no-unused-vars
+    // #region data
     const [searchParams, setSearchParams] = useSearchParams()
     const [isLoading, setIsLoading] = useState(false)
     const [errorMessage, setErrorMessage] = useState(false)
     const [isFirst, setIsFirst] = useState(true)
     const [isError404, setIsError404] = useState(false)
     const navigate = useNavigate()
+    // #endregion
 
+    // #region event
     useEffect(() => {
         const restApi = async () => {
             setIsLoading(true)
@@ -49,7 +51,7 @@ function MVerify() {
             navigate(0)
         }, 200)
     }
-
+    //#endregion
     return (
         <>
             {isError404 ? (

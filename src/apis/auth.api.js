@@ -43,6 +43,26 @@ export const refreshToken = (params = {}) => {
     }).post(AUTH.REFRESH_TOKEN, params)
 }
 
+export const identify = (params = {}) => {
+    return map(({ data, ...rest }) => {
+        if (isSuccess(rest)) {
+            return { data: data }
+        } else {
+            return { error: rest.response.data }
+        }
+    }).post(AUTH.IDENTIFY, params)
+}
+
+export const resetPassword = (params = {}) => {
+    return map(({ data, ...rest }) => {
+        if (isSuccess(rest)) {
+            return { data: data }
+        } else {
+            return { error: rest.response.data }
+        }
+    }).post(AUTH.RESET_PASSWORD, params)
+}
+
 export const verify = (params = {}) => {
     return map(({ data, ...rest }) => {
         if (isSuccess(rest)) {
