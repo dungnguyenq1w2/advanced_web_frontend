@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState, useCallback } from 'react'
 
 import { questionSocket } from 'common/socket'
 
-import { getAll } from 'common/queries-fn/question.query'
+import { getAll } from 'common/queries-fn/questions.query'
 
 import CModal from 'common/components/CModal'
 

@@ -21,8 +21,8 @@ function MLogin() {
     const [loginError, setLoginError] = useState()
     const [isLoading, setIsLoading] = useState(false)
     const navigate = useNavigate()
-    const flag = (localStorage.getItem('flagResetPasswoord') === 'true')
-
+    const flag = localStorage.getItem('flagResetPassword') === 'true'
+    localStorage.removeItem('flagResetPassword')
     const {
         register,
         handleSubmit,
@@ -41,13 +41,8 @@ function MLogin() {
             if (result?.data) {
                 setTimeout(() => {
                     setIsLoading(false)
-                    if (flag) {
-                        localStorage.removeItem('flagResetPasswoord')
-                        navigate('/')
-                    }else{
-                        navigate(-1)
-                    }
-                    
+                    if (flag) navigate('/')
+                    else navigate(-1)
                 }, 600)
             } else {
                 setLoginError(result.error.message)
@@ -85,12 +80,8 @@ function MLogin() {
         if (res?.data) {
             setTimeout(() => {
                 setIsLoading(false)
-                if (flag) {
-                    localStorage.removeItem('flagResetPasswoord')
-                    navigate('/')
-                } else {
-                    navigate(-1)
-                }
+                if (flag) navigate('/')
+                else navigate(-1)
             }, 600)
         } else {
             setLoginError(res.error.message)

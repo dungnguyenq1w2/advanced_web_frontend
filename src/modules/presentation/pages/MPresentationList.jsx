@@ -23,7 +23,7 @@ function MPresentationList() {
         }
     }, [])
 
-    const { data, isLoading, refetch } = getAllByHostId()
+    const { data, isLoading, refetch } = getAllByHostId({}, false, { staleTime: 0 })
     const presentations = useMemo(() => data?.data ?? [], [data])
     //#endregion
 
@@ -73,7 +73,7 @@ function MPresentationList() {
                             <div
                                 key={index}
                                 className="cursor-pointer overflow-hidden rounded border border-gray-300 bg-white"
-                                title="present"
+                                title="Presentation"
                                 onClick={handleEditPresentation(presentation?.id)}
                             >
                                 <div className="px-6 py-4">

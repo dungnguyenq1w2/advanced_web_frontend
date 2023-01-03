@@ -32,6 +32,7 @@ export const GROUPS = {
     INVITE_MAIL: (id) => `/groups/${id}/invite-email`,
     SEND_INVITAION_MAIL: (id) => `/groups/${id}/send-email`,
     GENERATE_INVITE_CODE: (id) => `/groups/${id}/generate-invite-code`,
+    DELETE_GROUP_BY_ID: (groupId) => `/groups/${groupId}`,
 }
 //#endregion
 

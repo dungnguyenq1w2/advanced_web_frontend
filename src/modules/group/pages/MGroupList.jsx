@@ -5,12 +5,20 @@ import { Link, useNavigate } from 'react-router-dom'
 import { getAll as getAllGroup } from 'common/queries-fn/groups.query'
 import CLoading from 'common/components/CLoading'
 
+import { deleteGroup } from 'apis/group.api'
 import { ROLE } from 'common/constant'
-import { FireIcon, UserGroupIcon, PlusCircleIcon } from '@heroicons/react/24/outline'
+import {
+    FireIcon,
+    UserGroupIcon,
+    PlusCircleIcon,
+    EllipsisVerticalIcon,
+} from '@heroicons/react/24/outline'
+import { XMarkIcon } from '@heroicons/react/20/solid'
+import { Dropdown } from 'flowbite-react'
 
 function MGroupList() {
     //#region data
-    const { data, isLoading } = getAllGroup({}, false, { staleTime: 0 })
+    const { data, isLoading, refetch } = getAllGroup({}, false, { staleTime: 0 })
     const [roleOption, setRoleOption] = useState(0)
     const navigate = useNavigate()
     //#endregion
@@ -36,6 +44,20 @@ function MGroupList() {
         }
         return filteredGroup
     }, [data, roleOption])
+
+    const handleDropdownClick = (e) => {
+        e.stopPropagation()
+    }
+
+    const handleDelGroup = async (groupId) => {
+        const res = await deleteGroup(groupId)
+
+        if (res?.data?.status) refetch()
+    }
+
+    const handleClickGroup = (groupId) => {
+        navigate(`/group/${groupId}`)
+    }
     //#endregion
 
     if (isLoading) {
@@ -74,37 +96,59 @@ function MGroupList() {
                 </div>
 
                 <div className="container grid grid-cols-1 gap-4 p-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-                    {groups.map((group) => {
+                    {groups.map((group, index) => {
                         if (group.hasOwnProperty('my_role')) {
                             return (
-                                <Link to={`/group/${group.id}`} key={group.id}>
-                                    <div
-                                        className="overflow-hidden rounded border border-gray-300 bg-white"
-                                        // onClick={}
-                                    >
-                                        <div className="px-6 py-4">
-                                            <div className="mb-2 text-xl font-bold">
-                                                {group.name}
+                                <div
+                                    key={index}
+                                    className="cursor-pointer overflow-hidden rounded border border-gray-300 bg-white"
+                                    onClick={() => handleClickGroup(group?.id)}
+                                >
+                                    <div className="px-6 py-4">
+                                        <div className="flex justify-center">
+                                            <div className="mb-2 flex-1 text-xl font-bold">
+                                                <h2>{group?.name}</h2>
                                             </div>
-                                            <p className="mb-2 text-base text-gray-700">
-                                                {group.description}
-                                            </p>
-                                            <div className="text-md mb-2 flex items-center">
-                                                <div>
-                                                    <FireIcon className="mr-2 h-5 w-5" />
+                                            {group?.my_role === 1 && (
+                                                <div onClick={handleDropdownClick}>
+                                                    <Dropdown
+                                                        arrowIcon={false}
+                                                        inline={true}
+                                                        placement="right"
+                                                        label={
+                                                            <EllipsisVerticalIcon className="h-7 w-7" />
+                                                        }
+                                                    >
+                                                        <Dropdown.Item
+                                                            className="text-red-600"
+                                                            onClick={() =>
+                                                                handleDelGroup(group?.id)
+                                                            }
+                                                        >
+                                                            <XMarkIcon className="h-6 w-6 cursor-pointer pr-1 text-red-600" />
+                                                            <h3>Delete</h3>
+                                                        </Dropdown.Item>
+                                                    </Dropdown>
                                                 </div>
-                                                You are {ROLE[group.my_role]} of this group
-                                                {/* {ROLE[group.my_role]} */}
+                                            )}
+                                        </div>
+                                        <p className="mb-2 text-base text-gray-700">
+                                            {group.description}
+                                        </p>
+                                        <div className="text-md mb-2 flex items-center">
+                                            <div>
+                                                <FireIcon className="mr-2 h-5 w-5" />
                                             </div>
-                                            <div className="text-md mb-2 flex items-center">
-                                                <div>
-                                                    <UserGroupIcon className="mr-2 h-5 w-5" />
-                                                </div>
-                                                {group.group_size} participants
+                                            You are {ROLE[group.my_role]} of this group
+                                        </div>
+                                        <div className="text-md mb-2 flex items-center">
+                                            <div>
+                                                <UserGroupIcon className="mr-2 h-5 w-5" />
                                             </div>
+                                            {group.group_size} participants
                                         </div>
                                     </div>
-                                </Link>
+                                </div>
                             )
                         } else {
                             return <div key={group.id}></div>

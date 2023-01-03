@@ -40,7 +40,7 @@ function MResetPassword() {
             localStorage.removeItem('user')
             setTimeout(() => {
                 setIsLoading(false)
-                localStorage.setItem('flagResetPasswoord', true)
+                localStorage.setItem('flagResetPassword', 'true')
                 navigate('/auth/login')
             }, 400)
             

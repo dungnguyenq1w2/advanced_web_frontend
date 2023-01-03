@@ -2,9 +2,9 @@ import { createQuery } from 'utils/react-query'
 
 import * as presentations from 'apis/presentation.api'
 
-export function getAllByHostId(isLoading = false, options = {}) {
+export function getAllByHostId(params = {}, isLoading = false, options = {}) {
     return createQuery(
-        ['presentations'],
+        ['presentations', params],
         ({ queryKey: [, _params] }) => presentations.getAllByHostId(_params),
         {
             enabled: !isLoading,
