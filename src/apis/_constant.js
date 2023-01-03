@@ -6,6 +6,8 @@ export const AUTH = {
     VERIFY: '/auth/verify',
     LOGOUT: '/auth/logout',
     GOOGLE_LOGIN: '/auth/google-login',
+    IDENTIFY: '/auth/identify',
+    RESET_PASSWORD: '/auth/reset-password',
 }
 //#endregion
 
@@ -30,6 +32,7 @@ export const GROUPS = {
     INVITE_MAIL: (id) => `/groups/${id}/invite-email`,
     SEND_INVITAION_MAIL: (id) => `/groups/${id}/send-email`,
     GENERATE_INVITE_CODE: (id) => `/groups/${id}/generate-invite-code`,
+    DELETE_GROUP_BY_ID: (groupId) => `/groups/${groupId}`,
 }
 //#endregion
 

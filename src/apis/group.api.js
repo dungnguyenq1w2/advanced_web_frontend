@@ -67,3 +67,9 @@ export const sendInvitationByEmail = (id, params = {}) => {
         return isSuccess(rest) ? { data: data } : { data: {} }
     }).post(GROUPS.SEND_INVITAION_MAIL(id), params)
 }
+
+export const deleteGroup = (groupId, params = {}) => {
+    return map(({ data, ...rest }) => {
+        return isSuccess(rest) ? { data: data.data } : { data: [] }
+    }).remove(GROUPS.DELETE_GROUP_BY_ID(groupId), params)
+}
