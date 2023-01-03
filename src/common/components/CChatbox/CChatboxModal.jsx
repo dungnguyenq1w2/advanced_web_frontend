@@ -46,10 +46,14 @@ const CChatboxModal = ({ isOpen, onClose, presentationId, presentationGroupId })
         data: _data,
         isLoading,
         set,
-    } = getAll({
-        presentationId,
-        presentationGroupId,
-    })
+    } = getAll(
+        {
+            presentationId,
+            presentationGroupId,
+        },
+        false,
+        { staleTime: 0 }
+    )
 
     const data = useMemo(
         () =>

@@ -52,11 +52,15 @@ const CQuestionModal = ({ isOpen, onClose, presentationId, presentationGroupId }
         data: _data,
         isLoading,
         set,
-    } = getAll({
-        filter,
-        presentationId,
-        presentationGroupId,
-    })
+    } = getAll(
+        {
+            filter,
+            presentationId,
+            presentationGroupId,
+        },
+        false,
+        { staleTime: 0 }
+    )
 
     const data = useMemo(
         () =>

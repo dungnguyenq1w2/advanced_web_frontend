@@ -1,8 +1,8 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useContext, useEffect, useMemo, useState } from 'react'
 
 import { Link, NavLink, useNavigate } from 'react-router-dom'
 
-import { notificationSocket } from 'common/socket'
+import { SocketContext } from 'common/socket'
 
 import { getAll as getAllNotifications } from 'common/queries-fn/notification.query'
 import { logout } from 'apis/auth.api'
@@ -21,6 +21,7 @@ import moment from 'moment'
 
 function CHeader() {
     //#region data
+    const notificationSocket = useContext(SocketContext)
     const [noti, setNoti] = useState(null)
     const [me, setMe] = useState(() => {
         const user = JSON.parse(localStorage.getItem('user'))
@@ -41,7 +42,6 @@ function CHeader() {
     // Wait socket
     useEffect(() => {
         notificationSocket.on('server-send-message-noti', (noti) => {
-            console.log('🚀 ~ noti', noti)
             if (parseInt(me.id) !== parseInt(noti.user_id)) {
                 setNoti(noti)
             }
@@ -63,7 +63,7 @@ function CHeader() {
             notificationSocket.off('server-send-message-noti')
             notificationSocket.off('server-send-question-noti')
         }
-    }, [me])
+    }, [notificationSocket, me])
 
     useEffect(() => {
         if (data?.data && noti) {
@@ -74,7 +74,7 @@ function CHeader() {
             set({ ...data, data: newNotifications })
 
             // api
-            // postNotification(noti)
+            postNotification(noti)
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [noti])

@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 
-import { notificationSocket } from 'common/socket'
+import { notificationSocket, SocketContext } from 'common/socket'
 
 function App({ children }) {
     const me = JSON.parse(localStorage.getItem('user'))
@@ -16,7 +16,11 @@ function App({ children }) {
         }
     }, [me])
 
-    return <>{children}</>
+    return (
+        <>
+            <SocketContext.Provider value={notificationSocket}>{children}</SocketContext.Provider>
+        </>
+    )
 }
 
 export default App

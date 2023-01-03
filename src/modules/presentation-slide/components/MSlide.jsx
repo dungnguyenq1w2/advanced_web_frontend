@@ -1,4 +1,10 @@
-import { useEffect, useState } from 'react'
+import 'react-toastify/dist/ReactToastify.css'
+
+import { useContext, useEffect, useState } from 'react'
+
+import { ToastContainer, toast } from 'react-toastify'
+
+import { SocketContext } from 'common/socket'
 
 import CChatboxModal from 'common/components/CChatbox/CChatboxModal'
 import CQuestionModal from 'common/components/CQuestion/CQuestionModal'
@@ -10,7 +16,6 @@ import {
     ChevronRightIcon,
     QuestionMarkCircleIcon,
 } from '@heroicons/react/24/outline'
-import { notificationSocket } from 'common/socket'
 
 function MSlide({
     children,
@@ -27,25 +32,53 @@ function MSlide({
 
     const [isChatboxModalOpen, setIsChatboxModalOpen] = useState(false)
     const [isQuestionModalOpen, setIsQuestionModalOpen] = useState(false)
+
+    const notificationSocket = useContext(SocketContext)
+
+    const notify = (content) =>
+        toast(content, {
+            position: 'top-right',
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: 'light',
+            onClick: () =>
+                content.includes('message')
+                    ? setIsChatboxModalOpen(true)
+                    : setIsQuestionModalOpen(true),
+        })
     //#endregion
 
     //#region Event
     useEffect(() => {
         if (!presentationGroupId) {
-            notificationSocket.open()
+            console.log('first')
             notificationSocket.emit('subscribe-presentation', presentationId)
         }
-    }, [presentationId, presentationGroupId])
+
+        return () => {
+            if (!presentationGroupId) {
+                notificationSocket.emit('unsubscribe-presentation', presentationId)
+            }
+        }
+    }, [notificationSocket, presentationId, presentationGroupId])
 
     useEffect(() => {
         notificationSocket.on('server-send-message-noti', (noti) => {
-            console.log('🚀 ~ noti', noti)
+            return isChatboxModalOpen === false ? notify(noti.content) : null
+        })
+        notificationSocket.on('server-send-question-noti', (noti) => {
+            return isQuestionModalOpen === false ? notify(noti.content) : null
         })
 
         return () => {
             notificationSocket.off('server-send-message-noti')
+            notificationSocket.off('server-send-question-noti')
         }
-    }, [])
+    }, [notificationSocket, isChatboxModalOpen, isQuestionModalOpen])
 
     const handleSlideChange = (type) => () => {
         if (type === 'PREV') {
@@ -142,10 +175,10 @@ function MSlide({
                 >
                     <div className="relative">
                         <ChatBubbleBottomCenterTextIcon className="h-8 w-8" />
-                        <span className="absolute -top-2 -right-2 flex h-3 w-3">
+                        {/* <span className="absolute -top-2 -right-2 flex h-3 w-3">
                             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-sky-400 opacity-75"></span>
                             <span className="relative inline-flex h-3 w-3 rounded-full bg-sky-500"></span>
-                        </span>
+                        </span> */}
                     </div>
                 </button>
 
@@ -158,10 +191,10 @@ function MSlide({
                 >
                     <div className="relative">
                         <QuestionMarkCircleIcon className="h-8 w-8" />
-                        <span className="absolute -top-2 -right-2 flex h-3 w-3">
+                        {/* <span className="absolute -top-2 -right-2 flex h-3 w-3">
                             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-sky-400 opacity-75"></span>
                             <span className="relative inline-flex h-3 w-3 rounded-full bg-sky-500"></span>
-                        </span>
+                        </span> */}
                     </div>
                 </button>
 
@@ -170,6 +203,10 @@ function MSlide({
                         *This presentation is presenting in group
                     </span>
                 )}
+
+                <span className="absolute bottom-4 left-8 -translate-x-1/2 text-2xl font-semibold">
+                    {slideIndex.cur}
+                </span>
             </div>
             {isChatboxModalOpen && (
                 <CChatboxModal
@@ -187,6 +224,19 @@ function MSlide({
                     presentationGroupId={presentationGroupId}
                 />
             )}
+            <ToastContainer
+                position="top-right"
+                autoClose={3000}
+                hideProgressBar={false}
+                newestOnTop
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="light"
+                limit={6}
+            />
         </div>
     )
 }
