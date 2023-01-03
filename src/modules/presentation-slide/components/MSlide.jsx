@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import CChatboxModal from 'common/components/CChatbox/CChatboxModal'
 import CQuestionModal from 'common/components/CQuestion/CQuestionModal'
@@ -10,6 +10,7 @@ import {
     ChevronRightIcon,
     QuestionMarkCircleIcon,
 } from '@heroicons/react/24/outline'
+import { notificationSocket } from 'common/socket'
 
 function MSlide({
     children,
@@ -29,6 +30,23 @@ function MSlide({
     //#endregion
 
     //#region Event
+    useEffect(() => {
+        if (!presentationGroupId) {
+            notificationSocket.open()
+            notificationSocket.emit('subscribe-presentation', presentationId)
+        }
+    }, [presentationId, presentationGroupId])
+
+    useEffect(() => {
+        notificationSocket.on('server-send-message-noti', (noti) => {
+            console.log('🚀 ~ noti', noti)
+        })
+
+        return () => {
+            notificationSocket.off('server-send-message-noti')
+        }
+    }, [])
+
     const handleSlideChange = (type) => () => {
         if (type === 'PREV') {
             onChangeSlide({

@@ -40,7 +40,12 @@ const CQuestionModal = ({ isOpen, onClose, presentationId, presentationGroupId }
             delete user.refreshTokenToken
             delete user.email
             return user
-        } else return null
+        } else {
+            const anonymous = JSON.parse(localStorage.getItem('anonymous'))
+            if (anonymous) {
+                return anonymous
+            } else return null
+        }
     }, [])
 
     const {
@@ -53,12 +58,22 @@ const CQuestionModal = ({ isOpen, onClose, presentationId, presentationGroupId }
         presentationGroupId,
     })
 
-    const data = useMemo(() => _data?.data ?? [], [_data])
+    const data = useMemo(
+        () =>
+            _data?.data
+                ? _data.data.map((question) => {
+                      if (!question?.user)
+                          return { ...question, user: { id: question.user_id, name: 'Anonynous' } }
+                      else return question
+                  })
+                : [],
+        [_data]
+    )
     //#endregion
 
     //#region event
     useEffect(() => {
-        inputRef.current.focus()
+        if (inputRef.current) inputRef.current.focus()
     }, [])
     // Connect socket
     useEffect(() => {

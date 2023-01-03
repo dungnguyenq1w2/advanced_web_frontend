@@ -41,6 +41,7 @@ function CHeader() {
     // Wait socket
     useEffect(() => {
         notificationSocket.on('server-send-message-noti', (noti) => {
+            console.log('🚀 ~ noti', noti)
             if (parseInt(me.id) !== parseInt(noti.user_id)) {
                 setNoti(noti)
             }
@@ -73,7 +74,7 @@ function CHeader() {
             set({ ...data, data: newNotifications })
 
             // api
-            postNotification(noti)
+            // postNotification(noti)
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [noti])
@@ -125,10 +126,11 @@ function CHeader() {
 
                 <div className="flex md:order-2">
                     {me?.name ? (
-                        <div className="flex items-center">
+                        <div className="flex  items-center ">
                             <Dropdown
                                 arrowIcon={false}
                                 inline={true}
+                                className="h-[24rem] overflow-y-auto"
                                 label={
                                     <div className="relative">
                                         <BellIcon

@@ -34,7 +34,12 @@ const CChatboxModal = ({ isOpen, onClose, presentationId, presentationGroupId })
             delete user.refreshTokenToken
             delete user.email
             return user
-        } else return null
+        } else {
+            const anonymous = JSON.parse(localStorage.getItem('anonymous'))
+            if (anonymous) {
+                return anonymous
+            } else return null
+        }
     }, [])
 
     const {
@@ -51,6 +56,9 @@ const CChatboxModal = ({ isOpen, onClose, presentationId, presentationGroupId })
             _data?.data
                 ? _data.data.reduce(
                       (item, cur) => {
+                          if (!cur?.user) {
+                              cur.user = { id: cur.user_id, name: 'Anonymous' }
+                          }
                           if (typeof item.last === 'undefined' || item.last !== cur.user.id) {
                               item.last = cur.user.id
                               item.arr.push([])
