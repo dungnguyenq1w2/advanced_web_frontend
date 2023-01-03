@@ -14,9 +14,9 @@ import { Dropdown } from 'flowbite-react'
 function MPresentationList() {
     //#region data
     const navigate = useNavigate()
-
+    const localUser = JSON.parse(localStorage.getItem('user'))
     useEffect(() => {
-        const localUser = JSON.parse(localStorage.getItem('user'))
+
         if (!localUser) {
             alert('Login to use this feature')
             navigate('/auth/login')
@@ -61,12 +61,13 @@ function MPresentationList() {
     return (
         <div className="mx-2 pt-10 md:mx-10 lg:mx-20 xl:mx-40 2xl:mx-60">
             <div className="bg-white p-5">
-                <Link to="/presentation/create">
-                    <button className="ml-4 flex items-center rounded bg-blue-600 py-1 pr-4 text-sm font-semibold text-white">
+                    <button
+                        onClick={() => navigate('/presentation/create')}
+                        className="ml-4 flex items-center rounded bg-blue-600 py-1 pr-4 text-sm font-semibold text-white"
+                    >
                         <PlusCircleIcon className="mx-2 h-8 w-8" />
                         Create presentation
                     </button>
-                </Link>
                 <div className="container grid grid-cols-1 gap-4 p-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
                     {presentations.map((presentation, index) => {
                         return (
@@ -95,21 +96,22 @@ function MPresentationList() {
                                                         presentation.id
                                                     )}
                                                 >
-                                                    <Dropdown.Item className="text-[#1A94FF]">
+                                                    <Dropdown.Item className="cursor-pointer text-[#1A94FF]">
                                                         <PlayIcon className="h-5 w-6 cursor-pointer pr-1 text-[#1A94FF]" />
                                                         <h3>Present</h3>
                                                     </Dropdown.Item>
                                                 </div>
-
-                                                <Dropdown.Item
-                                                    className="text-red-600"
-                                                    onClick={() =>
-                                                        handleDelPresentation(presentation?.id)
-                                                    }
-                                                >
-                                                    <XMarkIcon className="h-6 w-6 cursor-pointer pr-1 text-red-600" />
-                                                    <h3>Delete</h3>
-                                                </Dropdown.Item>
+                                                {localUser?.id === presentation?.owner_id && (
+                                                    <Dropdown.Item
+                                                        className="cursor-pointer text-red-600"
+                                                        onClick={() =>
+                                                            handleDelPresentation(presentation?.id)
+                                                        }
+                                                    >
+                                                        <XMarkIcon className="h-6 w-6 cursor-pointer pr-1 text-red-600" />
+                                                        <h3>Delete</h3>
+                                                    </Dropdown.Item>
+                                                )}
                                             </Dropdown>
                                         </div>
                                     </div>

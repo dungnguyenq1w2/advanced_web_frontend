@@ -68,12 +68,13 @@ function MGroupList() {
         <div className="mx-2 pt-10 md:mx-10 lg:mx-20 xl:mx-40 2xl:mx-60">
             <div className="bg-white p-5">
                 <div className="flex items-center justify-between px-4">
-                    <Link to="/group/create">
-                        <button className="flex items-center rounded bg-blue-600 py-1 pr-4 text-sm font-semibold text-white">
+                        <button
+                            onClick={() => navigate('/group/create')}
+                            className="flex items-center rounded bg-blue-600 py-1 pr-4 text-sm font-semibold text-white"
+                        >
                             <PlusCircleIcon className="mx-2 h-8 w-8" />
                             Create group
                         </button>
-                    </Link>
                     <div>
                         <label
                             htmlFor="my-role"
