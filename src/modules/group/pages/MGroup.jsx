@@ -72,6 +72,7 @@ function MGroup() {
         [presentationsData, itemsPerPage]
     )
 
+    console.log('presentations: ', presentationsData?.data)
     //#endregion
 
     //#region event
@@ -180,7 +181,7 @@ function MGroup() {
                                             <span className="ml-2 mt-1 truncate font-bold">
                                                 {row.presentation.name}
                                             </span>
-                                            {row?.presentation?.is_presenting ? (
+                                            {row?.is_presenting ? (
                                                 <div className="flex justify-end">
                                                     <span className="flex h-3 w-3">
                                                         <span className="absolute top-[10px] inline-flex h-3 w-3 animate-ping rounded-full bg-green-400 opacity-75"></span>
@@ -202,7 +203,7 @@ function MGroup() {
                                         </div>
                                     </div>
                                     <div className="flex flex-wrap">
-                                        {group.my_role !== 3 && !row?.presentation?.is_presenting && (
+                                        {group.my_role !== 3 && !row?.is_presenting && (
                                             <button
                                                 className="m-1 rounded p-1 text-sm font-medium text-blue-700 hover:bg-blue-200"
                                                 onClick={() =>
