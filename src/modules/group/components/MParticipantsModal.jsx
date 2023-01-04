@@ -104,9 +104,10 @@ const MParticipantsModal = forwardRef(({ participants, onRoleChange, refetch }, 
                             <div className="flex items-center p-2">
                                 <div>
                                     <Avatar
-                                        alt="User settings"
+                                        alt="User"
                                         img={owner?.user?.image}
                                         rounded={true}
+                                        referrerPolicy="no-referrer"
                                     />
                                 </div>
                                 <div className="flex-1 pl-3">
@@ -131,9 +132,10 @@ const MParticipantsModal = forwardRef(({ participants, onRoleChange, refetch }, 
                                 >
                                     <div>
                                         <Avatar
-                                            alt="User settings"
+                                            alt="User"
                                             img={co_owner?.user?.image}
                                             rounded={true}
+                                            referrerPolicy="no-referrer"
                                         />
                                     </div>
                                     <div className="flex-1 pl-3">
@@ -191,9 +193,10 @@ const MParticipantsModal = forwardRef(({ participants, onRoleChange, refetch }, 
                                 >
                                     <div>
                                         <Avatar
-                                            alt="User settings"
+                                            alt="User"
                                             img={member?.user?.image}
                                             rounded={true}
+                                            referrerPolicy="no-referrer"
                                         />
                                     </div>
                                     <div className="flex-1 pl-3">

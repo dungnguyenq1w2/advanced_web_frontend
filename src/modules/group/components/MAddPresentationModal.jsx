@@ -1,4 +1,4 @@
-import { forwardRef, useImperativeHandle, useState } from 'react'
+import { forwardRef, useImperativeHandle, useMemo, useState } from 'react'
 
 import { useNavigate } from 'react-router-dom'
 
@@ -8,7 +8,7 @@ import CModal from 'common/components/CModal'
 import { getFirst as getFirstSlide } from 'apis/slide.api'
 import { getAllByHostId } from 'common/queries-fn/presentations.query'
 
-import { PlusCircleIcon } from '@heroicons/react/24/outline'
+import { CheckIcon, PlusCircleIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import { Tooltip } from 'flowbite-react'
 
 // eslint-disable-next-line no-empty-pattern
@@ -19,6 +19,16 @@ const MAddPresentationModal = forwardRef(({}, ref) => {
     // const [isLoading, setIsLoading] = useState(false)
     const [isOpen, setIsOpen] = useState(false)
     const { data, isLoading } = getAllByHostId()
+
+    // const activePresentations = useMemo(
+    //     () => data?.data?.filter((item) => item?.is_presenting === true) ?? [],
+    //     [data]
+    // )
+
+    // console.log('data: ', data)
+    // console.log('active: ', activePresentations)
+
+    const [isAddedPresentation, setIsAddedPresentation] = useState(false)
     //#endregion
 
     //#region event
@@ -45,6 +55,10 @@ const MAddPresentationModal = forwardRef(({}, ref) => {
             navigate(`/presentation/${presentationId}/${res?.data?.id}/edit`)
         }
     }
+
+    const handleAddPresentation = (presentationId) => async () => {
+        // setIsAddedPresentation(!isAddedPresentation)
+    }
     //#endregion
 
     return (
@@ -54,7 +68,7 @@ const MAddPresentationModal = forwardRef(({}, ref) => {
                     {isLoading ? (
                         <CLoading />
                     ) : (
-                        data?.data.map((presentation) => (
+                        data?.data?.map((presentation) => (
                             <div
                                 key={presentation.id}
                                 className="flex justify-between border-b py-2"
@@ -67,7 +81,17 @@ const MAddPresentationModal = forwardRef(({}, ref) => {
                                         {presentation.name}
                                     </Tooltip>
                                 </span>
-                                <PlusCircleIcon className="h-6 w-6 cursor-pointer text-blue-600" />
+                                {isAddedPresentation ? (
+                                    <PlusCircleIcon
+                                        onClick={handleAddPresentation(presentation.id)}
+                                        className="h-6 w-6 cursor-pointer text-blue-600"
+                                    />
+                                ) : (
+                                    <XMarkIcon
+                                        onClick={handleAddPresentation(presentation.id)}
+                                        className="h-6 w-6 cursor-pointer text-red-600"
+                                    />
+                                )}
                             </div>
                         ))
                     )}

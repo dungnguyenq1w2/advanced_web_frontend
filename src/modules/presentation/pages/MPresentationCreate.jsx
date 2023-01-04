@@ -58,8 +58,9 @@ function MPresentationCreate() {
         const res = await postAddPresentation(data)
 
         if (res?.data) {
-            setPresentationId(res?.data?.id)
             await handleAddSlide(res?.data?.id)
+            setPresentationId(res?.data?.id)
+
             setTimeout(() => {
                 setIsLoading(false)
             }, 600)

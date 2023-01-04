@@ -13,6 +13,7 @@ import {
     Bars3BottomLeftIcon,
     FireIcon,
     PlusCircleIcon,
+    QrCodeIcon,
     UserGroupIcon,
     UserPlusIcon,
     ViewfinderCircleIcon,
@@ -25,6 +26,7 @@ import {
     MResultsModal,
     MShareModal,
 } from '../components'
+import { PlayIcon } from '@heroicons/react/20/solid'
 
 function MGroup() {
     //#region data
@@ -53,7 +55,23 @@ function MGroup() {
     const { data: presentationsData, isLoading: isPresentationsLoading } =
         getAllPresentationByGroupId(groupId)
 
-    const presentations = useMemo(() => presentationsData?.data ?? {}, [presentationsData])
+    const [currentPage, setCurrentPage] = useState(1)
+    const [itemsPerPage] = useState(3)
+
+    const presentations = useMemo(
+        () =>
+            presentationsData?.data?.slice(
+                (currentPage - 1) * itemsPerPage,
+                currentPage * itemsPerPage
+            ) ?? [],
+        [presentationsData, currentPage, itemsPerPage]
+    )
+
+    const totalPages = useMemo(
+        () => Math.ceil((presentationsData?.data?.length ?? 0) / itemsPerPage),
+        [presentationsData, itemsPerPage]
+    )
+
     //#endregion
 
     //#region event
@@ -137,10 +155,10 @@ function MGroup() {
             <div className="w-[25rem] rounded border bg-white p-5 sm:w-[35rem] lg:w-[52rem]">
                 <div className="flex justify-between">
                     <h1 className="text-md mb-10 font-semibold md:text-lg">
-                        Group's Presentations
+                        Group's Presentations {`(${presentationsData?.data?.length})`}
                     </h1>
                     <Button
-                        disabled={group.my_role === 3}
+                        disabled={group.my_role !== 1}
                         size="md"
                         onClick={() => addPresentationModalRef.current.open()}
                     >
@@ -152,56 +170,122 @@ function MGroup() {
                         <CLoading />
                     ) : (
                         <div>
-                            {presentations.map((row) => (
-                                <div key={row.id} className="flex">
-                                    {row.presentation.name}
-                                    <Button
-                                        disabled={group.my_role === 3}
-                                        size="md"
-                                        onClick={() =>
-                                            navigate({
-                                                pathname: `/presentation-slide/${row.presentation.id}/host`,
-                                                search: createSearchParams({
-                                                    id: row.id, // presentation_group_id
-                                                }).toString(),
-                                            })
-                                        }
-                                    >
-                                        Present
-                                    </Button>
-                                    <Button
-                                        disabled={group.my_role === 3}
-                                        size="md"
-                                        onClick={() => {
-                                            setIsResultModalOpen(true)
-                                            setPresentationIdSelected(row.presentation.id)
-                                            setPresentationGroupIdSelected(row.id)
-                                        }}
-                                    >
-                                        View results
-                                    </Button>
-                                    <Button
-                                        size="md"
-                                        onClick={() => {
-                                            setIsQuestionModalOpen(true)
-                                            setPresentationIdSelected(row.presentation.id)
-                                            setPresentationGroupIdSelected(row.id)
-                                        }}
-                                    >
-                                        Open question
-                                    </Button>
-                                    <Button
-                                        size="md"
-                                        onClick={() => {
-                                            setIsChatboxModalOpen(true)
-                                            setPresentationIdSelected(row.presentation.id)
-                                            setPresentationGroupIdSelected(row.id)
-                                        }}
-                                    >
-                                        Open chatbox
-                                    </Button>
+                            {presentations?.map((row) => (
+                                <div
+                                    key={row.id}
+                                    className={`relative mt-2 flex h-[90px] flex-col justify-between rounded border border-slate-300 px-1 shadow-lg`}
+                                >
+                                    <div className="flex-1">
+                                        <div className="flex justify-between">
+                                            <span className="ml-2 mt-1 truncate font-bold">
+                                                {row.presentation.name}
+                                            </span>
+                                            {row?.presentation?.is_presenting ? (
+                                                <div className="flex justify-end">
+                                                    <span className="flex h-3 w-3">
+                                                        <span className="absolute top-[10px] inline-flex h-3 w-3 animate-ping rounded-full bg-green-400 opacity-75"></span>
+                                                        <span className="absolute top-[10px] inline-flex h-3 w-3 rounded-full bg-green-500"></span>
+                                                    </span>
+                                                    <span className="relative rounded p-1 font-bold text-green-500">
+                                                        Presenting
+                                                    </span>
+                                                </div>
+                                            ) : (
+                                                <></>
+                                            )}
+                                        </div>
+                                        <div className="ml-2 flex items-center">
+                                            <QrCodeIcon className="h-4 w-4" />
+                                            <span className="ml-1 text-sm">
+                                                {row.presentation.code}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div className="flex flex-wrap">
+                                        {group.my_role !== 3 && !row?.presentation?.is_presenting && (
+                                            <button
+                                                className="m-1 rounded p-1 text-sm font-medium text-blue-700 hover:bg-blue-200"
+                                                onClick={() =>
+                                                    navigate({
+                                                        pathname: `/presentation-slide/${row.presentation.id}/host`,
+                                                        search: createSearchParams({
+                                                            id: row.id, // presentation_group_id
+                                                        }).toString(),
+                                                    })
+                                                }
+                                            >
+                                                <div className="flex items-center">
+                                                    <PlayIcon className="h-4 w-4" />
+                                                    <span>Present</span>
+                                                </div>
+                                            </button>
+                                        )}
+
+                                        {group.my_role !== 3 && (
+                                            <button
+                                                className="m-1 rounded p-1 text-sm font-medium text-blue-700 hover:bg-blue-200"
+                                                onClick={() => {
+                                                    setIsResultModalOpen(true)
+                                                    setPresentationIdSelected(row.presentation.id)
+                                                    setPresentationGroupIdSelected(row.id)
+                                                }}
+                                            >
+                                                View results
+                                            </button>
+                                        )}
+                                        <button
+                                            className="m-1 rounded p-1 text-sm font-medium text-blue-700 hover:bg-blue-200"
+                                            onClick={() => {
+                                                setIsQuestionModalOpen(true)
+                                                setPresentationIdSelected(row.presentation.id)
+                                                setPresentationGroupIdSelected(row.id)
+                                            }}
+                                        >
+                                            Open question
+                                        </button>
+                                        <button
+                                            className="m-1 rounded p-1 text-sm font-medium text-blue-700 hover:bg-blue-200"
+                                            onClick={() => {
+                                                setIsChatboxModalOpen(true)
+                                                setPresentationIdSelected(row.presentation.id)
+                                                setPresentationGroupIdSelected(row.id)
+                                            }}
+                                        >
+                                            Open chatbox
+                                        </button>
+                                    </div>
                                 </div>
                             ))}
+                            <div className="mt-2 flex justify-center">
+                                <button
+                                    className={`mx-1 rounded px-1 text-sm font-medium ${
+                                        currentPage === 1
+                                            ? 'text-gray-700 opacity-50'
+                                            : 'text-gray-700 hover:bg-gray-200'
+                                    }`}
+                                    disabled={currentPage === 1}
+                                    onClick={() => {
+                                        if (currentPage - 1 >= 1) setCurrentPage(currentPage - 1)
+                                    }}
+                                >
+                                    Previous
+                                </button>
+                                <span>{`${currentPage}/${totalPages}`}</span>
+                                <button
+                                    className={`mx-1 rounded px-1 text-sm font-medium ${
+                                        currentPage === totalPages
+                                            ? 'text-gray-700 opacity-50'
+                                            : 'text-gray-700 hover:bg-gray-200'
+                                    }`}
+                                    disabled={currentPage === totalPages}
+                                    onClick={() => {
+                                        if (currentPage + 1 <= totalPages)
+                                            setCurrentPage(currentPage + 1)
+                                    }}
+                                >
+                                    Next
+                                </button>
+                            </div>
                         </div>
                     )}
                 </div>
