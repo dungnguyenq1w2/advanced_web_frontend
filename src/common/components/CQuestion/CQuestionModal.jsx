@@ -22,7 +22,7 @@ const AlwaysScrollToBottom = () => {
     return <div ref={elementRef} />
 }
 
-const CQuestionModal = ({ isOpen, onClose, presentationId, presentationGroupId }) => {
+const CQuestionModal = ({ isOpen, onClose, presentationId }) => {
     //#region data
     // const questionRef = useRef(null)
     const scrollToBottomRef = useRef(null)
@@ -56,7 +56,6 @@ const CQuestionModal = ({ isOpen, onClose, presentationId, presentationGroupId }
         {
             filter,
             presentationId,
-            presentationGroupId,
         },
         false,
         { staleTime: 0 }
@@ -83,14 +82,14 @@ const CQuestionModal = ({ isOpen, onClose, presentationId, presentationGroupId }
     useEffect(() => {
         if (presentationId) {
             questionSocket.open()
-            questionSocket.emit('subscribe', presentationId, presentationGroupId)
+            questionSocket.emit('subscribe', presentationId)
         }
         return () => {
             if (presentationId) {
-                questionSocket.emit('unsubscribe', presentationId, presentationGroupId)
+                questionSocket.emit('unsubscribe', presentationId)
             }
         }
-    }, [presentationId, presentationGroupId])
+    }, [presentationId])
 
     // Wait socket
     useEffect(() => {
@@ -212,15 +211,10 @@ const CQuestionModal = ({ isOpen, onClose, presentationId, presentationGroupId }
                 setReplyQuestion(null)
             }
 
-            questionSocket.emit(
-                'client-send-question',
-                presentationId,
-                presentationGroupId,
-                question
-            )
+            questionSocket.emit('client-send-question', presentationId, question)
             setInput('')
         },
-        [input, me, replyQuestion, presentationId, presentationGroupId]
+        [input, me, replyQuestion, presentationId]
     )
     //#endregion
 

@@ -54,17 +54,16 @@ function MSlide({
 
     //#region Event
     useEffect(() => {
-        if (!presentationGroupId) {
-            console.log('first')
+        if (presentationId) {
             notificationSocket.emit('subscribe-presentation', presentationId)
         }
 
-        return () => {
-            if (!presentationGroupId) {
-                notificationSocket.emit('unsubscribe-presentation', presentationId)
-            }
-        }
-    }, [notificationSocket, presentationId, presentationGroupId])
+        // return () => {
+        //     if (!presentationId) {
+        //         notificationSocket.emit('unsubscribe-presentation', presentationId)
+        //     }
+        // }
+    }, [notificationSocket, presentationId])
 
     useEffect(() => {
         notificationSocket.on('server-send-message-noti', (noti) => {

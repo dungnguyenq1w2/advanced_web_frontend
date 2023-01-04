@@ -134,7 +134,7 @@ const CChatboxModal = ({ isOpen, onClose, presentationId, presentationGroupId })
         }
         const message = { content: inputValue, created_at: new Date(), user: me }
 
-        messageSocket.emit('client-send-message', presentationId, presentationGroupId, message)
+        messageSocket.emit('client-send-message', presentationId, message)
 
         setInput('')
     }

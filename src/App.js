@@ -7,12 +7,11 @@ function App({ children }) {
 
     useEffect(() => {
         if (me) {
-            notificationSocket.open()
             notificationSocket.emit('subscribe', me.id)
-            // window.addEventListener('beforeunload', (ev) => {
-            //     ev.preventDefault()
-            //     notificationSocket.emit('unsubscribe', me.id)
-            // })
+            window.addEventListener('beforeunload', (ev) => {
+                ev.preventDefault()
+                notificationSocket.emit('unsubscribe', me.id)
+            })
         }
     }, [me])
 
