@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState, useCallback } from 'react'
 
 import { questionSocket } from 'common/socket'
 
-import { getAll } from 'common/queries-fn/question.query'
+import { getAll } from 'common/queries-fn/questions.query'
 
 import CModal from 'common/components/CModal'
 
@@ -40,25 +40,44 @@ const CQuestionModal = ({ isOpen, onClose, presentationId, presentationGroupId }
             delete user.refreshTokenToken
             delete user.email
             return user
-        } else return null
+        } else {
+            const anonymous = JSON.parse(localStorage.getItem('anonymous'))
+            if (anonymous) {
+                return anonymous
+            } else return null
+        }
     }, [])
 
     const {
         data: _data,
         isLoading,
         set,
-    } = getAll({
-        filter,
-        presentationId,
-        presentationGroupId,
-    })
+    } = getAll(
+        {
+            filter,
+            presentationId,
+            presentationGroupId,
+        },
+        false,
+        { staleTime: 0 }
+    )
 
-    const data = useMemo(() => _data?.data ?? [], [_data])
+    const data = useMemo(
+        () =>
+            _data?.data
+                ? _data.data.map((question) => {
+                      if (!question?.user)
+                          return { ...question, user: { id: question.user_id, name: 'Anonynous' } }
+                      else return question
+                  })
+                : [],
+        [_data]
+    )
     //#endregion
 
     //#region event
     useEffect(() => {
-        inputRef.current.focus()
+        if (inputRef.current) inputRef.current.focus()
     }, [])
     // Connect socket
     useEffect(() => {

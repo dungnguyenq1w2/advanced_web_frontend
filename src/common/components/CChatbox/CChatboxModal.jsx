@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 
 import { messageSocket } from 'common/socket'
 
-import { getAll } from 'common/queries-fn/messge.query'
+import { getAll } from 'common/queries-fn/messges.query'
 
 import CModal from 'common/components/CModal'
 
@@ -34,23 +34,35 @@ const CChatboxModal = ({ isOpen, onClose, presentationId, presentationGroupId })
             delete user.refreshTokenToken
             delete user.email
             return user
-        } else return null
+        } else {
+            const anonymous = JSON.parse(localStorage.getItem('anonymous'))
+            if (anonymous) {
+                return anonymous
+            } else return null
+        }
     }, [])
 
     const {
         data: _data,
         isLoading,
         set,
-    } = getAll({
-        presentationId,
-        presentationGroupId,
-    })
+    } = getAll(
+        {
+            presentationId,
+            presentationGroupId,
+        },
+        false,
+        { staleTime: 0 }
+    )
 
     const data = useMemo(
         () =>
             _data?.data
                 ? _data.data.reduce(
                       (item, cur) => {
+                          if (!cur?.user) {
+                              cur.user = { id: cur.user_id, name: 'Anonymous' }
+                          }
                           if (typeof item.last === 'undefined' || item.last !== cur.user.id) {
                               item.last = cur.user.id
                               item.arr.push([])
