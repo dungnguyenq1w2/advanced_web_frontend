@@ -8,6 +8,7 @@ import { getForHostById as getSlideForHostById } from 'common/queries-fn/slides.
 import CLoading from 'common/components/CLoading'
 
 import { MHeading, MHostMultipleChoice, MParagraph, MSlide } from '../components'
+import { presentationSocket } from 'common/socket'
 
 function MHostSlide() {
     //#region data
@@ -61,6 +62,19 @@ function MHostSlide() {
             }
         }
     }, [presentation, navigate])
+
+    useEffect(() => {
+        return () => {
+            if (searchParams.get('id')) {
+                presentationSocket.open()
+                presentationSocket.emit(
+                    'client-send-stoppedPresentation',
+                    presentationId,
+                    searchParams.get('id')
+                )
+            }
+        }
+    }, [presentationId, searchParams])
 
     // Update slide index of this presentation when change slidesId
     useEffect(() => {

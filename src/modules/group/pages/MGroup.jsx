@@ -41,7 +41,10 @@ function MGroup() {
     const [isResultModalOpen, setIsResultModalOpen] = useState(false)
     const [isChatboxModalOpen, setIsChatboxModalOpen] = useState(false)
     const [isQuestionModalOpen, setIsQuestionModalOpen] = useState(false)
-    const [presentingPresentation, setPresentingPresentation] = useState(false)
+    const [presentingPresentation, setPresentingPresentation] = useState({
+        content: null,
+        presentationId: null,
+    })
 
     const [presentationIdSelected, setPresentationIdSelected] = useState(null)
     const [presentationGroupIdSelected, setPresentationGroupIdSelected] = useState(null)
@@ -55,7 +58,7 @@ function MGroup() {
     const group = useMemo(() => groupData?.data ?? {}, [groupData])
 
     const { data: presentationsData, isLoading: isPresentationsLoading } =
-        getAllPresentationByGroupId(groupId)
+        getAllPresentationByGroupId(groupId, false, { staleTime: 0 })
 
     const [currentPage, setCurrentPage] = useState(1)
     const [itemsPerPage] = useState(3)
@@ -88,26 +91,39 @@ function MGroup() {
 
     useEffect(() => {
         notificationSocket.on('server-send-presentingPresentation-noti', (noti) => {
-            // console.log('🚀 ~ data', data)
-            const index = noti.content.firstIndex(' in ')
+            const index = noti.content.indexOf(' in ')
             const content = noti.content.slice(0, index)
-            setPresentingPresentation(content)
+            setPresentingPresentation((cur) =>
+                cur.presentationId !== parseInt(noti.presentationId)
+                    ? { content, presentationId: parseInt(noti.presentationId) }
+                    : { content: null, presentationId: null }
+            )
+        })
+
+        notificationSocket.on('server-send-stoppedPresentation-noti', (data) => {
+            setPresentingPresentation((cur) =>
+                cur.presentationId === parseInt(data.presentationId)
+                    ? { content: null, presentationId: null }
+                    : cur
+            )
         })
 
         return () => {
             notificationSocket.off('server-send-presentingPresentation-noti')
+            notificationSocket.off('server-send-stoppedPresentation-noti')
         }
     }, [])
 
     useEffect(() => {
         if (presentationsData?.data?.length > 0) {
-            const presentingPresentation = presentationsData.data.findIndex(
+            const presentingPresentation = presentationsData.data.find(
                 (e) => e.is_presenting === true
             )
             if (presentingPresentation) {
-                setPresentingPresentation(
-                    `Presentation [${presentingPresentation.name}] is presenting`
-                )
+                setPresentingPresentation({
+                    content: `Presentation [${presentingPresentation?.presentation?.name}] is presenting`,
+                    presentationId: presentingPresentation?.presentation?.id,
+                })
             }
         }
     }, [presentationsData])
@@ -367,6 +383,15 @@ function MGroup() {
                     presentationId={presentationIdSelected}
                     presentationGroupId={presentationGroupIdSelected}
                 />
+            )}
+            {presentingPresentation?.content && (
+                <div className="fixed top-20 left-4 bg-white p-5 shadow">
+                    {presentingPresentation.content}
+                    <span className="absolute -top-1 -right-1 flex h-3 w-3">
+                        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-75"></span>
+                        <span className="relative inline-flex h-3 w-3 items-center justify-center rounded-full bg-red-500 text-[8px]"></span>
+                    </span>
+                </div>
             )}
         </div>
     )
