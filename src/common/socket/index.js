@@ -15,6 +15,7 @@ const questionSocket = manager.socket('/question') // question namespace
 const presentationSocket = manager.socket('/presentation') // presentation namespace
 const notificationSocket = manager.socket('/notification') // notification namespace
 notificationSocket.open()
+
 export {
     socket,
     hostSocket,
