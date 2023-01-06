@@ -5,6 +5,7 @@ import { createSearchParams, useNavigate, useParams } from 'react-router-dom'
 import { getById } from 'common/queries-fn/groups.query'
 import { getAllByGroupId as getAllPresentationByGroupId } from 'common/queries-fn/presentations.query'
 
+import { presentationSocket, notificationSocket } from 'common/socket'
 import CChatboxModal from 'common/components/CChatbox/CChatboxModal'
 import CLoading from 'common/components/CLoading'
 import CQuestionModal from 'common/components/CQuestion/CQuestionModal'
@@ -84,6 +85,16 @@ function MGroup() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
+    useEffect(() => {
+        notificationSocket.on('server-send-presentingPresentation-noti', (data) => {
+            console.log('🚀 ~ data', data)
+        })
+
+        return () => {
+            notificationSocket.off('server-send-presentingPresentation-noti')
+        }
+    }, [])
+
     const handleChangeRole = (mode, userId) => {
         const index = group.participants.findIndex((e) => e.user.id === userId)
         let newGroup = { ...group, participants: [...group.participants] }
@@ -109,6 +120,23 @@ function MGroup() {
                 break
         }
         set({ ...groupData, data: newGroup })
+    }
+
+    const handlePresent = (presentationId, presentationName, presentationGroupId) => {
+        presentationSocket.open()
+        presentationSocket.emit(
+            'client-send-presentingPresentation',
+            presentationId,
+            presentationName,
+            groupId,
+            group.name
+        )
+        navigate({
+            pathname: `/presentation-slide/${presentationId}/host`,
+            search: createSearchParams({
+                id: presentationGroupId, // presentation_group_id
+            }).toString(),
+        })
     }
     //#endregion
 
@@ -173,7 +201,7 @@ function MGroup() {
                             {presentations?.map((row) => (
                                 <div
                                     key={row.id}
-                                    className={`relative mt-2 flex h-[90px] flex-col justify-between rounded border border-slate-300 px-1 shadow-lg`}
+                                    className={`relative mt-2 flex h-[90px] flex-col justify-between rounded border border-slate-300 px-1 shadow-md`}
                                 >
                                     <div className="flex-1">
                                         <div className="flex justify-between">
@@ -206,12 +234,11 @@ function MGroup() {
                                             <button
                                                 className="m-1 rounded p-1 text-sm font-medium text-blue-700 hover:bg-blue-200"
                                                 onClick={() =>
-                                                    navigate({
-                                                        pathname: `/presentation-slide/${row.presentation.id}/host`,
-                                                        search: createSearchParams({
-                                                            id: row.id, // presentation_group_id
-                                                        }).toString(),
-                                                    })
+                                                    handlePresent(
+                                                        row.presentation.id,
+                                                        row.presentation.name,
+                                                        row.id
+                                                    )
                                                 }
                                             >
                                                 <div className="flex items-center">

@@ -58,6 +58,11 @@ function CHeader() {
                 }
             }
         })
+        notificationSocket.on('server-send-presentingPresentation-noti', (noti) => {
+            if (parseInt(me.id) !== parseInt(noti.user_id)) {
+                setNoti(noti)
+            }
+        })
 
         return () => {
             notificationSocket.off('server-send-message-noti')
@@ -74,18 +79,18 @@ function CHeader() {
             set({ ...data, data: newNotifications })
 
             // api
-            postNotification(noti)
+            // postNotification(noti)
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [noti])
 
-    const postNotification = async (noti) => {
-        const postNoti = { ...noti, user_id: me.id }
-        delete postNoti?.userAnsweredId
-        delete postNoti?.created_at
+    // const postNotification = async (noti) => {
+    //     const postNoti = { ...noti, user_id: me.id }
+    //     delete postNoti?.userAnsweredId
+    //     delete postNoti?.created_at
 
-        await add(postNoti)
-    }
+    //     await add(postNoti)
+    // }
 
     const handleLogout = async () => {
         setIsLoading(true)
