@@ -131,7 +131,7 @@ function CHeader() {
 
                 <div className="flex md:order-2">
                     {me?.name ? (
-                        <div className="flex  items-center ">
+                        <div className="flex items-center ">
                             <Dropdown
                                 arrowIcon={false}
                                 inline={true}
@@ -162,7 +162,7 @@ function CHeader() {
                                                     navigate(noti.link)
                                                 }}
                                             >
-                                                <div>
+                                                <div className="flex-1">
                                                     <p
                                                         className={`text-sm font-semibold text-gray-600`}
                                                     >

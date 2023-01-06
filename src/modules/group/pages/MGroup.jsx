@@ -41,6 +41,7 @@ function MGroup() {
     const [isResultModalOpen, setIsResultModalOpen] = useState(false)
     const [isChatboxModalOpen, setIsChatboxModalOpen] = useState(false)
     const [isQuestionModalOpen, setIsQuestionModalOpen] = useState(false)
+    const [presentingPresentation, setPresentingPresentation] = useState(false)
 
     const [presentationIdSelected, setPresentationIdSelected] = useState(null)
     const [presentationGroupIdSelected, setPresentationGroupIdSelected] = useState(null)
@@ -86,14 +87,30 @@ function MGroup() {
     }, [])
 
     useEffect(() => {
-        notificationSocket.on('server-send-presentingPresentation-noti', (data) => {
-            console.log('🚀 ~ data', data)
+        notificationSocket.on('server-send-presentingPresentation-noti', (noti) => {
+            // console.log('🚀 ~ data', data)
+            const index = noti.content.firstIndex(' in ')
+            const content = noti.content.slice(0, index)
+            setPresentingPresentation(content)
         })
 
         return () => {
             notificationSocket.off('server-send-presentingPresentation-noti')
         }
     }, [])
+
+    useEffect(() => {
+        if (presentationsData?.data?.length > 0) {
+            const presentingPresentation = presentationsData.data.findIndex(
+                (e) => e.is_presenting === true
+            )
+            if (presentingPresentation) {
+                setPresentingPresentation(
+                    `Presentation [${presentingPresentation.name}] is presenting`
+                )
+            }
+        }
+    }, [presentationsData])
 
     const handleChangeRole = (mode, userId) => {
         const index = group.participants.findIndex((e) => e.user.id === userId)
