@@ -66,8 +66,8 @@ function MEditProfile() {
         try {
             if (image) {
                 const reader = new FileReader()
-                await reader.readAsDataURL(image)
-                reader.onloadend = async () => {
+                reader.readAsDataURL(image)
+                reader.onloadend = () => {
                     data.image = reader.result
                     updateUser(data)
                 }

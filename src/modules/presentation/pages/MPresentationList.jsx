@@ -16,7 +16,6 @@ function MPresentationList() {
     const navigate = useNavigate()
     const localUser = JSON.parse(localStorage.getItem('user'))
     useEffect(() => {
-
         if (!localUser) {
             alert('Login to use this feature')
             navigate('/auth/login')
@@ -35,13 +34,10 @@ function MPresentationList() {
         if (res?.data?.status) refetch()
     }
 
-    const handleDropdownClick = (e) => {
-        e.stopPropagation()
-    }
+    const handleDropdownClick = (e) => e.stopPropagation()
 
-    const handlePresentationClick = (presentationId) => () => {
+    const handlePresentationClick = (presentationId) => () =>
         navigate(`/presentation-slide/${presentationId}/host`)
-    }
 
     const handleEditPresentation = (presentationId) => async () => {
         const res = await getFirstSlide({
@@ -61,13 +57,13 @@ function MPresentationList() {
     return (
         <div className="mx-2 pt-10 md:mx-10 lg:mx-20 xl:mx-40 2xl:mx-60">
             <div className="bg-white p-5">
-                    <button
-                        onClick={() => navigate('/presentation/create')}
-                        className="ml-4 flex items-center rounded bg-blue-600 py-1 pr-4 text-sm font-semibold text-white"
-                    >
-                        <PlusCircleIcon className="mx-2 h-8 w-8" />
-                        Create presentation
-                    </button>
+                <button
+                    onClick={() => navigate('/presentation/create')}
+                    className="ml-4 flex items-center rounded bg-blue-600 py-1 pr-4 text-sm font-semibold text-white"
+                >
+                    <PlusCircleIcon className="mx-2 h-8 w-8" />
+                    Create presentation
+                </button>
                 <div className="container grid grid-cols-1 gap-4 p-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
                     {presentations.map((presentation, index) => {
                         return (
