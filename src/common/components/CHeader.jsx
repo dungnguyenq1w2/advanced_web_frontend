@@ -58,7 +58,7 @@ function CHeader() {
                 }
             }
         })
-        notificationSocket.on('server-send-presentingPresentation-noti', (noti) => {
+        notificationSocket.on('server-present-presentation-noti', (noti) => {
             if (parseInt(me.id) !== parseInt(noti.user_id)) {
                 setNoti({ ...noti, is_read: false, created_at: new Date() })
             }
@@ -67,7 +67,7 @@ function CHeader() {
         return () => {
             notificationSocket.off('server-send-message-noti')
             notificationSocket.off('server-send-question-noti')
-            notificationSocket.off('server-send-presentingPresentation-noti')
+            notificationSocket.off('server-present-presentation-noti')
         }
     }, [notificationSocket, me])
 

@@ -90,7 +90,7 @@ function MGroup() {
     }, [])
 
     useEffect(() => {
-        notificationSocket.on('server-send-presentingPresentation-noti', (noti) => {
+        notificationSocket.on('server-present-presentation-noti', (noti) => {
             const index = noti.content.indexOf(' in ')
             const content = noti.content.slice(0, index)
             setPresentingPresentation((cur) =>
@@ -100,7 +100,7 @@ function MGroup() {
             )
         })
 
-        notificationSocket.on('server-send-stoppedPresentation-noti', (data) => {
+        notificationSocket.on('server-stop-presentation-noti', (data) => {
             setPresentingPresentation((cur) =>
                 cur.presentationId === parseInt(data.presentationId)
                     ? { content: null, presentationId: null }
@@ -109,8 +109,8 @@ function MGroup() {
         })
 
         return () => {
-            notificationSocket.off('server-send-presentingPresentation-noti')
-            notificationSocket.off('server-send-stoppedPresentation-noti')
+            notificationSocket.off('server-present-presentation-noti')
+            notificationSocket.off('server-stop-presentation-noti')
         }
     }, [])
 
@@ -158,7 +158,7 @@ function MGroup() {
     const handlePresent = (presentationId, presentationName, presentationGroupId) => {
         presentationSocket.open()
         presentationSocket.emit(
-            'client-send-presentingPresentation',
+            'client-present-presentation',
             presentationId,
             presentationName,
             groupId,
