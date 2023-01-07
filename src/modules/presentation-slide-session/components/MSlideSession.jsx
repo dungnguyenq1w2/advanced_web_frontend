@@ -6,9 +6,6 @@ import { ToastContainer, toast } from 'react-toastify'
 
 import { SocketContext } from 'common/socket'
 
-import CChatboxModal from 'common/components/CChatbox/CChatboxModal'
-import CQuestionModal from 'common/components/CQuestion/CQuestionModal'
-
 import {
     ChatBubbleBottomCenterTextIcon,
     CheckIcon,
@@ -16,6 +13,7 @@ import {
     ChevronRightIcon,
     QuestionMarkCircleIcon,
 } from '@heroicons/react/24/outline'
+import { MChatboxModalSession, MQuestionModalSession } from '.'
 
 function MSlide({
     children,
@@ -34,6 +32,9 @@ function MSlide({
     const [isQuestionModalOpen, setIsQuestionModalOpen] = useState(false)
 
     const notificationSocket = useContext(SocketContext)
+
+    const [messages, setMessages] = useState([])
+    const [questions, setQuestions] = useState([])
 
     const notify = (content) =>
         toast(content, {
@@ -100,7 +101,7 @@ function MSlide({
 
     const handleCopyShareLink = async () => {
         navigator.clipboard.writeText(
-            `${window.location.host}/presentation-slide/${presentationId}/member${
+            `${window.location.host}/presentation-slide-session/${presentationId}/member${
                 presentationGroupId ? `?id=${presentationGroupId}` : ''
             }`
         )
@@ -127,7 +128,9 @@ function MSlide({
                     </h1>
                     <div className="hidden p-2 pb-4 text-center hover:flex hover:items-center hover:justify-center peer-hover:flex peer-hover:items-center peer-hover:justify-center">
                         <span className="mr-2 border border-gray-700 p-1 text-center text-sm font-normal">
-                            {`${window.location.host}/presentation-slide/${presentationId}/member${
+                            {`${
+                                window.location.host
+                            }/presentation-slide-session/${presentationId}/member${
                                 presentationGroupId ? `?id=${presentationGroupId}` : ''
                             }`}
                         </span>
@@ -199,7 +202,7 @@ function MSlide({
 
                 {presentationGroupId && (
                     <span className="absolute bottom-4 left-1/2 -translate-x-1/2 text-2xl font-semibold">
-                        *This presentation is presenting in group
+                        *This presentation session is presenting in group
                     </span>
                 )}
 
@@ -207,22 +210,22 @@ function MSlide({
                     {slideIndex.cur}
                 </span>
             </div>
-            {isChatboxModalOpen && (
-                <CChatboxModal
-                    isOpen={isChatboxModalOpen}
-                    onClose={() => setIsChatboxModalOpen(false)}
-                    presentationId={presentationId}
-                    presentationGroupId={presentationGroupId}
-                />
-            )}
-            {isQuestionModalOpen && (
-                <CQuestionModal
-                    isOpen={isQuestionModalOpen}
-                    onClose={() => setIsQuestionModalOpen(false)}
-                    presentationId={presentationId}
-                    presentationGroupId={presentationGroupId}
-                />
-            )}
+            <MChatboxModalSession
+                isOpen={isChatboxModalOpen}
+                onClose={() => setIsChatboxModalOpen(false)}
+                data={messages}
+                set={setMessages}
+                presentationId={presentationId}
+                presentationGroupId={presentationGroupId}
+            />
+            <MQuestionModalSession
+                isOpen={isQuestionModalOpen}
+                onClose={() => setIsQuestionModalOpen(false)}
+                data={questions}
+                set={setQuestions}
+                presentationId={presentationId}
+                presentationGroupId={presentationGroupId}
+            />
             <ToastContainer
                 position="top-right"
                 autoClose={3000}

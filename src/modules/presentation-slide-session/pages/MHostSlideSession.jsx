@@ -87,6 +87,7 @@ function MHostSlide() {
                     searchParams.get('id')
                 )
             }
+            hostSocket.open()
             hostSocket.emit(
                 'client-stop-presentation-session',
                 presentationId,

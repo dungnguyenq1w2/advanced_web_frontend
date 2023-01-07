@@ -68,7 +68,7 @@ function MHostSlide() {
             if (searchParams.get('id')) {
                 presentationSocket.open()
                 presentationSocket.emit(
-                    'client-send-stoppedPresentation',
+                    'client-stop-presentation',
                     presentationId,
                     searchParams.get('id')
                 )

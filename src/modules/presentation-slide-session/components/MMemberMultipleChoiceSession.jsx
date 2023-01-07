@@ -150,20 +150,20 @@ function MMemberMultipleChoice({
         })
 
         // Realtime update new choices
-        memberSocket.on('server-send-choices', (member, choices) => {
+        memberSocket.on('server-send-choices-session', (member, choices) => {
             setNewChoices({ member, choices })
         })
 
         return () => {
             memberSocket.off('server-send-permission')
-            memberSocket.off('server-send-choices')
+            memberSocket.off('server-send-choices-session')
         }
     }, []) // Khi sử dụng socket.on thì bắt buộc phải để empty dependency
 
     //Xử lí cập nhật data
     useEffect(() => {
         if (newChoices) {
-            const newData = { ...data.data }
+            const newData = { ...data }
             newChoices.choices.forEach((addChoice) => {
                 const index = newData.choices.findIndex(
                     (choice) => choice.id.toString() === addChoice.toString()
@@ -174,7 +174,7 @@ function MMemberMultipleChoice({
                     newData.isChosen = true
                 }
             })
-            set({ ...data, data: newData })
+            set(newData)
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [newChoices])
@@ -187,7 +187,13 @@ function MMemberMultipleChoice({
     }, [data, onSubmit])
 
     const handleChoiceSendSocket = (choices) => {
-        memberSocket.emit('client-send-choices', slideId, presentationGroupId, member, choices)
+        memberSocket.emit(
+            'client-send-choices-session',
+            slideId,
+            presentationGroupId,
+            member,
+            choices
+        )
         onSubmit(true)
     }
     //#endregion

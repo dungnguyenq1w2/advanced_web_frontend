@@ -12,6 +12,8 @@ import CQuestionModal from 'common/components/CQuestion/CQuestionModal'
 
 import {
     Bars3BottomLeftIcon,
+    BoltIcon,
+    CircleStackIcon,
     FireIcon,
     PlusCircleIcon,
     QrCodeIcon,
@@ -20,7 +22,7 @@ import {
     ViewfinderCircleIcon,
 } from '@heroicons/react/24/outline'
 import { ROLE, ROLE_ASSIGNMENT } from 'common/constant'
-import { Button } from 'flowbite-react'
+import { Button, Dropdown } from 'flowbite-react'
 import {
     MAddPresentationModal,
     MParticipantsModal,
@@ -155,7 +157,7 @@ function MGroup() {
         set({ ...groupData, data: newGroup })
     }
 
-    const handlePresent = (presentationId, presentationName, presentationGroupId) => {
+    const handlePresent = (mode, presentationId, presentationName, presentationGroupId) => {
         presentationSocket.open()
         presentationSocket.emit(
             'client-present-presentation',
@@ -165,7 +167,9 @@ function MGroup() {
             group.name
         )
         navigate({
-            pathname: `/presentation-slide/${presentationId}/host`,
+            pathname: `/presentation-slide${
+                mode === 'session' ? '-session' : ''
+            }/${presentationId}/host`,
             search: createSearchParams({
                 id: presentationGroupId, // presentation_group_id
             }).toString(),
@@ -264,21 +268,50 @@ function MGroup() {
                                     </div>
                                     <div className="flex flex-wrap">
                                         {group.my_role !== 3 && !row?.presentation?.is_presenting && (
-                                            <button
-                                                className="m-1 rounded p-1 text-sm font-medium text-blue-700 hover:bg-blue-200"
-                                                onClick={() =>
-                                                    handlePresent(
-                                                        row.presentation.id,
-                                                        row.presentation.name,
-                                                        row.id
-                                                    )
-                                                }
-                                            >
+                                            <div className="m-1 rounded p-1 text-sm font-medium text-blue-700 hover:bg-blue-200">
                                                 <div className="flex items-center">
-                                                    <PlayIcon className="h-4 w-4" />
-                                                    <span>Present</span>
+                                                    <Dropdown
+                                                        arrowIcon={false}
+                                                        inline={true}
+                                                        placement="right"
+                                                        label={
+                                                            <>
+                                                                <PlayIcon className="h-4 w-4" />
+                                                                <span>Present</span>
+                                                            </>
+                                                        }
+                                                    >
+                                                        <Dropdown.Item
+                                                            className="cursor-pointer text-[#1A94FF]"
+                                                            onClick={() =>
+                                                                handlePresent(
+                                                                    'storage',
+                                                                    row.presentation.id,
+                                                                    row.presentation.name,
+                                                                    row.id
+                                                                )
+                                                            }
+                                                        >
+                                                            <CircleStackIcon className="mr-2 h-4 w-4 cursor-pointer text-[#1A94FF]" />
+                                                            <span>Present with storage</span>
+                                                        </Dropdown.Item>
+                                                        <Dropdown.Item
+                                                            className="cursor-pointer text-red-600"
+                                                            onClick={() =>
+                                                                handlePresent(
+                                                                    'session',
+                                                                    row.presentation.id,
+                                                                    row.presentation.name,
+                                                                    row.id
+                                                                )
+                                                            }
+                                                        >
+                                                            <BoltIcon className="mr-2 h-4 w-4 cursor-pointer text-red-600" />
+                                                            <span>Present in session</span>
+                                                        </Dropdown.Item>
+                                                    </Dropdown>
                                                 </div>
-                                            </button>
+                                            </div>
                                         )}
 
                                         {group.my_role !== 3 && (

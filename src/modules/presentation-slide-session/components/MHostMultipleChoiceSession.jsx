@@ -136,18 +136,18 @@ function MHostMultipleChoice({ slideId, presentationGroupId, data, isLoading, se
     useEffect(() => {
         // Xử lí -> lưu state kết quả socket trả về
         // rồi tạo useEffect với dependency là state đó
-        hostSocket.on('server-send-choices', (member, choices) => {
+        hostSocket.on('server-send-choices-session', (member, choices) => {
             setNewChoices({ member, choices })
         })
         return () => {
-            hostSocket.off('server-send-choices')
+            hostSocket.off('server-send-choices-session')
         }
     }, []) // Khi sử dụng socket.on thì bắt buộc phải để empty dependency
 
     // Xử lí cập nhật data
     useEffect(() => {
         if (newChoices) {
-            const newData = { ...data.data }
+            const newData = { ...data }
             newChoices.choices.forEach((addChoice) => {
                 const index = newData.choices.findIndex(
                     (choice) => choice.id.toString() === addChoice.toString()
@@ -162,7 +162,7 @@ function MHostMultipleChoice({ slideId, presentationGroupId, data, isLoading, se
                     })
                 }
             })
-            set({ ...data, data: newData })
+            set(newData)
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [newChoices])
