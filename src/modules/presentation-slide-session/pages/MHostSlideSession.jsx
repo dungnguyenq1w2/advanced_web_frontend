@@ -6,7 +6,7 @@ import { MHeading, MParagraph } from 'modules/presentation-slide/components'
 
 import { getForHostById as getPresentationForHostById } from 'common/queries-fn/presentations.query'
 
-import { hostSocket, presentationSocket } from 'common/socket'
+import { hostSocket, messageSocket, presentationSocket, questionSocket } from 'common/socket'
 import CLoading from 'common/components/CLoading'
 
 import { MHostMultipleChoiceSession, MSlideSession } from '../components'
@@ -91,7 +91,17 @@ function MHostSlide() {
             hostSocket.emit(
                 'client-stop-presentation-session',
                 presentationId,
-                searchParams.get('id')
+                searchParams.get('id') ?? null
+            )
+            messageSocket.emit(
+                'client-stop-message-session',
+                presentationId,
+                searchParams.get('id') ?? null
+            )
+            questionSocket.emit(
+                'client-stop-question-session',
+                presentationId,
+                searchParams.get('id') ?? null
             )
         }
     }, [presentationId, searchParams])

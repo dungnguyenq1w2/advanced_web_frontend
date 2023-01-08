@@ -16,14 +16,7 @@ const AlwaysScrollToBottom = () => {
     useEffect(() => elementRef.current.scrollIntoView(), [])
     return <div ref={elementRef} />
 }
-const MChatboxModalSession = ({
-    isOpen,
-    onClose,
-    data,
-    set,
-    presentationId,
-    presentationGroupId,
-}) => {
+const MChatboxModalSession = ({ isOpen, onClose, data, set, presentationId }) => {
     //#region data
     const scrollToBottomRef = useRef(null)
     const [input, setInput] = useState('')
@@ -69,19 +62,24 @@ const MChatboxModalSession = ({
     useEffect(() => {
         if (presentationId) {
             messageSocket.open()
-            messageSocket.emit('subscribe', presentationId, presentationGroupId)
+            messageSocket.emit('subscribe', presentationId)
+            messageSocket.emit('client-get-messages-session', presentationId)
         }
         return () => {
             if (presentationId) {
-                messageSocket.emit('unsubscribe', presentationId, presentationGroupId)
+                messageSocket.emit('unsubscribe', presentationId)
             }
         }
-    }, [presentationId, presentationGroupId])
+    }, [presentationId, set])
 
     // Wait socket
     useEffect(() => {
         // Xử lí -> lưu state kết quả socket trả về
         // rồi tạo useEffect với dependency là state đó
+        // Get all message
+        messageSocket.on('server-send-messages-session', (messages) => {
+            set(messages)
+        })
         // Realtime update new message
         messageSocket.on('server-send-message-session', (message) => {
             setNewMessage(message)
@@ -90,6 +88,7 @@ const MChatboxModalSession = ({
         return () => {
             messageSocket.off('server-send-message-session')
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []) // Khi sử dụng socket.on thì bắt buộc phải để empty dependency
 
     //Xử lí cập nhật data

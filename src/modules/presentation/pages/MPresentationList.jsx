@@ -1,13 +1,18 @@
 import { useEffect, useMemo } from 'react'
 
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 import { deletePresentation } from 'apis/presentation.api'
 import { getFirst as getFirstSlide } from 'apis/slide.api'
 import { getAllByHostId } from 'common/queries-fn/presentations.query'
 
-import { PlayIcon, PlusCircleIcon, XMarkIcon } from '@heroicons/react/20/solid'
-import { EllipsisVerticalIcon, FireIcon } from '@heroicons/react/24/outline'
+import { PlusCircleIcon, XMarkIcon } from '@heroicons/react/20/solid'
+import {
+    BoltIcon,
+    CircleStackIcon,
+    EllipsisVerticalIcon,
+    FireIcon,
+} from '@heroicons/react/24/outline'
 import CLoading from 'common/components/CLoading'
 import { Dropdown } from 'flowbite-react'
 
@@ -20,7 +25,7 @@ function MPresentationList() {
             alert('Login to use this feature')
             navigate('/auth/login')
         }
-    }, [])
+    }, [localUser, navigate])
 
     const { data, isLoading, refetch } = getAllByHostId({}, false, { staleTime: 0 })
     const presentations = useMemo(() => data?.data ?? [], [data])
@@ -36,8 +41,10 @@ function MPresentationList() {
 
     const handleDropdownClick = (e) => e.stopPropagation()
 
-    const handlePresentationClick = (presentationId) => () =>
-        navigate(`/presentation-slide/${presentationId}/host`)
+    const handlePresentationClick = (mode, presentationId) => () =>
+        navigate(
+            `/presentation-slide${mode === 'session' ? '-session' : ''}/${presentationId}/host`
+        )
 
     const handleEditPresentation = (presentationId) => async () => {
         const res = await getFirstSlide({
@@ -89,12 +96,25 @@ function MPresentationList() {
                                                 <div
                                                     className="cursor-pointer"
                                                     onClick={handlePresentationClick(
+                                                        'storage',
                                                         presentation.id
                                                     )}
                                                 >
                                                     <Dropdown.Item className="cursor-pointer text-[#1A94FF]">
-                                                        <PlayIcon className="h-5 w-6 cursor-pointer pr-1 text-[#1A94FF]" />
-                                                        <h3>Present</h3>
+                                                        <CircleStackIcon className="mr-2 h-4 w-4 cursor-pointer text-[#1A94FF]" />
+                                                        <span>Present with storage</span>
+                                                    </Dropdown.Item>
+                                                </div>
+                                                <div
+                                                    className="cursor-pointer"
+                                                    onClick={handlePresentationClick(
+                                                        'session',
+                                                        presentation.id
+                                                    )}
+                                                >
+                                                    <Dropdown.Item className="cursor-pointer text-[#1A94FF]">
+                                                        <BoltIcon className="mr-2 h-4 w-4 cursor-pointer text-red-600" />
+                                                        <span>Present in session</span>
                                                     </Dropdown.Item>
                                                 </div>
                                                 {localUser?.id === presentation?.owner_id && (

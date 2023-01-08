@@ -24,11 +24,11 @@ const MQuestionModalSession = ({ isOpen, onClose, data, set, presentationId }) =
     // const questionRef = useRef(null)
     const scrollToBottomRef = useRef(null)
     const inputRef = useRef(null)
-    const [filter, setFilter] = useState('all')
     const [input, setInput] = useState('')
     const [replyQuestion, setReplyQuestion] = useState(null)
     const [isOpenAnswers, setisOpenAnswers] = useState({})
     const [newQuestion, setNewQuestion] = useState(null)
+    const [questionsData, setQuestionsData] = useState([])
 
     const me = useMemo(() => {
         const user = JSON.parse(localStorage.getItem('user'))
@@ -47,14 +47,14 @@ const MQuestionModalSession = ({ isOpen, onClose, data, set, presentationId }) =
 
     const questions = useMemo(
         () =>
-            data.length > 0
-                ? data.map((question) => {
+            questionsData.length > 0
+                ? questionsData.map((question) => {
                       if (!question?.user)
                           return { ...question, user: { id: question.user_id, name: 'Anonynous' } }
                       else return question
                   })
                 : [],
-        [data]
+        [questionsData]
     )
     //#endregion
 
@@ -63,11 +63,18 @@ const MQuestionModalSession = ({ isOpen, onClose, data, set, presentationId }) =
         if (inputRef.current) inputRef.current.focus()
     }, [])
 
+    useEffect(() => {
+        if (data.length > 0) {
+            setQuestionsData([...data])
+        }
+    }, [data])
+
     // Connect socket
     useEffect(() => {
         if (presentationId) {
             questionSocket.open()
             questionSocket.emit('subscribe', presentationId)
+            questionSocket.emit('client-get-questions-session', presentationId)
         }
         return () => {
             if (presentationId) {
@@ -80,6 +87,10 @@ const MQuestionModalSession = ({ isOpen, onClose, data, set, presentationId }) =
     useEffect(() => {
         // Xử lí -> lưu state kết quả socket trả về
         // rồi tạo useEffect với dependency là state đó
+        // Get all message
+        questionSocket.on('server-send-questions-session', (questions) => {
+            set(questions)
+        })
         // Realtime update new question
         questionSocket.on('server-send-question-session', (question) => {
             setNewQuestion(question)
@@ -88,6 +99,7 @@ const MQuestionModalSession = ({ isOpen, onClose, data, set, presentationId }) =
         return () => {
             questionSocket.off('server-send-question-session')
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []) // Khi sử dụng socket.on thì bắt buộc phải để empty dependency
 
     //Xử lí cập nhật data
@@ -96,11 +108,13 @@ const MQuestionModalSession = ({ isOpen, onClose, data, set, presentationId }) =
             const newData = [...data]
 
             if (newQuestion.isAnswer) {
-                const questionAnsweredIndex = newData.findIndex((e) => e.id === newQuestion.id)
+                const questionAnsweredIndex = newData.findIndex(
+                    (e) => e.id === newQuestion.questionId
+                )
                 if (newData[questionAnsweredIndex]?.answers) {
                     // set query
                     newData[questionAnsweredIndex].answers.push({
-                        id: uuidv4(),
+                        id: newQuestion.id,
                         content: newQuestion.content,
                         created_at: newQuestion.created_at,
                         user: newQuestion.user,
@@ -108,7 +122,7 @@ const MQuestionModalSession = ({ isOpen, onClose, data, set, presentationId }) =
                 } else {
                     newData[questionAnsweredIndex].answers = [
                         {
-                            id: uuidv4(),
+                            id: newQuestion.id,
                             content: newQuestion.content,
                             created_at: newQuestion.created_at,
                             user: newQuestion.user,
@@ -134,7 +148,18 @@ const MQuestionModalSession = ({ isOpen, onClose, data, set, presentationId }) =
     }, [newQuestion])
 
     const handleFilterChange = (e) => {
-        setFilter(e.target.value)
+        const newData = [...data]
+        // eslint-disable-next-line array-callback-return
+        const filtedData = newData.filter((question) => {
+            if (e.target.value === 'all') {
+                return true
+            } else if (e.target.value === 'answered') {
+                return question.is_marked === true
+            } else if (e.target.value === 'unanswered') {
+                return question.is_marked === false
+            }
+        })
+        setQuestionsData(filtedData)
         setTimeout(() => scrollToBottomRef.current.scrollIntoView({ behavior: 'smooth' }), [50])
     }
 
@@ -144,23 +169,21 @@ const MQuestionModalSession = ({ isOpen, onClose, data, set, presentationId }) =
     }
     const handleUpvote = (questionId) => {
         const newData = [...data]
-        const index = newData.findIndex(
-            (question) => parseInt(question.id) === parseInt(questionId)
-        )
+        const index = newData.findIndex((question) => question.id === questionId)
         if (index > -1) {
             newData[index].is_voted = true
             newData[index].vote++
             set(newData)
+            questionSocket.emit('client-vote-question-session', presentationId, questionId)
         }
     }
     const handleMark = (questionId) => {
         const newData = [...data]
-        const index = newData.findIndex(
-            (question) => parseInt(question.id) === parseInt(questionId)
-        )
+        const index = newData.findIndex((question) => question.id === questionId)
         if (index > -1) {
             newData[index].is_marked = true
             set(newData)
+            questionSocket.emit('client-mark-question-session', presentationId, questionId)
         }
     }
     const handleOpenAnswers = (questionId) => () => {
@@ -190,11 +213,15 @@ const MQuestionModalSession = ({ isOpen, onClose, data, set, presentationId }) =
             // Case ANSWER the question
             if (replyQuestion) {
                 question.isAnswer = true
-                question.id = replyQuestion.id
+                question.questionId = replyQuestion.id
                 question.userAnsweredId = replyQuestion.user.id
                 setisOpenAnswers((cur) => ({ ...cur, [replyQuestion.id]: true }))
 
                 setReplyQuestion(null)
+            } else {
+                question.is_voted = false
+                question.vote = 0
+                question.is_marked = false
             }
 
             questionSocket.emit('client-send-question-session', presentationId, question)
