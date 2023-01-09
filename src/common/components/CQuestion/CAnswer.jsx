@@ -2,8 +2,13 @@ import { Avatar } from 'flowbite-react'
 import moment from 'moment'
 
 function CAnswer({ answer, me }) {
-    const isMe = parseInt(answer.user.id) === parseInt(me.id)
-
+    const isMe = answer.user_id.toString() === me.id.toString()
+    if (answer.user === null) {
+        answer.user = {
+            id: answer.user_id,
+            name: 'Anonymous',
+        }
+    }
     return (
         <div className={`flex animate-[pulse-once_1s_ease-in] items-start px-2 pt-2`}>
             <Avatar img={answer.user ? answer.user.image : null} rounded={true} />
