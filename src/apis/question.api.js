@@ -13,3 +13,9 @@ export const add = (params = {}) => {
         return isSuccess(rest) ? { data: data?.data } : { data: {} }
     }).post(QUESTIONS.ADD, params)
 }
+
+export const postUpvote = (questionId, params = {}) => {
+    return map(({ data, ...rest }) => {
+        return isSuccess(rest) ? { data: data?.data } : { data: {} }
+    }).post(QUESTIONS.POST_VOTE(questionId), params)
+}

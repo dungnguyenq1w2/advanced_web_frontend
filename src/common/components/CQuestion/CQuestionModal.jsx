@@ -13,6 +13,8 @@ import { Avatar, Label, Radio } from 'flowbite-react'
 import moment from 'moment'
 import { v4 as uuidv4 } from 'uuid'
 
+import { postUpvote } from 'apis/question.api'
+
 import CLoading from '../CLoading'
 import CAnswer from './CAnswer'
 
@@ -158,15 +160,22 @@ const CQuestionModal = ({ isOpen, onClose, presentationId }) => {
         setReplyQuestion(question)
         inputRef.current.focus()
     }
-    const handleUpvote = (questionId) => {
+    const handleUpvote = async (questionId) => {
         const newData = [...data]
         const index = newData.findIndex(
             (question) => parseInt(question.id) === parseInt(questionId)
         )
         if (index > -1) {
-            newData[index].is_voted = true
-            newData[index].vote++
-            set({ ..._data, data: newData })
+            try {
+                const res = await postUpvote(questionId)
+                if (res?.data?.status) {
+                    newData[index].is_voted = true
+                    newData[index].vote++
+                    set({ ..._data, data: newData })
+                }
+            } catch (error) {
+                console.log(error)
+            }
         }
     }
     const handleMark = (questionId) => {
