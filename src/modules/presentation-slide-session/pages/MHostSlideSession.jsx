@@ -2,19 +2,22 @@ import { Suspense, useEffect, useMemo, useState } from 'react'
 
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 
-import { getForHostById as getPresentationForHostById } from 'common/queries-fn/presentations.query'
-import { getForHostById as getSlideForHostById } from 'common/queries-fn/slides.query'
+import { MHeading, MParagraph } from 'modules/presentation-slide/components'
 
+import { getForHostById as getPresentationForHostById } from 'common/queries-fn/presentations.query'
+
+import { hostSocket, messageSocket, presentationSocket, questionSocket } from 'common/socket'
 import CLoading from 'common/components/CLoading'
 
-import { MHeading, MHostMultipleChoice, MParagraph, MSlide } from '../components'
-import { presentationSocket } from 'common/socket'
+import { MHostMultipleChoiceSession, MSlideSession } from '../components'
 
 function MHostSlide() {
     //#region data
     const { presentationId } = useParams()
     const [searchParams] = useSearchParams()
     const navigate = useNavigate()
+    const [slide, setSlide] = useState({})
+    const [isSlideLoading, setIsSlideLoading] = useState(false)
 
     const { data: presentation, isLoading: isPresentationLoading } = getPresentationForHostById(
         presentationId,
@@ -37,13 +40,6 @@ function MHostSlide() {
 
     const [slideIndex, setSlideIndex] = useState({ cur: 1, prev: null, next: null })
 
-    const {
-        data: slide,
-        isLoading: isSlideLoading,
-        set,
-    } = getSlideForHostById(slidesId[slideIndex.cur]?.id, {
-        presentationGroupId: searchParams.get('id'), // presentation_group_id
-    })
     //#endregion
 
     //#region event
@@ -64,6 +60,24 @@ function MHostSlide() {
     }, [presentation, navigate])
 
     useEffect(() => {
+        hostSocket.open()
+        setIsSlideLoading(true)
+        hostSocket.emit(
+            'client-get-slideForHost-session',
+            slidesId[slideIndex.cur]?.id,
+            searchParams.get('id')
+        )
+
+        return () => {
+            hostSocket.emit(
+                'client-send-stop-session',
+                slidesId[slideIndex.cur]?.id,
+                searchParams.get('id')
+            )
+        }
+    }, [slideIndex, slidesId, searchParams])
+
+    useEffect(() => {
         return () => {
             if (searchParams.get('id')) {
                 presentationSocket.open()
@@ -73,8 +87,35 @@ function MHostSlide() {
                     searchParams.get('id')
                 )
             }
+            hostSocket.open()
+            hostSocket.emit(
+                'client-stop-presentation-session',
+                presentationId,
+                searchParams.get('id') ?? null
+            )
+            messageSocket.emit(
+                'client-stop-message-session',
+                presentationId,
+                searchParams.get('id') ?? null
+            )
+            questionSocket.emit(
+                'client-stop-question-session',
+                presentationId,
+                searchParams.get('id') ?? null
+            )
         }
     }, [presentationId, searchParams])
+
+    useEffect(() => {
+        hostSocket.on('server-send-slideForHost-session', (slide) => {
+            setSlide(slide)
+            setTimeout(() => setIsSlideLoading(false), 100)
+        })
+
+        return () => {
+            hostSocket.off('server-send-slideForHost-session')
+        }
+    }, [])
 
     // Update slide index of this presentation when change slidesId
     useEffect(() => {
@@ -91,7 +132,7 @@ function MHostSlide() {
     //#endregion
 
     return (
-        <MSlide
+        <MSlideSession
             type={slidesId[slideIndex.cur]?.type}
             code={presentation?.data.code}
             presentationGroupId={searchParams.get('id')}
@@ -105,27 +146,27 @@ function MHostSlide() {
             ) : (
                 <>
                     {slidesId[slideIndex.cur]?.type === 1 && (
-                        <MHeading data={slide?.data} isLoading={isSlideLoading} />
+                        <MHeading data={slide} isLoading={isSlideLoading} />
                     )}
 
                     {slidesId[slideIndex.cur]?.type === 2 && (
-                        <MParagraph data={slide?.data} isLoading={isSlideLoading} />
+                        <MParagraph data={slide} isLoading={isSlideLoading} />
                     )}
 
                     {slidesId[slideIndex.cur]?.type === 3 && (
                         <Suspense fallback={<CLoading />}>
-                            <MHostMultipleChoice
+                            <MHostMultipleChoiceSession
                                 slideId={slidesId[slideIndex.cur].id}
                                 presentationGroupId={searchParams.get('id')}
                                 data={slide}
                                 isLoading={isSlideLoading}
-                                set={set}
+                                set={setSlide}
                             />
                         </Suspense>
                     )}
                 </>
             )}
-        </MSlide>
+        </MSlideSession>
     )
 }
 

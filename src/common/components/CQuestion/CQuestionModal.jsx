@@ -78,6 +78,7 @@ const CQuestionModal = ({ isOpen, onClose, presentationId }) => {
     useEffect(() => {
         if (inputRef.current) inputRef.current.focus()
     }, [])
+
     // Connect socket
     useEffect(() => {
         if (presentationId) {

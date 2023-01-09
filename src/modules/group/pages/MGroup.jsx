@@ -5,12 +5,15 @@ import { createSearchParams, useNavigate, useParams } from 'react-router-dom'
 import { getById } from 'common/queries-fn/groups.query'
 import { getAllByGroupId as getAllPresentationByGroupId } from 'common/queries-fn/presentations.query'
 
+import { presentationSocket, notificationSocket } from 'common/socket'
 import CChatboxModal from 'common/components/CChatbox/CChatboxModal'
 import CLoading from 'common/components/CLoading'
 import CQuestionModal from 'common/components/CQuestion/CQuestionModal'
 
 import {
     Bars3BottomLeftIcon,
+    BoltIcon,
+    CircleStackIcon,
     FireIcon,
     PlusCircleIcon,
     QrCodeIcon,
@@ -19,7 +22,7 @@ import {
     ViewfinderCircleIcon,
 } from '@heroicons/react/24/outline'
 import { ROLE, ROLE_ASSIGNMENT } from 'common/constant'
-import { Button } from 'flowbite-react'
+import { Button, Dropdown } from 'flowbite-react'
 import {
     MAddPresentationModal,
     MParticipantsModal,
@@ -40,6 +43,10 @@ function MGroup() {
     const [isResultModalOpen, setIsResultModalOpen] = useState(false)
     const [isChatboxModalOpen, setIsChatboxModalOpen] = useState(false)
     const [isQuestionModalOpen, setIsQuestionModalOpen] = useState(false)
+    const [presentingPresentation, setPresentingPresentation] = useState({
+        content: null,
+        presentationId: null,
+    })
 
     const [presentationIdSelected, setPresentationIdSelected] = useState(null)
     const [presentationGroupIdSelected, setPresentationGroupIdSelected] = useState(null)
@@ -53,7 +60,7 @@ function MGroup() {
     const group = useMemo(() => groupData?.data ?? {}, [groupData])
 
     const { data: presentationsData, isLoading: isPresentationsLoading } =
-        getAllPresentationByGroupId(groupId)
+        getAllPresentationByGroupId(groupId, false, { staleTime: 0 })
 
     const [currentPage, setCurrentPage] = useState(1)
     const [itemsPerPage] = useState(3)
@@ -85,6 +92,45 @@ function MGroup() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
+    useEffect(() => {
+        notificationSocket.on('server-present-presentation-noti', (noti) => {
+            const index = noti.content.indexOf(' in ')
+            const content = noti.content.slice(0, index)
+            setPresentingPresentation((cur) =>
+                cur.presentationId !== parseInt(noti.presentationId)
+                    ? { content, presentationId: parseInt(noti.presentationId) }
+                    : { content: null, presentationId: null }
+            )
+        })
+
+        notificationSocket.on('server-stop-presentation-noti', (data) => {
+            setPresentingPresentation((cur) =>
+                cur.presentationId === parseInt(data.presentationId)
+                    ? { content: null, presentationId: null }
+                    : cur
+            )
+        })
+
+        return () => {
+            notificationSocket.off('server-present-presentation-noti')
+            notificationSocket.off('server-stop-presentation-noti')
+        }
+    }, [])
+
+    useEffect(() => {
+        if (presentationsData?.data?.length > 0) {
+            const presentingPresentation = presentationsData.data.find(
+                (e) => e.is_presenting === true
+            )
+            if (presentingPresentation) {
+                setPresentingPresentation({
+                    content: `Presentation [${presentingPresentation?.presentation?.name}] is presenting`,
+                    presentationId: presentingPresentation?.presentation?.id,
+                })
+            }
+        }
+    }, [presentationsData])
+
     const handleChangeRole = (mode, userId) => {
         const index = group.participants.findIndex((e) => e.user.id === userId)
         let newGroup = { ...group, participants: [...group.participants] }
@@ -110,6 +156,25 @@ function MGroup() {
                 break
         }
         set({ ...groupData, data: newGroup })
+    }
+
+    const handlePresent = (mode, presentationId, presentationName, presentationGroupId) => {
+        presentationSocket.open()
+        presentationSocket.emit(
+            'client-present-presentation',
+            presentationId,
+            presentationName,
+            groupId,
+            group.name
+        )
+        navigate({
+            pathname: `/presentation-slide${
+                mode === 'session' ? '-session' : ''
+            }/${presentationId}/host`,
+            search: createSearchParams({
+                id: presentationGroupId, // presentation_group_id
+            }).toString(),
+        })
     }
     //#endregion
 
@@ -174,7 +239,7 @@ function MGroup() {
                             {presentations?.map((row) => (
                                 <div
                                     key={row.id}
-                                    className={`relative mt-2 flex h-[90px] flex-col justify-between rounded border border-slate-300 px-1 shadow-lg`}
+                                    className={`relative mt-2 flex h-[90px] flex-col justify-between rounded border border-slate-300 px-1 shadow-md`}
                                 >
                                     <div className="flex-1">
                                         <div className="flex justify-between">
@@ -203,23 +268,51 @@ function MGroup() {
                                         </div>
                                     </div>
                                     <div className="flex flex-wrap">
-                                        {group.my_role !== 3 && !row?.is_presenting && (
-                                            <button
-                                                className="m-1 rounded p-1 text-sm font-medium text-blue-700 hover:bg-blue-200"
-                                                onClick={() =>
-                                                    navigate({
-                                                        pathname: `/presentation-slide/${row.presentation.id}/host`,
-                                                        search: createSearchParams({
-                                                            id: row.id, // presentation_group_id
-                                                        }).toString(),
-                                                    })
-                                                }
-                                            >
+                                        {group.my_role !== 3 && !row?.presentation?.is_presenting && (
+                                            <div className="m-1 rounded p-1 text-sm font-medium text-blue-700 hover:bg-blue-200">
                                                 <div className="flex items-center">
-                                                    <PlayIcon className="h-4 w-4" />
-                                                    <span>Present</span>
+                                                    <Dropdown
+                                                        arrowIcon={false}
+                                                        inline={true}
+                                                        placement="right"
+                                                        label={
+                                                            <>
+                                                                <PlayIcon className="h-4 w-4" />
+                                                                <span>Present</span>
+                                                            </>
+                                                        }
+                                                    >
+                                                        <Dropdown.Item
+                                                            className="cursor-pointer text-[#1A94FF]"
+                                                            onClick={() =>
+                                                                handlePresent(
+                                                                    'storage',
+                                                                    row.presentation.id,
+                                                                    row.presentation.name,
+                                                                    row.id
+                                                                )
+                                                            }
+                                                        >
+                                                            <CircleStackIcon className="mr-2 h-4 w-4 cursor-pointer text-[#1A94FF]" />
+                                                            <span>Present with storage</span>
+                                                        </Dropdown.Item>
+                                                        <Dropdown.Item
+                                                            className="cursor-pointer text-red-600"
+                                                            onClick={() =>
+                                                                handlePresent(
+                                                                    'session',
+                                                                    row.presentation.id,
+                                                                    row.presentation.name,
+                                                                    row.id
+                                                                )
+                                                            }
+                                                        >
+                                                            <BoltIcon className="mr-2 h-4 w-4 cursor-pointer text-red-600" />
+                                                            <span>Present in session</span>
+                                                        </Dropdown.Item>
+                                                    </Dropdown>
                                                 </div>
-                                            </button>
+                                            </div>
                                         )}
 
                                         {group.my_role !== 3 && (
@@ -324,6 +417,15 @@ function MGroup() {
                     presentationId={presentationIdSelected}
                     presentationGroupId={presentationGroupIdSelected}
                 />
+            )}
+            {presentingPresentation?.content && (
+                <div className="fixed top-20 left-4 bg-white p-5 shadow">
+                    {presentingPresentation.content}
+                    <span className="absolute -top-1 -right-1 flex h-3 w-3">
+                        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-75"></span>
+                        <span className="relative inline-flex h-3 w-3 items-center justify-center rounded-full bg-red-500 text-[8px]"></span>
+                    </span>
+                </div>
             )}
         </div>
     )

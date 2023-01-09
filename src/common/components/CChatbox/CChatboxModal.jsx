@@ -1,6 +1,7 @@
 import 'modules/presentation-slide/assets/style/index.css'
-
 import { useEffect, useMemo, useRef, useState } from 'react'
+
+import InfiniteScroll from 'react-infinite-scroll-component'
 
 import { messageSocket } from 'common/socket'
 
@@ -15,17 +16,13 @@ import { v4 as uuidv4 } from 'uuid'
 
 import CLoading from '../CLoading'
 
-const AlwaysScrollToBottom = () => {
-    const elementRef = useRef()
-    useEffect(() => elementRef.current.scrollIntoView(), [])
-    return <div ref={elementRef} />
-}
-
 const CChatboxModal = ({ isOpen, onClose, presentationId, presentationGroupId }) => {
     //#region data
     const scrollToBottomRef = useRef(null)
     const [input, setInput] = useState('')
     const [newMessage, setNewMessage] = useState(null)
+    const [hasMore, setHasMore] = useState(true)
+    const [page, setPage] = useState(1)
 
     const me = useMemo(() => {
         const user = JSON.parse(localStorage.getItem('user'))
@@ -46,18 +43,25 @@ const CChatboxModal = ({ isOpen, onClose, presentationId, presentationGroupId })
         data: _data,
         isLoading,
         set,
+        refetch,
     } = getAll(
         {
             presentationId,
             presentationGroupId,
+            page,
         },
         false,
         { staleTime: 0 }
     )
+    const [data, setData] = useState({})
+    //#endregion
 
-    const data = useMemo(
-        () =>
-            _data?.data
+    //#region event
+
+    // Fetch data
+    useEffect(() => {
+        if (_data !== undefined) {
+            const moreData = _data?.data
                 ? _data.data.reduce(
                       (item, cur) => {
                           if (!cur?.user) {
@@ -72,12 +76,19 @@ const CChatboxModal = ({ isOpen, onClose, presentationId, presentationGroupId })
                       },
                       { arr: [] }
                   )
-                : [],
-        [_data]
-    )
-    //#endregion
+                : []
+            if (page === 1) {
+                setData(moreData)
+            } else {
+                setData({ ...data, arr: [...data.arr, ...moreData.arr] })
+            }
+            if (_data?.data.length < 10) {
+                setHasMore(false)
+            }
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [_data])
 
-    //#region event
     // Connect socket
     useEffect(() => {
         if (presentationId) {
@@ -139,132 +150,168 @@ const CChatboxModal = ({ isOpen, onClose, presentationId, presentationGroupId })
         setInput('')
     }
 
+    const fetchMoreData = () => {
+        setPage(page + 1)
+        setTimeout(() => {
+            refetch()
+        }, 1000) //1s
+    }
+
     return (
         <>
             <CModal title="Chat" isOpen={isOpen} onClose={onClose}>
-                <div className="h-[550px] overflow-auto">
-                    {isLoading ? (
-                        <CLoading />
-                    ) : (
-                        <>
-                            <div>See more</div>
-                            {data.arr.map((messages) => {
-                                const isMe = parseInt(messages[0].user.id) === parseInt(me.id)
+                {isLoading ? (
+                    <CLoading />
+                ) : (
+                    <div
+                        id="scrollableDiv"
+                        style={{
+                            height: 550,
+                            overflow: 'auto',
+                            display: 'flex',
+                            flexDirection: 'column-reverse',
+                        }}
+                    >
+                        <InfiniteScroll
+                            dataLength={data?.arr?.length || 0}
+                            next={fetchMoreData}
+                            style={{ display: 'flex', flexDirection: 'column-reverse' }} //To put endMessage and loader to the top.
+                            inverse={true}
+                            hasMore={hasMore}
+                            height={550} // importance
+                            loader={<h4 className="text-center">...Loading</h4>}
+                            endMessage={
+                                <h4 className="text-center text-red-600">You are all set!</h4>
+                            }
+                            scrollableTarget="scrollableDiv"
+                        >
+                            <>
+                                {data.arr &&
+                                    data.arr.map((messages) => {
+                                        const isMe =
+                                            parseInt(messages[0].user.id) === parseInt(me.id)
 
-                                return (
-                                    <div
-                                        key={messages[0].id}
-                                        className={`my-2 flex items-end ${
-                                            isMe ? 'flex-row-reverse' : ''
-                                        }`}
-                                    >
-                                        <Avatar
-                                            img={messages[0].user ? messages[0].user.image : null}
-                                            rounded={true}
-                                            className="mx-3"
-                                        />
-                                        {messages.length === 1 ? (
-                                            // One message
+                                        return (
                                             <div
-                                                className={`flex max-w-[350px] flex-col rounded-lg  py-2 px-4 ${
-                                                    isMe ? 'bg-green-100' : 'bg-gray-100'
+                                                key={messages[0].id}
+                                                className={`my-2 flex items-end ${
+                                                    isMe ? 'flex-row-reverse' : ''
                                                 }`}
-                                                title={moment(messages[0].created_at)
-                                                    // .utc()
-                                                    .locale('vi')
-                                                    .format('hh:mm DD/MM/YY')}
                                             >
-                                                <span
-                                                    className={`mb-1 flex text-xs font-semibold ${
-                                                        isMe
-                                                            ? 'justify-end text-blue-600'
-                                                            : 'text-sky-600'
-                                                    }`}
-                                                >
-                                                    {messages[0].user
-                                                        ? messages[0].user.name
-                                                        : 'Anonymous'}
-                                                </span>
-                                                <p
-                                                    className={`flex text-sm ${
-                                                        isMe ? 'justify-end' : ''
-                                                    }`}
-                                                >
-                                                    {messages[0].content}
-                                                </p>
-                                                <span
-                                                    className={`flex cursor-default text-xs text-gray-600 ${
-                                                        isMe ? 'items-start' : 'justify-end'
-                                                    }`}
-                                                >
-                                                    {moment(messages[0].created_at).utc().fromNow()}
-                                                </span>
-                                            </div>
-                                        ) : (
-                                            // Group messages
-                                            <div
-                                                className={`flex flex-col ${
-                                                    isMe ? 'items-end' : 'items-start'
-                                                } rounded-lg`}
-                                            >
-                                                {messages.map((message, index) => (
+                                                <Avatar
+                                                    img={
+                                                        messages[0].user
+                                                            ? messages[0].user.image
+                                                            : null
+                                                    }
+                                                    rounded={true}
+                                                    className="mx-3"
+                                                />
+                                                {messages.length === 1 ? (
+                                                    // One message
                                                     <div
-                                                        key={message.id}
-                                                        className={`my-0.5 inline-block max-w-[350px] flex-col py-2 px-4 ${
-                                                            index === 0
-                                                                ? isMe
-                                                                    ? 'rounded-t-lg rounded-bl-lg bg-green-100'
-                                                                    : 'rounded-t-lg rounded-br-lg bg-gray-100'
-                                                                : isMe
-                                                                ? 'rounded-l-lg bg-green-100'
-                                                                : 'rounded-r-lg bg-gray-100'
+                                                        className={`flex max-w-[350px] flex-col rounded-lg  py-2 px-4 ${
+                                                            isMe ? 'bg-green-100' : 'bg-gray-100'
                                                         }`}
-                                                        title={moment(message.created_at)
+                                                        title={moment(messages[0].created_at)
+                                                            // .utc()
                                                             .locale('vi')
                                                             .format('hh:mm DD/MM/YY')}
                                                     >
-                                                        {index === 0 && (
-                                                            <span
-                                                                className={`mb-1 flex text-xs font-semibold ${
-                                                                    isMe
-                                                                        ? 'justify-end text-blue-600'
-                                                                        : 'text-sky-600'
-                                                                }`}
-                                                            >
-                                                                {message.user
-                                                                    ? message.user.name
-                                                                    : 'Anonymous'}
-                                                            </span>
-                                                        )}
-
+                                                        <span
+                                                            className={`mb-1 flex text-xs font-semibold ${
+                                                                isMe
+                                                                    ? 'justify-end text-blue-600'
+                                                                    : 'text-sky-600'
+                                                            }`}
+                                                        >
+                                                            {messages[0].user
+                                                                ? messages[0].user.name
+                                                                : 'Anonymous'}
+                                                        </span>
                                                         <p
-                                                            className={` flex text-sm ${
+                                                            className={`flex text-sm ${
                                                                 isMe ? 'justify-end' : ''
                                                             }`}
                                                         >
-                                                            {message.content}
+                                                            {messages[0].content}
                                                         </p>
                                                         <span
-                                                            className={` inline-flex cursor-default text-xs text-gray-600 ${
+                                                            className={`flex cursor-default text-xs text-gray-600 ${
                                                                 isMe ? 'items-start' : 'justify-end'
                                                             }`}
                                                         >
-                                                            {moment(message.created_at)
+                                                            {moment(messages[0].created_at)
                                                                 .utc()
                                                                 .fromNow()}
                                                         </span>
                                                     </div>
-                                                ))}
+                                                ) : (
+                                                    // Group messages
+                                                    <div
+                                                        className={`flex flex-col ${
+                                                            isMe ? 'items-end' : 'items-start'
+                                                        } rounded-lg`}
+                                                    >
+                                                        {messages.map((message, index) => (
+                                                            <div
+                                                                key={message.id}
+                                                                className={`my-0.5 inline-block max-w-[350px] flex-col py-2 px-4 ${
+                                                                    index === 0
+                                                                        ? isMe
+                                                                            ? 'rounded-t-lg rounded-bl-lg bg-green-100'
+                                                                            : 'rounded-t-lg rounded-br-lg bg-gray-100'
+                                                                        : isMe
+                                                                        ? 'rounded-l-lg bg-green-100'
+                                                                        : 'rounded-r-lg bg-gray-100'
+                                                                }`}
+                                                                title={moment(message.created_at)
+                                                                    .locale('vi')
+                                                                    .format('hh:mm DD/MM/YY')}
+                                                            >
+                                                                {index === 0 && (
+                                                                    <span
+                                                                        className={`mb-1 flex text-xs font-semibold ${
+                                                                            isMe
+                                                                                ? 'justify-end text-blue-600'
+                                                                                : 'text-sky-600'
+                                                                        }`}
+                                                                    >
+                                                                        {message.user
+                                                                            ? message.user.name
+                                                                            : 'Anonymous'}
+                                                                    </span>
+                                                                )}
+
+                                                                <p
+                                                                    className={` flex text-sm ${
+                                                                        isMe ? 'justify-end' : ''
+                                                                    }`}
+                                                                >
+                                                                    {message.content}
+                                                                </p>
+                                                                <span
+                                                                    className={` inline-flex cursor-default text-xs text-gray-600 ${
+                                                                        isMe
+                                                                            ? 'items-start'
+                                                                            : 'justify-end'
+                                                                    }`}
+                                                                >
+                                                                    {moment(message.created_at)
+                                                                        .utc()
+                                                                        .fromNow()}
+                                                                </span>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                )}
                                             </div>
-                                        )}
-                                    </div>
-                                )
-                            })}
-                            <AlwaysScrollToBottom />
-                        </>
-                    )}
-                    <div ref={scrollToBottomRef} />
-                </div>
+                                        )
+                                    })}
+                            </>
+                        </InfiniteScroll>
+                    </div>
+                )}
 
                 <div>
                     {/* Form control */}

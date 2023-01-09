@@ -16,7 +16,7 @@ import {
 } from '@heroicons/react/24/outline'
 import CLoading from './CLoading'
 import { v4 as uuidv4 } from 'uuid'
-import { add, readNotifications } from 'apis/notification.api'
+import { readNotifications } from 'apis/notification.api'
 import moment from 'moment'
 
 function CHeader() {
@@ -43,7 +43,7 @@ function CHeader() {
     useEffect(() => {
         notificationSocket.on('server-send-message-noti', (noti) => {
             if (parseInt(me.id) !== parseInt(noti.user_id)) {
-                setNoti(noti)
+                setNoti({ ...noti, is_read: false, created_at: new Date() })
             }
         })
         notificationSocket.on('server-send-question-noti', (noti) => {
@@ -54,14 +54,20 @@ function CHeader() {
                 ) {
                     return
                 } else {
-                    setNoti(noti)
+                    setNoti({ ...noti, is_read: false, created_at: new Date() })
                 }
+            }
+        })
+        notificationSocket.on('server-present-presentation-noti', (noti) => {
+            if (parseInt(me.id) !== parseInt(noti.user_id)) {
+                setNoti({ ...noti, is_read: false, created_at: new Date() })
             }
         })
 
         return () => {
             notificationSocket.off('server-send-message-noti')
             notificationSocket.off('server-send-question-noti')
+            notificationSocket.off('server-present-presentation-noti')
         }
     }, [notificationSocket, me])
 
@@ -72,20 +78,9 @@ function CHeader() {
             newNotifications.unshift({ ...noti, id: uuidv4() })
 
             set({ ...data, data: newNotifications })
-
-            // api
-            postNotification(noti)
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [noti])
-
-    const postNotification = async (noti) => {
-        const postNoti = { ...noti, user_id: me.id }
-        delete postNoti?.userAnsweredId
-        delete postNoti?.created_at
-
-        await add(postNoti)
-    }
 
     const handleLogout = async () => {
         setIsLoading(true)
@@ -126,7 +121,7 @@ function CHeader() {
 
                 <div className="flex md:order-2">
                     {me?.name ? (
-                        <div className="flex  items-center ">
+                        <div className="flex items-center ">
                             <Dropdown
                                 arrowIcon={false}
                                 inline={true}
@@ -157,7 +152,7 @@ function CHeader() {
                                                     navigate(noti.link)
                                                 }}
                                             >
-                                                <div>
+                                                <div className="flex-1">
                                                     <p
                                                         className={`text-sm font-semibold text-gray-600`}
                                                     >
