@@ -49,6 +49,8 @@ export const PRESENTATIONS = {
     UPDATE_PRESENTATION_NAME: '/presentations/updateName',
     POST_NEW_CODE: (presentationId) => `/presentations/createCode/${presentationId}`,
     ADD_TO_GROUP: '/presentations/add-to-group',
+    REMOVE_FROM_GROUP: (presentationGroupId) =>
+        `/presentations/${presentationGroupId}/remove-from-group`,
 }
 
 //#region SLIDES

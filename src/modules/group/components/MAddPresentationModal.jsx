@@ -1,4 +1,4 @@
-import { forwardRef, useImperativeHandle, useMemo, useState } from 'react'
+import { forwardRef, useEffect, useImperativeHandle, useMemo, useState } from 'react'
 
 import { useNavigate } from 'react-router-dom'
 
@@ -21,23 +21,36 @@ const MAddPresentationModal = forwardRef(
         const [isLoading, setIsLoading] = useState(false)
         const [isOpen, setIsOpen] = useState(false)
         const { data, isLoading: isDataLoading } = getAllPresentationsByHostId()
+        const localUser = JSON.parse(localStorage.getItem('user'))
+
+        useEffect(() => {
+            if (!localUser) {
+                alert('Login to use this feature')
+                navigate('/auth/login')
+            }
+        }, [localUser, navigate])
+
+        // console.log('🚀 ~ data', data?.data)
+        // console.log('🚀 ~ pres', presentations)
 
         const remainPresentations = useMemo(() => {
             let result = []
             if (data?.data) {
                 for (const presentation of data?.data) {
-                    const index = presentations.findIndex(
-                        (item) => item?.presentation_id === presentation?.id
-                    )
+                    if (presentation?.owner_id === localUser?.id) {
+                        const index = presentations.findIndex(
+                            (item) => item?.presentation_id === presentation?.id
+                        )
 
-                    if (index === -1) {
-                        result.push(presentation)
+                        if (index === -1) {
+                            result.push(presentation)
+                        }
                     }
                 }
             }
 
             return result
-        }, [data, presentations])
+        }, [data, presentations, localUser])
 
         // console.log('🚀 ~ data', data)
         // console.log('🚀 ~ presentations', presentations)
@@ -79,7 +92,7 @@ const MAddPresentationModal = forwardRef(
             })
             setTimeout(() => {
                 setIsLoading(false)
-            }, 500)
+            }, 200)
             refetchPresentations()
         }
         //#endregion

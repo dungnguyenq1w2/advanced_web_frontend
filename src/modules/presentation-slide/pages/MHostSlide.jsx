@@ -8,7 +8,7 @@ import { getForHostById as getSlideForHostById } from 'common/queries-fn/slides.
 import CLoading from 'common/components/CLoading'
 
 import { MHeading, MHostMultipleChoice, MParagraph, MSlide } from '../components'
-import { hostSocket, presentationSocket, slideSocket } from 'common/socket'
+import { hostSocket, presentationSocket } from 'common/socket'
 
 function MHostSlide() {
     //#region data

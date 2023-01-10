@@ -67,3 +67,9 @@ export const addToGroup = (params = {}) => {
         return isSuccess(rest) ? { data: data?.data } : { data: {} }
     }).post(PRESENTATIONS.ADD_TO_GROUP, params)
 }
+
+export const removeFromGroup = (presentationGroupId, params = {}) => {
+    return map(({ data, ...rest }) => {
+        return isSuccess(rest) ? { data: data?.data } : { data: {} }
+    }).remove(PRESENTATIONS.REMOVE_FROM_GROUP(presentationGroupId), params)
+}

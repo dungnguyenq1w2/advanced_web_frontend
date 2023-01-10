@@ -36,6 +36,7 @@ import {
     MShareModal,
 } from '../components'
 import { PlayIcon } from '@heroicons/react/20/solid'
+import { removeFromGroup as removePresentationFromGroup } from 'apis/presentation.api'
 
 const ITEM_PER_PAGE = 5
 
@@ -209,6 +210,17 @@ function MGroup() {
                 id: presentationGroupId, // presentation_group_id
             }).toString(),
         })
+    }
+
+    const handleRemovePresentation = (presentationGroupId) => async () => {
+        // setIsLoading(true)
+        // console.log('🚀 ~ presentations', presentations)
+        // console.log('🚀 ~ presentationGroupId', presentationGroupId)
+        await removePresentationFromGroup(presentationGroupId)
+        // setTimeout(() => {
+        // setIsLoading(false)
+        // }, 200)
+        refetchPresentations()
     }
 
     //#endregion
@@ -406,11 +418,7 @@ function MGroup() {
                                         </button>
                                         <button
                                             className="m-1  rounded p-1 text-sm font-medium text-red-700 hover:bg-red-200"
-                                            onClick={() => {
-                                                setIsChatboxModalOpen(true)
-                                                setPresentationIdSelected(row.presentation.id)
-                                                setPresentationGroupIdSelected(row.id)
-                                            }}
+                                            onClick={handleRemovePresentation(row.id)}
                                         >
                                             <Tooltip content="Remove">
                                                 <XMarkIcon className="h-6 w-6" />
