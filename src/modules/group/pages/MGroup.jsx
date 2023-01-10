@@ -169,7 +169,7 @@ function MGroup() {
             case ROLE_ASSIGNMENT.SET_OWNER:
                 newGroup.participants[index].role_id = 1
                 newGroup.my_role = 2
-                console.log(newGroup)
+                // console.log(newGroup)
                 // set({ ...data, data: newGroup })
 
                 break

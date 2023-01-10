@@ -133,6 +133,9 @@ const MQuestionModalSession = ({ isOpen, onClose, data, set, presentationId }) =
                 newData.push({
                     id: newQuestion.id,
                     content: newQuestion.content,
+                    is_voted: newQuestion.is_voted,
+                    vote: newQuestion.vote,
+                    is_marked: newQuestion.is_marked,
                     created_at: newQuestion.created_at,
                     user: newQuestion.user,
                 })

@@ -129,7 +129,6 @@ const MChatboxModalSession = ({ isOpen, onClose, data, set, presentationId }) =>
         <>
             <CModal title="Chat" isOpen={isOpen} onClose={onClose}>
                 <div className="h-[550px] overflow-auto">
-                    <div>See more</div>
                     {messages.arr.map((messages) => {
                         const isMe = parseInt(messages[0].user.id) === parseInt(me.id)
 

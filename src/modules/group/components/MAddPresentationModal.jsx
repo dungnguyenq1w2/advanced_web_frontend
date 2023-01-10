@@ -39,9 +39,9 @@ const MAddPresentationModal = forwardRef(
             return result
         }, [data, presentations])
 
-        console.log('🚀 ~ data', data)
-        console.log('🚀 ~ presentations', presentations)
-        console.log('🚀 ~ remainPresentations', remainPresentations)
+        // console.log('🚀 ~ data', data)
+        // console.log('🚀 ~ presentations', presentations)
+        // console.log('🚀 ~ remainPresentations', remainPresentations)
 
         //#endregion
 

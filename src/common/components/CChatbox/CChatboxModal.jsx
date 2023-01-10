@@ -42,11 +42,9 @@ const CChatboxModal = ({ isOpen, onClose, presentationId, presentationGroupId })
         data: _data,
         isLoading,
         set,
-        refetch,
     } = getAll(
         {
             presentationId,
-            presentationGroupId,
             page,
         },
         false,

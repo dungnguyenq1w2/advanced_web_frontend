@@ -78,10 +78,31 @@ function MMemberSlide() {
     const { presentationId } = useParams()
     const [searchParams] = useSearchParams()
     const navigate = useNavigate()
-    const [member, setMember] = useState()
+    // const [member, setMember] = useState()
     const [isSubmitted, setIsSubmitted] = useState(false)
     const [slide, setSlide] = useState({})
     const [isSlideLoading, setIsSlideLoading] = useState(false)
+
+    const me = useMemo(() => {
+        const user = JSON.parse(localStorage.getItem('user'))
+        if (user) {
+            delete user.accessToken
+            delete user.refreshToken
+            delete user.email
+            return user
+        } else {
+            const anonymous = JSON.parse(localStorage.getItem('anonymous'))
+            if (anonymous) {
+                return anonymous
+            } else {
+                const fetchIP = async () => {
+                    const ip = await getIP()
+                    return { id: ip, name: 'Anonymous' }
+                }
+                return fetchIP()
+            }
+        }
+    }, [])
 
     const { data: presentation, isLoading: isPresentationLoading } = getPresentationForMemberById(
         presentationId,
@@ -125,9 +146,9 @@ function MMemberSlide() {
             'client-get-slideForMember-session',
             slidesId[slideIndex.cur]?.id,
             searchParams.get('id'),
-            member
+            me
         )
-    }, [slideIndex, slidesId, searchParams, member])
+    }, [slideIndex, slidesId, searchParams, me])
 
     useEffect(() => {
         memberSocket.on('server-send-slideForMember-session', (slide) => {
@@ -156,22 +177,22 @@ function MMemberSlide() {
     // Lấy memberId.
     // Nếu user đã đăng nhập thì lấy userId
     // Nếu là anonymous thì lấy IP
-    useEffect(() => {
-        if (localStorage.getItem('user')) {
-            const user = JSON.parse(localStorage.getItem('user'))
-            delete user.accessToken
-            delete user.refreshToken
-            setMember(user)
-        } else if (localStorage.getItem('ip')) {
-            setMember(JSON.parse(localStorage.getItem('anonomous')))
-        } else {
-            const fetchIP = async () => {
-                const ip = await getIP()
-                setMember({ id: ip, name: 'Anonymous' })
-            }
-            fetchIP()
-        }
-    }, [])
+    // useEffect(() => {
+    //     if (localStorage.getItem('user')) {
+    //         const user = JSON.parse(localStorage.getItem('user'))
+    //         delete user.accessToken
+    //         delete user.refreshToken
+    //         setMember(user)
+    //     } else if (localStorage.getItem('ip')) {
+    //         setMember(JSON.parse(localStorage.getItem('anonomous')))
+    //     } else {
+    //         const fetchIP = async () => {
+    //             const ip = await getIP()
+    //             setMember({ id: ip, name: 'Anonymous' })
+    //         }
+    //         fetchIP()
+    //     }
+    // }, [])
 
     useEffect(() => {
         memberSocket.open()
@@ -206,7 +227,7 @@ function MMemberSlide() {
                         <Suspense fallback={<CLoading />}>
                             <MMemberMultipleChoiceSession
                                 slideId={slidesId[slideIndex.cur].id}
-                                member={member}
+                                member={me}
                                 presentationGroupId={searchParams.get('id')}
                                 data={slide}
                                 isLoading={isSlideLoading}

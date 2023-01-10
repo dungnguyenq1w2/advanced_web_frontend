@@ -202,6 +202,9 @@ function MMemberMultipleChoice({
                 </div>
             ) : isSubmitted ? (
                 <div className="relative animate-[show-slow_0.5s_ease-in]">
+                    <h1 className="absolute top-20 px-6 text-center text-[3.5rem] font-medium">
+                        {data.data.question}?
+                    </h1>
                     <Bar options={options} data={slide.data} />
                     <div
                         style={{ minWidth: '300px' }}

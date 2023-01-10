@@ -20,9 +20,9 @@ export const checkValidSlideInputs = (currentSlide, slideChoices) => {
         if (!currentSlide.question) {
             return false
         }
-        console.log('🚀 ~ currentSlide', currentSlide)
+        // console.log('🚀 ~ currentSlide', currentSlide)
 
-        console.log('🚀 ~ slideChoices', slideChoices)
+        // console.log('🚀 ~ slideChoices', slideChoices)
         for (const choice of slideChoices) {
             if (choice.action) {
                 if (choice.action === 'ADD' || choice.action === 'UPDATE') {
