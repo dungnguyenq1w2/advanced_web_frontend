@@ -7,6 +7,8 @@ import { Link, useParams } from 'react-router-dom'
 import { add as addChoice, remove as removeChoice, update as updateChoice } from 'apis/choice.api'
 import { update as updateSlide } from 'apis/slide.api'
 
+import { slideSocket } from 'common/socket'
+
 import { getAll as getAllChoices } from 'common/queries-fn/choices.query'
 import {
     getAll as getAllSlides,
@@ -97,6 +99,8 @@ function MPresentationEdit() {
     const [currentSlide, setCurrentSlide] = useState(
         slides.find((slide) => slide.id === parseInt(slideId)) ?? {}
     )
+
+    console.log('Current slide: ', currentSlide)
     //#endregion
 
     //#region event
@@ -133,6 +137,11 @@ function MPresentationEdit() {
         try {
             const type = currentSlide?.type
             const isSlideChange = typeof currentSlide?.change !== 'undefined'
+            slideSocket.open()
+
+            //
+            //
+            const isPresenting = true
 
             if (isSlideChange) {
                 const changeParams =
@@ -148,7 +157,12 @@ function MPresentationEdit() {
                               subheading: currentSlide?.subheading,
                           }
 
-                await updateSlide(slideId, changeParams)
+                if (isPresenting) {
+                    slideSocket.emit('client-save-slide', currentSlide?.id, changeParams)
+                } else {
+                    await updateSlide(slideId, changeParams)
+                }
+
                 refetchSlides()
                 refetchSlideData()
             }
@@ -158,21 +172,25 @@ function MPresentationEdit() {
                 const isChoicesChange = slideChoices.findIndex((choice) => choice?.action) !== -1
 
                 if (isChoicesChange) {
-                    for (const choice of slideChoices) {
-                        if (choice?.action) {
-                            const { action, id, ...choiceData } = choice
-                            switch (choice?.action) {
-                                case 'ADD':
-                                    await addChoice(choiceData)
-                                    break
-                                case 'UPDATE':
-                                    await updateChoice(id, choiceData)
-                                    break
-                                case 'DELETE':
-                                    await removeChoice(id)
-                                    break
-                                default:
-                                    break
+                    if (isPresenting) {
+                        slideSocket.emit('client-save-slideChoices', slideChoices)
+                    } else {
+                        for (const choice of slideChoices) {
+                            if (choice?.action) {
+                                const { action, id, ...choiceData } = choice
+                                switch (choice?.action) {
+                                    case 'ADD':
+                                        await addChoice(choiceData)
+                                        break
+                                    case 'UPDATE':
+                                        await updateChoice(id, choiceData)
+                                        break
+                                    case 'DELETE':
+                                        await removeChoice(id)
+                                        break
+                                    default:
+                                        break
+                                }
                             }
                         }
                     }
