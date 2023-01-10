@@ -61,3 +61,9 @@ export const postCreatePresentationCode = (presentationId, params = {}) => {
         return isSuccess(rest) ? { data: data.data } : { data: {} }
     }).post(PRESENTATIONS.POST_NEW_CODE(presentationId), params)
 }
+
+export const addToGroup = (params = {}) => {
+    return map(({ data, ...rest }) => {
+        return isSuccess(rest) ? { data: data?.data } : { data: {} }
+    }).post(PRESENTATIONS.ADD_TO_GROUP, params)
+}

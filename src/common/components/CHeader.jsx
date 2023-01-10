@@ -109,7 +109,7 @@ function CHeader() {
     //#endregion
 
     return (
-        <div className="z-20 shadow-lg">
+        <div className="sticky top-0 left-0 z-20 shadow-sm">
             <Navbar fluid={true} rounded={true}>
                 <Navbar.Brand>
                     <Link to="/">

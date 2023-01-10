@@ -66,15 +66,24 @@ export const options = {
     },
 }
 
-function MSlide({ slideData, isSlideDataLoading }) {
+function MSlide({ currentSlide, slideData, isSlideDataLoading }) {
     return isSlideDataLoading ? (
         <CLoading />
-    ) : (
+    ) : currentSlide?.type === 3 ? (
         <>
             <h2 className="p-3 text-3xl">{slideData.question}</h2>
             <Bar options={options} data={slideData?.data} />
         </>
-    )
+    ) : currentSlide?.type === 2 ? (
+        <div className="flex h-full animate-[show-slow_0.5s_ease-in] flex-col items-center justify-center ">
+            <h1 className="mb-10 px-40 text-center text-2xl">{currentSlide?.paragraph}</h1>
+        </div>
+    ) : currentSlide?.type === 1 ? (
+        <div className="flex h-full animate-[show-slow_0.5s_ease-in] flex-col items-center justify-center">
+            <h1 className="mb-16 w-[70rem] text-center text-5xl">{currentSlide?.heading}</h1>
+            <h2 className="w-[70rem] text-center text-2xl">{currentSlide?.subheading}</h2>
+        </div>
+    ) : null
 }
 
 export default MSlide

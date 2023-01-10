@@ -7,8 +7,6 @@ import { Link, useParams } from 'react-router-dom'
 import { add as addChoice, remove as removeChoice, update as updateChoice } from 'apis/choice.api'
 import { update as updateSlide } from 'apis/slide.api'
 
-import { slideSocket } from 'common/socket'
-
 import { getAll as getAllChoices } from 'common/queries-fn/choices.query'
 import {
     getAll as getAllSlides,
@@ -21,6 +19,7 @@ import MHeader from '../components/MHeader'
 import MSlide from '../components/MSlide'
 
 import { getRandomColor } from 'utils/func'
+import { checkValidSlideInputs } from '../validation'
 
 function MPresentationEdit() {
     //#region data
@@ -134,6 +133,11 @@ function MPresentationEdit() {
 
     const handleSaveSlide = async () => {
         try {
+            if (checkValidSlideInputs(currentSlide, slideChoices) === false) {
+                alert('All fields of slide are required!')
+                return
+            }
+
             const type = currentSlide?.type
             const isSlideChange = typeof currentSlide?.change !== 'undefined'
 
@@ -143,7 +147,7 @@ function MPresentationEdit() {
                         ? { question: currentSlide?.question }
                         : type === 2
                         ? {
-                              heading: currentSlide?.heading,
+                              //   heading: currentSlide?.heading,
                               paragraph: currentSlide?.paragraph,
                           }
                         : {
@@ -284,7 +288,11 @@ function MPresentationEdit() {
                     {/* phần giữa */}
                     <div className="flex flex-1 bg-slate-300">
                         <div className="m-5 h-[530px] w-[650px] flex-1 rounded-sm bg-white">
-                            <MSlide slideData={slideData} isSlideDataLoading={isSlideDataLoading} />
+                            <MSlide
+                                currentSlide={currentSlide}
+                                slideData={slideData}
+                                isSlideDataLoading={isSlideDataLoading}
+                            />
                         </div>
                     </div>
 
@@ -374,30 +382,6 @@ function MPresentationEdit() {
                             </>
                         ) : (
                             <>
-                                <div className="mx-3 flex-none py-2">
-                                    <label
-                                        htmlFor="heading"
-                                        className="mb-2 block text-lg font-bold text-gray-900"
-                                    >
-                                        Heading:
-                                    </label>
-                                    <input
-                                        type="text"
-                                        id="heading"
-                                        className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
-                                        placeholder="Your heading"
-                                        autoFocus
-                                        value={currentSlide?.heading ?? 'Heading'}
-                                        onChange={(e) => {
-                                            setCurrentSlide({
-                                                ...currentSlide,
-                                                heading: e.target.value,
-                                                change: true,
-                                            })
-                                        }}
-                                        required
-                                    />
-                                </div>
                                 {/* <b className="mx-3 mt-1 mb-2 flex-none text-lg">Paragraph: </b> */}
 
                                 {currentSlide?.type === 2 ? (
@@ -426,30 +410,56 @@ function MPresentationEdit() {
                                         />
                                     </div>
                                 ) : (
-                                    <div className="mx-3 flex-1">
-                                        <label
-                                            htmlFor="subheading"
-                                            className="mb-2 text-lg font-bold text-gray-900"
-                                        >
-                                            Subheading:
-                                        </label>
-                                        <input
-                                            type="text"
-                                            id="subheading"
-                                            className="mt-2 w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
-                                            placeholder="Your subheading"
-                                            autoFocus
-                                            value={currentSlide?.subheading ?? 'Heading'}
-                                            onChange={(e) => {
-                                                setCurrentSlide({
-                                                    ...currentSlide,
-                                                    subheading: e.target.value,
-                                                    change: true,
-                                                })
-                                            }}
-                                            required
-                                        />
-                                    </div>
+                                    <>
+                                        <div className="mx-3 flex-none py-2">
+                                            <label
+                                                htmlFor="heading"
+                                                className="mb-2 block text-lg font-bold text-gray-900"
+                                            >
+                                                Heading:
+                                            </label>
+                                            <input
+                                                type="text"
+                                                id="heading"
+                                                className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
+                                                placeholder="Your heading"
+                                                autoFocus
+                                                value={currentSlide?.heading ?? 'Heading'}
+                                                onChange={(e) => {
+                                                    setCurrentSlide({
+                                                        ...currentSlide,
+                                                        heading: e.target.value,
+                                                        change: true,
+                                                    })
+                                                }}
+                                                required
+                                            />
+                                        </div>
+                                        <div className="mx-3 flex-1">
+                                            <label
+                                                htmlFor="subheading"
+                                                className="mb-2 text-lg font-bold text-gray-900"
+                                            >
+                                                Subheading:
+                                            </label>
+                                            <input
+                                                type="text"
+                                                id="subheading"
+                                                className="mt-2 w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
+                                                placeholder="Your subheading"
+                                                autoFocus
+                                                value={currentSlide?.subheading ?? 'Heading'}
+                                                onChange={(e) => {
+                                                    setCurrentSlide({
+                                                        ...currentSlide,
+                                                        subheading: e.target.value,
+                                                        change: true,
+                                                    })
+                                                }}
+                                                required
+                                            />
+                                        </div>
+                                    </>
                                 )}
                             </>
                         )}

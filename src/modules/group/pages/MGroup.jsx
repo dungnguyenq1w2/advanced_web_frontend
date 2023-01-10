@@ -15,13 +15,17 @@ import { getFirst as getFirstSlide } from 'apis/slide.api'
 import {
     Bars3BottomLeftIcon,
     BoltIcon,
+    ChatBubbleBottomCenterTextIcon,
     CircleStackIcon,
+    DocumentChartBarIcon,
     FireIcon,
     PlusCircleIcon,
     QrCodeIcon,
+    QuestionMarkCircleIcon,
     UserGroupIcon,
     UserPlusIcon,
     ViewfinderCircleIcon,
+    XMarkIcon,
 } from '@heroicons/react/24/outline'
 import { ROLE, ROLE_ASSIGNMENT } from 'common/constant'
 import { Button, Dropdown, Tooltip } from 'flowbite-react'
@@ -32,6 +36,8 @@ import {
     MShareModal,
 } from '../components'
 import { PlayIcon } from '@heroicons/react/20/solid'
+
+const ITEM_PER_PAGE = 5
 
 function MGroup() {
     //#region data
@@ -50,6 +56,8 @@ function MGroup() {
         presentationId: null,
     })
 
+    const [presentingMode, setPresentingMode] = useState('')
+
     const [presentationIdSelected, setPresentationIdSelected] = useState(null)
     const [presentationGroupIdSelected, setPresentationGroupIdSelected] = useState(null)
 
@@ -61,27 +69,30 @@ function MGroup() {
     } = getById(groupId, false, { staleTime: 0 })
     const group = useMemo(() => groupData?.data ?? {}, [groupData])
 
-    const { data: presentationsData, isLoading: isPresentationsLoading } =
-        getAllPresentationByGroupId(groupId, false, { staleTime: 0 })
+    const {
+        data: presentationsData,
+        isLoading: isPresentationsLoading,
+        refetch: refetchPresentations,
+        set: setPresentations,
+    } = getAllPresentationByGroupId(groupId, false, { staleTime: 0 })
 
     const [currentPage, setCurrentPage] = useState(1)
-    const [itemsPerPage] = useState(3)
+    // const [itemsPerPage] = useState(5)
 
     const presentations = useMemo(
         () =>
             presentationsData?.data?.slice(
-                (currentPage - 1) * itemsPerPage,
-                currentPage * itemsPerPage
+                (currentPage - 1) * ITEM_PER_PAGE,
+                currentPage * ITEM_PER_PAGE
             ) ?? [],
-        [presentationsData, currentPage, itemsPerPage]
+        [presentationsData, currentPage]
     )
 
     const totalPages = useMemo(
-        () => Math.ceil((presentationsData?.data?.length ?? 0) / itemsPerPage),
-        [presentationsData, itemsPerPage]
+        () => Math.ceil((presentationsData?.data?.length ?? 0) / ITEM_PER_PAGE),
+        [presentationsData]
     )
 
-    console.log('presentations: ', presentationsData?.data)
     //#endregion
 
     //#region event
@@ -96,6 +107,8 @@ function MGroup() {
 
     useEffect(() => {
         notificationSocket.on('server-present-presentation-noti', (noti) => {
+            setPresentingMode(noti.mode)
+
             const index = noti.content.indexOf(' in ')
             const content = noti.content.slice(0, index)
             setPresentingPresentation((cur) =>
@@ -103,14 +116,21 @@ function MGroup() {
                     ? { content, presentationId: parseInt(noti.presentationId) }
                     : { content: null, presentationId: null }
             )
+
+            //
+            refetchPresentations()
         })
 
         notificationSocket.on('server-stop-presentation-noti', (data) => {
+            setPresentingMode('')
             setPresentingPresentation((cur) =>
                 cur.presentationId === parseInt(data.presentationId)
                     ? { content: null, presentationId: null }
                     : cur
             )
+
+            //
+            refetchPresentations()
         })
 
         return () => {
@@ -164,6 +184,7 @@ function MGroup() {
         presentationSocket.open()
         presentationSocket.emit(
             'client-present-presentation',
+            mode,
             presentationId,
             presentationName,
             groupId,
@@ -173,6 +194,17 @@ function MGroup() {
             pathname: `/presentation-slide${
                 mode === 'session' ? '-session' : ''
             }/${presentationId}/host`,
+            search: createSearchParams({
+                id: presentationGroupId, // presentation_group_id
+            }).toString(),
+        })
+    }
+
+    const handleJoinPresentation = (mode, presentationId, presentationGroupId) => {
+        navigate({
+            pathname: `/presentation-slide${
+                mode === 'session' ? '-session' : ''
+            }/${presentationId}/member`,
             search: createSearchParams({
                 id: presentationGroupId, // presentation_group_id
             }).toString(),
@@ -242,39 +274,38 @@ function MGroup() {
                             {presentations?.map((row) => (
                                 <div
                                     key={row.id}
-                                    className={`relative mt-2 flex h-[90px] flex-col justify-between rounded border border-slate-300 px-1 shadow-md`}
+                                    className={`relative mt-2 flex justify-between rounded border border-slate-300 px-1 shadow-md`}
                                 >
-                                    <div className="flex-1">
-                                        <div className="flex justify-between">
-                                            <span className="ml-2 mt-1 truncate font-bold">
-                                                {row.presentation.name}
-                                            </span>
-                                            {row?.is_presenting ? (
-                                                <div className="flex justify-end">
-                                                    <span className="flex h-3 w-3">
-                                                        <span className="absolute top-[10px] inline-flex h-3 w-3 animate-ping rounded-full bg-green-400 opacity-75"></span>
-                                                        <span className="absolute top-[10px] inline-flex h-3 w-3 rounded-full bg-green-500"></span>
-                                                    </span>
-                                                    <span className="relative rounded p-1 font-bold text-green-500">
-                                                        Presenting
-                                                    </span>
-                                                </div>
-                                            ) : (
-                                                <></>
-                                            )}
-                                        </div>
+                                    <div className="flex flex-1 items-center">
+                                        <span className="ml-2 truncate text-lg font-bold">
+                                            {row.presentation.name}
+                                        </span>
                                         <div className="ml-2 flex items-center">
                                             <QrCodeIcon className="h-4 w-4" />
                                             <span className="ml-1 text-sm">
                                                 {row.presentation.code}
                                             </span>
                                         </div>
+                                        {row?.is_presenting ? (
+                                            <div className="ml-3 flex items-center">
+                                                <span className="flex h-3 w-3">
+                                                    <span className="absolute top-[14px] inline-flex h-3 w-3 animate-ping rounded-full bg-green-400 opacity-75"></span>
+                                                    <span className="absolute top-[14px] inline-flex h-3 w-3 rounded-full bg-green-500"></span>
+                                                </span>
+                                                <span className="relative rounded p-1 font-bold text-green-500">
+                                                    Presenting
+                                                </span>
+                                            </div>
+                                        ) : (
+                                            <></>
+                                        )}
                                     </div>
                                     <div className="flex flex-wrap">
-                                        {group.my_role !== 3 && !row?.presentation?.is_presenting && (
-                                            <div className="m-1 rounded p-1 text-sm font-medium text-blue-700 hover:bg-blue-200">
+                                        {group.my_role !== 3 && !row?.is_presenting && (
+                                            <button className="m-1 rounded p-1 text-sm font-medium text-blue-700 hover:bg-blue-200">
                                                 <div className="flex items-center">
                                                     <Dropdown
+                                                        className="w-48"
                                                         arrowIcon={false}
                                                         inline={true}
                                                         placement="right"
@@ -315,40 +346,75 @@ function MGroup() {
                                                         </Dropdown.Item>
                                                     </Dropdown>
                                                 </div>
-                                            </div>
+                                            </button>
+                                        )}
+                                        {group.my_role === 3 && row?.is_presenting && (
+                                            <button
+                                                className="m-1 rounded p-1 text-sm font-medium text-blue-700 hover:bg-blue-200"
+                                                onClick={() =>
+                                                    handleJoinPresentation(
+                                                        presentingMode,
+                                                        row.presentation.id,
+                                                        row.id
+                                                    )
+                                                }
+                                            >
+                                                <div className="flex items-center">
+                                                    <PlayIcon className="h-4 w-4" />
+                                                    <span>Join</span>
+                                                </div>
+                                            </button>
                                         )}
 
                                         {group.my_role !== 3 && (
                                             <button
-                                                className="m-1 rounded p-1 text-sm font-medium text-blue-700 hover:bg-blue-200"
+                                                className="m-1  rounded p-1 text-sm font-medium text-blue-700 hover:bg-blue-200"
                                                 onClick={() => {
                                                     setIsResultModalOpen(true)
                                                     setPresentationIdSelected(row.presentation.id)
                                                     setPresentationGroupIdSelected(row.id)
                                                 }}
                                             >
-                                                View results
+                                                <Tooltip content="View result">
+                                                    <DocumentChartBarIcon className="h-6 w-6" />
+                                                </Tooltip>
                                             </button>
                                         )}
                                         <button
-                                            className="m-1 rounded p-1 text-sm font-medium text-blue-700 hover:bg-blue-200"
+                                            className="m-1  rounded p-1 text-sm font-medium text-blue-700 hover:bg-blue-200"
                                             onClick={() => {
                                                 setIsQuestionModalOpen(true)
                                                 setPresentationIdSelected(row.presentation.id)
                                                 setPresentationGroupIdSelected(row.id)
                                             }}
                                         >
-                                            Open question
+                                            <Tooltip content="View questions">
+                                                <QuestionMarkCircleIcon className="h-6 w-6" />
+                                            </Tooltip>
                                         </button>
                                         <button
-                                            className="m-1 rounded p-1 text-sm font-medium text-blue-700 hover:bg-blue-200"
+                                            className="m-1  rounded p-1 text-sm font-medium text-blue-700 hover:bg-blue-200"
                                             onClick={() => {
                                                 setIsChatboxModalOpen(true)
                                                 setPresentationIdSelected(row.presentation.id)
                                                 setPresentationGroupIdSelected(row.id)
                                             }}
                                         >
-                                            Open chatbox
+                                            <Tooltip content="Open chatbox">
+                                                <ChatBubbleBottomCenterTextIcon className="h-6 w-6" />
+                                            </Tooltip>
+                                        </button>
+                                        <button
+                                            className="m-1  rounded p-1 text-sm font-medium text-red-700 hover:bg-red-200"
+                                            onClick={() => {
+                                                setIsChatboxModalOpen(true)
+                                                setPresentationIdSelected(row.presentation.id)
+                                                setPresentationGroupIdSelected(row.id)
+                                            }}
+                                        >
+                                            <Tooltip content="Remove">
+                                                <XMarkIcon className="h-6 w-6" />
+                                            </Tooltip>
                                         </button>
                                     </div>
                                 </div>
@@ -396,7 +462,12 @@ function MGroup() {
                 set={set}
                 refetch={refetch}
             />
-            <MAddPresentationModal ref={addPresentationModalRef} />
+            <MAddPresentationModal
+                ref={addPresentationModalRef}
+                presentations={presentationsData?.data ?? []}
+                groupId={groupId}
+                refetchPresentations={refetchPresentations}
+            />
             {isResultModalOpen && (
                 <MResultsModal
                     isOpen={isResultModalOpen}
