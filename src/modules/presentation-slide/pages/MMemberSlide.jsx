@@ -18,6 +18,7 @@ import {
 import CLoading from 'common/components/CLoading'
 import { MHeading, MMemberMultipleChoice, MParagraph, MSlide } from '../components'
 import { getIP } from 'utils/func'
+import { memberSocket, slideSocket } from 'common/socket'
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, Colors)
 
@@ -153,6 +154,14 @@ function MMemberSlide() {
             fetchIP()
         }
     }, [])
+
+    useEffect(() => {
+        memberSocket.open()
+        memberSocket.on('server-send-changeSlide', (_slideIndex) => {
+            setSlideIndex({ ..._slideIndex })
+        })
+    }, [])
+
     //#endregion
     return (
         <MSlide

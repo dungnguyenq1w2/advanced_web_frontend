@@ -179,17 +179,6 @@ function MGroup() {
         })
     }
 
-    const handleEditPresentation = (presentationId) => async () => {
-        const res = await getFirstSlide({
-            presentationId: presentationId,
-        })
-
-        if (res?.data) {
-            presentationSocket.open()
-            presentationSocket.emit('client-edit-presentation', presentationId)
-            navigate(`/presentation/${presentationId}/${res?.data?.id}/edit`)
-        }
-    }
     //#endregion
 
     if (isGroupLoading) return <CLoading />
@@ -361,34 +350,6 @@ function MGroup() {
                                         >
                                             Open chatbox
                                         </button>
-                                        {group.my_role !== 3 && (
-                                            <button
-                                                className={`m-1 rounded p-1 text-sm font-medium
-                                                ${
-                                                    row?.presentation?.is_editing === true
-                                                        ? 'cursor-not-allowed text-gray-700 opacity-80'
-                                                        : 'text-blue-700 hover:bg-blue-200'
-                                                }
-                                                `}
-                                                disabled={row?.presentation?.is_editing === true}
-                                                // title={
-                                                //     row?.presentation?.is_editing === true
-                                                //         ? 'This presentation is being edited'
-                                                //         : ''
-                                                // }
-                                                onClick={handleEditPresentation(
-                                                    row?.presentation?.id
-                                                )}
-                                            >
-                                                {row?.presentation?.is_editing === true ? (
-                                                    <Tooltip content="This presentation is being edited">
-                                                        Edit
-                                                    </Tooltip>
-                                                ) : (
-                                                    'Edit'
-                                                )}
-                                            </button>
-                                        )}
                                     </div>
                                 </div>
                             ))}

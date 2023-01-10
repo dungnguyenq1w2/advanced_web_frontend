@@ -13,7 +13,7 @@ import { Avatar, Label, Radio } from 'flowbite-react'
 import moment from 'moment'
 import { v4 as uuidv4 } from 'uuid'
 
-import { getAll, postUpvote } from 'apis/question.api'
+import { getAll, postUpvote, mark as markQuestion } from 'apis/question.api'
 
 import CLoading from '../CLoading'
 import CAnswer from './CAnswer'
@@ -52,7 +52,7 @@ const CQuestionModal = ({ isOpen, onClose, presentationId }) => {
     }, [])
 
     const queryClient = useQueryClient()
-    const set = (data) => queryClient.setQueryData(['questions'], data)
+    const set = (data) => queryClient.setQueryData(['questions', filter, presentationId], data)
 
     const {
         data: _data,
@@ -61,7 +61,7 @@ const CQuestionModal = ({ isOpen, onClose, presentationId }) => {
         hasNextPage,
         isFetchingNextPage,
     } = useInfiniteQuery(
-        ['questions'],
+        ['questions', filter, presentationId],
         ({ pageParam: page = 1 }) => getAll({ filter, presentationId, page }),
         {
             retry: 1,
@@ -242,7 +242,7 @@ const CQuestionModal = ({ isOpen, onClose, presentationId }) => {
         }
     }
 
-    const handleMark = (groupIndex, questionId) => {
+    const handleMark = async (groupIndex, questionId) => {
         const newData = [...data[groupIndex].data.data]
         const index = newData.findIndex(
             (question) => parseInt(question.id) === parseInt(questionId)
@@ -268,6 +268,12 @@ const CQuestionModal = ({ isOpen, onClose, presentationId }) => {
                 ...data.slice(groupIndex + 1),
             ]
             set({ ..._data, pages: newPages })
+
+            try {
+                await markQuestion(questionId)
+            } catch (error) {
+                console.log('🚀 ~ error', error)
+            }
         }
     }
 

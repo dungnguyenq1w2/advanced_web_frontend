@@ -8,7 +8,7 @@ import { getForHostById as getSlideForHostById } from 'common/queries-fn/slides.
 import CLoading from 'common/components/CLoading'
 
 import { MHeading, MHostMultipleChoice, MParagraph, MSlide } from '../components'
-import { presentationSocket } from 'common/socket'
+import { hostSocket, presentationSocket, slideSocket } from 'common/socket'
 
 function MHostSlide() {
     //#region data
@@ -88,6 +88,17 @@ function MHostSlide() {
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [slidesId])
+
+    const handleChangeSlide = (_slideIndex) => {
+        hostSocket.open()
+        hostSocket.emit(
+            'client-send-changeSlide',
+            slidesId[slideIndex.cur].id,
+            _slideIndex,
+            searchParams.get('id')
+        )
+        setSlideIndex(_slideIndex)
+    }
     //#endregion
 
     return (
@@ -98,7 +109,7 @@ function MHostSlide() {
             presentationId={presentationId}
             slidesId={slidesId}
             slideIndex={slideIndex}
-            onChangeSlide={setSlideIndex}
+            onChangeSlide={handleChangeSlide}
         >
             {isPresentationLoading ? (
                 <CLoading />

@@ -172,6 +172,13 @@ function MMemberSlide() {
             fetchIP()
         }
     }, [])
+
+    useEffect(() => {
+        memberSocket.open()
+        memberSocket.on('server-send-changeSlide', (_slideIndex) => {
+            setSlideIndex({ ..._slideIndex })
+        })
+    }, [])
     //#endregion
     return (
         <MSlideSession

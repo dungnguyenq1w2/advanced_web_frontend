@@ -129,6 +129,17 @@ function MHostSlide() {
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [slidesId])
+
+    const handleChangeSlide = (_slideIndex) => {
+        hostSocket.open()
+        hostSocket.emit(
+            'client-send-changeSlide',
+            slidesId[slideIndex.cur].id,
+            _slideIndex,
+            searchParams.get('id')
+        )
+        setSlideIndex(_slideIndex)
+    }
     //#endregion
 
     return (
@@ -139,7 +150,7 @@ function MHostSlide() {
             presentationId={presentationId}
             slidesId={slidesId}
             slideIndex={slideIndex}
-            onChangeSlide={setSlideIndex}
+            onChangeSlide={handleChangeSlide}
         >
             {isPresentationLoading ? (
                 <CLoading />

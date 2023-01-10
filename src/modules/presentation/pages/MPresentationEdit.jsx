@@ -100,7 +100,6 @@ function MPresentationEdit() {
         slides.find((slide) => slide.id === parseInt(slideId)) ?? {}
     )
 
-    console.log('Current slide: ', currentSlide)
     //#endregion
 
     //#region event
@@ -137,11 +136,6 @@ function MPresentationEdit() {
         try {
             const type = currentSlide?.type
             const isSlideChange = typeof currentSlide?.change !== 'undefined'
-            slideSocket.open()
-
-            //
-            //
-            const isPresenting = true
 
             if (isSlideChange) {
                 const changeParams =
@@ -157,11 +151,7 @@ function MPresentationEdit() {
                               subheading: currentSlide?.subheading,
                           }
 
-                if (isPresenting) {
-                    slideSocket.emit('client-save-slide', currentSlide?.id, changeParams)
-                } else {
-                    await updateSlide(slideId, changeParams)
-                }
+                await updateSlide(slideId, changeParams)
 
                 refetchSlides()
                 refetchSlideData()
@@ -172,25 +162,21 @@ function MPresentationEdit() {
                 const isChoicesChange = slideChoices.findIndex((choice) => choice?.action) !== -1
 
                 if (isChoicesChange) {
-                    if (isPresenting) {
-                        slideSocket.emit('client-save-slideChoices', slideChoices)
-                    } else {
-                        for (const choice of slideChoices) {
-                            if (choice?.action) {
-                                const { action, id, ...choiceData } = choice
-                                switch (choice?.action) {
-                                    case 'ADD':
-                                        await addChoice(choiceData)
-                                        break
-                                    case 'UPDATE':
-                                        await updateChoice(id, choiceData)
-                                        break
-                                    case 'DELETE':
-                                        await removeChoice(id)
-                                        break
-                                    default:
-                                        break
-                                }
+                    for (const choice of slideChoices) {
+                        if (choice?.action) {
+                            const { action, id, ...choiceData } = choice
+                            switch (choice?.action) {
+                                case 'ADD':
+                                    await addChoice(choiceData)
+                                    break
+                                case 'UPDATE':
+                                    await updateChoice(id, choiceData)
+                                    break
+                                case 'DELETE':
+                                    await removeChoice(id)
+                                    break
+                                default:
+                                    break
                             }
                         }
                     }

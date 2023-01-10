@@ -3,6 +3,8 @@ import { isSuccess } from 'utils/func'
 import { QUESTIONS } from './_constant'
 
 export const getAll = (params = {}) => {
+    console.log('🚀 ~ params', params)
+
     return map(({ data, ...rest }) => {
         return isSuccess(rest) ? { data: data } : { data: [] }
     }).get(QUESTIONS.GET_ALL, params)
@@ -18,4 +20,10 @@ export const postUpvote = (questionId, params = {}) => {
     return map(({ data, ...rest }) => {
         return isSuccess(rest) ? { data: data?.data } : { data: {} }
     }).post(QUESTIONS.POST_VOTE(questionId), params)
+}
+
+export const mark = (questionId, params = {}) => {
+    return map(({ data, ...rest }) => {
+        return isSuccess(rest) ? { data: data?.data } : { data: {} }
+    }).post(QUESTIONS.MARK(questionId), params)
 }

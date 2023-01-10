@@ -46,17 +46,13 @@ function MPresentationList() {
             `/presentation-slide${mode === 'session' ? '-session' : ''}/${presentationId}/host`
         )
 
-    const handleEditPresentation = (presentationId, isEditing) => async () => {
-        if (!isEditing) {
-            const res = await getFirstSlide({
-                presentationId: presentationId,
-            })
+    const handleEditPresentation = (presentationId) => async () => {
+        const res = await getFirstSlide({
+            presentationId: presentationId,
+        })
 
-            if (res?.data) {
-                navigate(`/presentation/${presentationId}/${res?.data?.id}/edit`)
-            }
-        } else {
-            alert('This presentation is being edited')
+        if (res?.data) {
+            navigate(`/presentation/${presentationId}/${res?.data?.id}/edit`)
         }
     }
     //#endregion
@@ -80,12 +76,9 @@ function MPresentationList() {
                         return (
                             <div
                                 key={index}
-                                className={`cursor-pointer overflow-hidden rounded border border-gray-300 bg-white`}
+                                className="cursor-pointer overflow-hidden rounded border border-gray-300 bg-white"
                                 title="Presentation"
-                                onClick={handleEditPresentation(
-                                    presentation?.id,
-                                    presentation?.is_editing
-                                )}
+                                onClick={handleEditPresentation(presentation?.id)}
                             >
                                 <div className="px-6 py-4">
                                     <div className="flex justify-center">
@@ -144,7 +137,11 @@ function MPresentationList() {
                                             <FireIcon className="mr-2 h-5 w-5" />
                                         </div>
                                         <span className="text-left">
-                                            You are owner of this presentation
+                                            You are{' '}
+                                            {presentation?.owner_id === localUser.id
+                                                ? 'Owner'
+                                                : 'Co-owner'}{' '}
+                                            of this presentation
                                         </span>
                                     </div>
                                 </div>
