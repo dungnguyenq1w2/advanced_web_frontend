@@ -18,7 +18,6 @@ import CLoading from '../CLoading'
 
 const CChatboxModal = ({ isOpen, onClose, presentationId, presentationGroupId }) => {
     //#region data
-    // const scrollToBottomRef = useRef(null)
     const [input, setInput] = useState('')
     const [newMessage, setNewMessage] = useState(null)
     const [hasMore, setHasMore] = useState(true)
@@ -53,7 +52,6 @@ const CChatboxModal = ({ isOpen, onClose, presentationId, presentationGroupId })
         false,
         { staleTime: 0 }
     )
-    console.log(_data);
     const [data, setData] = useState({})
     //#endregion
 
@@ -130,18 +128,6 @@ const CChatboxModal = ({ isOpen, onClose, presentationId, presentationGroupId })
             })
 
             set({ ..._data, data: newData })
-            // setData({
-            //     ...data,
-            //     arr: [
-            //         ...data.arr,
-            //         {
-            //             id: uuidv4(),
-            //             content: newMessage.content,
-            //             created_at: newMessage.created_at,
-            //             user: newMessage.user,
-            //         },
-            //     ],
-            // })
             //setTimeout(() => scrollToBottomRef.current.scrollIntoView({ behavior: 'smooth' }), [50])
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -190,21 +176,6 @@ const CChatboxModal = ({ isOpen, onClose, presentationId, presentationGroupId })
                                 flexDirection: 'column-reverse',
                                 perspective: '1px',
                             }} //To put endMessage and loader to the top.
-                            // onScroll={async (e) => {
-                            //     console.log('xy')
-                            //     if (e) {
-                            //         const { scrollTop, scrollHeight, clientHeight } = e
-                            //         console.log(e.scrollTop, e.scrollHeight, e.clientHeight)
-
-                            //         if (scrollTop === 0) {
-                            //             const pastScroll = scrollHeight
-
-                            //             const currentScroll =
-                            //                 (await e.scrollHeight) - pastScroll
-                            //             await e.scrollTo(0, currentScroll)
-                            //         }
-                            //     }
-                            // }}
                             inverse={true}
                             hasMore={hasMore}
                             height={300} // importance

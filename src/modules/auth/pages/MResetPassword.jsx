@@ -12,6 +12,7 @@ import { resetPassword } from 'apis/auth.api'
 import CLoading from 'common/components/CLoading'
 
 import { Button, Label } from 'flowbite-react'
+import { isSuccess } from 'utils/func'
 
 const formOptions = { resolver: yupResolver(resetPasswordValidationSchema) }
 
@@ -41,9 +42,9 @@ function MResetPassword() {
             setTimeout(() => {
                 setIsLoading(false)
                 localStorage.setItem('flagResetPassword', 'true')
+                alert('Reset password success! Please login again')
                 navigate('/auth/login')
             }, 400)
-            
         } else {
             setResetPasswordError(res.error.message)
             setTimeout(() => {
@@ -122,7 +123,7 @@ function MResetPassword() {
                 )}
                 {isLoading && <CLoading />}
 
-                <Button type="submit">Submit</Button>
+                <Button type="submit" >Submit</Button>
             </form>
         </div>
     )

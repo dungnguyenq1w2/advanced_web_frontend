@@ -19,6 +19,7 @@ function MIdentify() {
     // #region data
     const [identifyMessage, setIdentifyMessage] = useState()
     const [isLoading, setIsLoading] = useState(false)
+    const [isSuccess, setIsSuccess] = useState(false)
     const navigate = useNavigate()
     
     const {
@@ -38,13 +39,14 @@ function MIdentify() {
         if (res?.data) {
             setTimeout(() => {
                 setIsLoading(false)
+                setIsSuccess(true)
                 setIdentifyMessage(res?.data.message)
-            }, 400)
+            }, 200)
         } else {
             setIdentifyMessage(res.error.message)
             setTimeout(() => {
                 setIsLoading(false)
-            }, 400)
+            }, 200)
         }
     }
 
@@ -104,7 +106,7 @@ function MIdentify() {
                 )}
                 {isLoading && <CLoading />}
 
-                <Button type="submit">Send</Button>
+                <Button type="submit" disabled={isSuccess}> {isSuccess ? 'Sent' : 'Send'}</Button>
             </form>
         </div>
     )
