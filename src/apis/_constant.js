@@ -85,6 +85,7 @@ export const MESSAGES = {
 export const QUESTIONS = {
     GET_ALL: '/questions',
     ADD: '/questions',
+    POST_VOTE: (id) => `/questions/${id}/vote`,
 }
 //#endregion
 

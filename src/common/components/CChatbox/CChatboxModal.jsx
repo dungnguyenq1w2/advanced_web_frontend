@@ -18,7 +18,7 @@ import CLoading from '../CLoading'
 
 const CChatboxModal = ({ isOpen, onClose, presentationId, presentationGroupId }) => {
     //#region data
-    const scrollToBottomRef = useRef(null)
+    // const scrollToBottomRef = useRef(null)
     const [input, setInput] = useState('')
     const [newMessage, setNewMessage] = useState(null)
     const [hasMore, setHasMore] = useState(true)
@@ -53,6 +53,7 @@ const CChatboxModal = ({ isOpen, onClose, presentationId, presentationGroupId })
         false,
         { staleTime: 0 }
     )
+    console.log(_data);
     const [data, setData] = useState({})
     //#endregion
 
@@ -82,7 +83,7 @@ const CChatboxModal = ({ isOpen, onClose, presentationId, presentationGroupId })
             } else {
                 setData({ ...data, arr: [...data.arr, ...moreData.arr] })
             }
-            if (_data?.data.length < 10) {
+            if (_data?.data.length < 5) {
                 setHasMore(false)
             }
         }
@@ -129,7 +130,19 @@ const CChatboxModal = ({ isOpen, onClose, presentationId, presentationGroupId })
             })
 
             set({ ..._data, data: newData })
-            setTimeout(() => scrollToBottomRef.current.scrollIntoView({ behavior: 'smooth' }), [50])
+            // setData({
+            //     ...data,
+            //     arr: [
+            //         ...data.arr,
+            //         {
+            //             id: uuidv4(),
+            //             content: newMessage.content,
+            //             created_at: newMessage.created_at,
+            //             user: newMessage.user,
+            //         },
+            //     ],
+            // })
+            //setTimeout(() => scrollToBottomRef.current.scrollIntoView({ behavior: 'smooth' }), [50])
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [newMessage])
@@ -150,11 +163,8 @@ const CChatboxModal = ({ isOpen, onClose, presentationId, presentationGroupId })
         setInput('')
     }
 
-    const fetchMoreData = () => {
+    const fetchMoreData = async () => {
         setPage(page + 1)
-        setTimeout(() => {
-            refetch()
-        }, 1000) //1s
     }
 
     return (
@@ -166,7 +176,7 @@ const CChatboxModal = ({ isOpen, onClose, presentationId, presentationGroupId })
                     <div
                         id="scrollableDiv"
                         style={{
-                            height: 550,
+                            height: 300,
                             overflow: 'auto',
                             display: 'flex',
                             flexDirection: 'column-reverse',
@@ -175,10 +185,29 @@ const CChatboxModal = ({ isOpen, onClose, presentationId, presentationGroupId })
                         <InfiniteScroll
                             dataLength={data?.arr?.length || 0}
                             next={fetchMoreData}
-                            style={{ display: 'flex', flexDirection: 'column-reverse' }} //To put endMessage and loader to the top.
+                            style={{
+                                display: 'flex',
+                                flexDirection: 'column-reverse',
+                                perspective: '1px',
+                            }} //To put endMessage and loader to the top.
+                            // onScroll={async (e) => {
+                            //     console.log('xy')
+                            //     if (e) {
+                            //         const { scrollTop, scrollHeight, clientHeight } = e
+                            //         console.log(e.scrollTop, e.scrollHeight, e.clientHeight)
+
+                            //         if (scrollTop === 0) {
+                            //             const pastScroll = scrollHeight
+
+                            //             const currentScroll =
+                            //                 (await e.scrollHeight) - pastScroll
+                            //             await e.scrollTo(0, currentScroll)
+                            //         }
+                            //     }
+                            // }}
                             inverse={true}
                             hasMore={hasMore}
-                            height={550} // importance
+                            height={300} // importance
                             loader={<h4 className="text-center">...Loading</h4>}
                             endMessage={
                                 <h4 className="text-center text-red-600">You are all set!</h4>
