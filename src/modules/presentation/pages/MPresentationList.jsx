@@ -46,13 +46,17 @@ function MPresentationList() {
             `/presentation-slide${mode === 'session' ? '-session' : ''}/${presentationId}/host`
         )
 
-    const handleEditPresentation = (presentationId) => async () => {
-        const res = await getFirstSlide({
-            presentationId: presentationId,
-        })
+    const handleEditPresentation = (presentationId, isEditing) => async () => {
+        if (!isEditing) {
+            const res = await getFirstSlide({
+                presentationId: presentationId,
+            })
 
-        if (res?.data) {
-            navigate(`/presentation/${presentationId}/${res?.data?.id}/edit`)
+            if (res?.data) {
+                navigate(`/presentation/${presentationId}/${res?.data?.id}/edit`)
+            }
+        } else {
+            alert('This presentation is being edited')
         }
     }
     //#endregion
@@ -76,9 +80,12 @@ function MPresentationList() {
                         return (
                             <div
                                 key={index}
-                                className="cursor-pointer overflow-hidden rounded border border-gray-300 bg-white"
+                                className={`cursor-pointer overflow-hidden rounded border border-gray-300 bg-white`}
                                 title="Presentation"
-                                onClick={handleEditPresentation(presentation?.id)}
+                                onClick={handleEditPresentation(
+                                    presentation?.id,
+                                    presentation?.is_editing
+                                )}
                             >
                                 <div className="px-6 py-4">
                                     <div className="flex justify-center">

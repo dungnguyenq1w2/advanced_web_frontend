@@ -10,6 +10,8 @@ import CChatboxModal from 'common/components/CChatbox/CChatboxModal'
 import CLoading from 'common/components/CLoading'
 import CQuestionModal from 'common/components/CQuestion/CQuestionModal'
 
+import { getFirst as getFirstSlide } from 'apis/slide.api'
+
 import {
     Bars3BottomLeftIcon,
     BoltIcon,
@@ -22,7 +24,7 @@ import {
     ViewfinderCircleIcon,
 } from '@heroicons/react/24/outline'
 import { ROLE, ROLE_ASSIGNMENT } from 'common/constant'
-import { Button, Dropdown } from 'flowbite-react'
+import { Button, Dropdown, Tooltip } from 'flowbite-react'
 import {
     MAddPresentationModal,
     MParticipantsModal,
@@ -175,6 +177,18 @@ function MGroup() {
                 id: presentationGroupId, // presentation_group_id
             }).toString(),
         })
+    }
+
+    const handleEditPresentation = (presentationId) => async () => {
+        const res = await getFirstSlide({
+            presentationId: presentationId,
+        })
+
+        if (res?.data) {
+            presentationSocket.open()
+            presentationSocket.emit('client-edit-presentation', presentationId)
+            navigate(`/presentation/${presentationId}/${res?.data?.id}/edit`)
+        }
     }
     //#endregion
 
@@ -347,6 +361,34 @@ function MGroup() {
                                         >
                                             Open chatbox
                                         </button>
+                                        {group.my_role !== 3 && (
+                                            <button
+                                                className={`m-1 rounded p-1 text-sm font-medium
+                                                ${
+                                                    row?.presentation?.is_editing === true
+                                                        ? 'cursor-not-allowed text-gray-700 opacity-80'
+                                                        : 'text-blue-700 hover:bg-blue-200'
+                                                }
+                                                `}
+                                                disabled={row?.presentation?.is_editing === true}
+                                                // title={
+                                                //     row?.presentation?.is_editing === true
+                                                //         ? 'This presentation is being edited'
+                                                //         : ''
+                                                // }
+                                                onClick={handleEditPresentation(
+                                                    row?.presentation?.id
+                                                )}
+                                            >
+                                                {row?.presentation?.is_editing === true ? (
+                                                    <Tooltip content="This presentation is being edited">
+                                                        Edit
+                                                    </Tooltip>
+                                                ) : (
+                                                    'Edit'
+                                                )}
+                                            </button>
+                                        )}
                                     </div>
                                 </div>
                             ))}
