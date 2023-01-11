@@ -20,6 +20,7 @@ import MSlide from '../components/MSlide'
 
 import { getRandomColor } from 'utils/func'
 import { checkValidSlideInputs } from '../validation'
+import { getPresentationById, setEditingState } from 'apis/presentation.api'
 
 function MPresentationEdit() {
     //#region data
@@ -107,6 +108,15 @@ function MPresentationEdit() {
         setnumberOptions(choices.length)
         setSlideChoices(choices)
     }, [slides, slideId, choices])
+
+    useEffect(() => {
+        return async () => {
+            await setEditingState({
+                presentationId,
+                isEditing: 0,
+            })
+        }
+    }, [presentationId])
 
     const handleAddChoice = () => {
         setnumberOptions(numberOptions + 1)

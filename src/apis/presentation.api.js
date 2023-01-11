@@ -73,3 +73,9 @@ export const removeFromGroup = (presentationGroupId, params = {}) => {
         return isSuccess(rest) ? { data: data?.data } : { data: {} }
     }).remove(PRESENTATIONS.REMOVE_FROM_GROUP(presentationGroupId), params)
 }
+
+export const setEditingState = (params = {}) => {
+    return map(({ data, ...rest }) => {
+        return isSuccess(rest) ? { data: data?.data } : { data: {} }
+    }).put(PRESENTATIONS.SET_EDITING_STATE, params)
+}

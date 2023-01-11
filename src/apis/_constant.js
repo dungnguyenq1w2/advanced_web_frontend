@@ -51,6 +51,7 @@ export const PRESENTATIONS = {
     ADD_TO_GROUP: '/presentations/add-to-group',
     REMOVE_FROM_GROUP: (presentationGroupId) =>
         `/presentations/${presentationGroupId}/remove-from-group`,
+    SET_EDITING_STATE: `/presentations/set-editing-state`,
 }
 
 //#region SLIDES

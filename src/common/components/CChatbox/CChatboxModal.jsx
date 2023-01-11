@@ -79,7 +79,7 @@ const CChatboxModal = ({ isOpen, onClose, presentationId, presentationGroupId })
             } else {
                 setData({ ...data, arr: [...data.arr, ...moreData.arr] })
             }
-            if (_data?.data.length < 5) {
+            if (_data?.data.length < 10) {
                 setHasMore(false)
             }
         }
@@ -160,7 +160,7 @@ const CChatboxModal = ({ isOpen, onClose, presentationId, presentationGroupId })
                     <div
                         id="scrollableDiv"
                         style={{
-                            height: 300,
+                            height: 550,
                             overflow: 'auto',
                             display: 'flex',
                             flexDirection: 'column-reverse',
@@ -176,7 +176,7 @@ const CChatboxModal = ({ isOpen, onClose, presentationId, presentationGroupId })
                             }} //To put endMessage and loader to the top.
                             inverse={true}
                             hasMore={hasMore}
-                            height={300} // importance
+                            height={550} // importance
                             loader={<h4 className="text-center">...Loading</h4>}
                             endMessage={
                                 <h4 className="text-center text-red-600">You are all set!</h4>

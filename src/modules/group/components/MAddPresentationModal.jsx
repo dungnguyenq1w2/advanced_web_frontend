@@ -30,9 +30,6 @@ const MAddPresentationModal = forwardRef(
             }
         }, [localUser, navigate])
 
-        // console.log('🚀 ~ data', data?.data)
-        // console.log('🚀 ~ pres', presentations)
-
         const remainPresentations = useMemo(() => {
             let result = []
             if (data?.data) {

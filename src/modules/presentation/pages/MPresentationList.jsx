@@ -2,7 +2,7 @@ import { useEffect, useMemo } from 'react'
 
 import { useNavigate } from 'react-router-dom'
 
-import { deletePresentation } from 'apis/presentation.api'
+import { deletePresentation, setEditingState } from 'apis/presentation.api'
 import { getFirst as getFirstSlide } from 'apis/slide.api'
 import { getAllByHostId } from 'common/queries-fn/presentations.query'
 
@@ -15,6 +15,7 @@ import {
 } from '@heroicons/react/24/outline'
 import CLoading from 'common/components/CLoading'
 import { Dropdown } from 'flowbite-react'
+import { slideSocket } from 'common/socket'
 
 function MPresentationList() {
     //#region data
@@ -46,12 +47,13 @@ function MPresentationList() {
             `/presentation-slide${mode === 'session' ? '-session' : ''}/${presentationId}/host`
         )
 
-    const handleEditPresentation = (presentationId) => async () => {
+    const handleEditPresentation = async (presentationId) => {
         const res = await getFirstSlide({
             presentationId: presentationId,
         })
 
         if (res?.data) {
+            await setEditingState({ presentationId, isEditing: 1 })
             navigate(`/presentation/${presentationId}/${res?.data?.id}/edit`)
         }
     }
@@ -76,9 +78,19 @@ function MPresentationList() {
                         return (
                             <div
                                 key={index}
-                                className="cursor-pointer overflow-hidden rounded border border-gray-300 bg-white"
-                                title="Presentation"
-                                onClick={handleEditPresentation(presentation?.id)}
+                                className={`cursor-pointer overflow-hidden rounded border border-gray-300 bg-white ${
+                                    presentation.is_editing && 'cursor-not-allowed'
+                                }`}
+                                title={
+                                    presentation.is_editing
+                                        ? 'This presentation is being edited!'
+                                        : 'Presentation'
+                                }
+                                onClick={() =>
+                                    presentation.is_editing
+                                        ? null
+                                        : handleEditPresentation(presentation?.id)
+                                }
                             >
                                 <div className="px-6 py-4">
                                     <div className="flex justify-center">
