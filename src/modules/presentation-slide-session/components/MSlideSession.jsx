@@ -4,7 +4,7 @@ import { useContext, useEffect, useState } from 'react'
 
 import { ToastContainer, toast } from 'react-toastify'
 
-import { SocketContext } from 'common/socket'
+import { presentationSocket, SocketContext } from 'common/socket'
 
 import {
     ChatBubbleBottomCenterTextIcon,
@@ -14,6 +14,7 @@ import {
     QuestionMarkCircleIcon,
 } from '@heroicons/react/24/outline'
 import { MChatboxModalSession, MQuestionModalSession } from '.'
+import { useNavigate } from 'react-router-dom'
 
 function MSlide({
     children,
@@ -30,8 +31,12 @@ function MSlide({
 
     const [isChatboxModalOpen, setIsChatboxModalOpen] = useState(false)
     const [isQuestionModalOpen, setIsQuestionModalOpen] = useState(false)
+    const [notiMessage, setNotiMessage] = useState(null)
+    const [notiQuestion, setNotiQuestion] = useState(null)
+    const [presentingPresentationGroupId, setPresentingPresentationGroupId] = useState(null)
 
     const notificationSocket = useContext(SocketContext)
+    const navigate = useNavigate()
 
     const [messages, setMessages] = useState([])
     const [questions, setQuestions] = useState([])
@@ -68,17 +73,42 @@ function MSlide({
 
     useEffect(() => {
         notificationSocket.on('server-send-message-noti', (noti) => {
-            return isChatboxModalOpen === false ? notify(noti.content) : null
+            setNotiMessage(noti)
         })
         notificationSocket.on('server-send-question-noti', (noti) => {
-            return isQuestionModalOpen === false ? notify(noti.content) : null
+            setNotiQuestion(noti)
+        })
+
+        presentationSocket.open()
+        presentationSocket.on('server-forceStop-presentation', (_presentingPresentationGroupId) => {
+            setPresentingPresentationGroupId(_presentingPresentationGroupId)
         })
 
         return () => {
             notificationSocket.off('server-send-message-noti')
             notificationSocket.off('server-send-question-noti')
+            presentationSocket.off('server-forceStop-presentation')
         }
-    }, [notificationSocket, isChatboxModalOpen, isQuestionModalOpen])
+    }, [])
+
+    useEffect(() => {
+        if (parseInt(presentingPresentationGroupId) === parseInt(presentationGroupId)) {
+            alert('This presentation will be stopped because another presentation is presenting!')
+            navigate(-1)
+        }
+    }, [navigate, presentationGroupId, presentingPresentationGroupId])
+
+    useEffect(() => {
+        if (isChatboxModalOpen === false && notiMessage) {
+            notify(notiMessage.content)
+        }
+    }, [notiMessage, isChatboxModalOpen])
+
+    useEffect(() => {
+        if (isQuestionModalOpen === false && notiQuestion) {
+            notify(notiQuestion.content)
+        }
+    }, [notiQuestion, isQuestionModalOpen])
 
     const handleSlideChange = (type) => () => {
         if (type === 'PREV') {
