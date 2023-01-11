@@ -498,6 +498,7 @@ function MGroup() {
                     onClose={() => setIsQuestionModalOpen(false)}
                     presentationId={presentationIdSelected}
                     presentationGroupId={presentationGroupIdSelected}
+                    myRole={group.my_role ?? 3}
                 />
             )}
             {presentingPresentation?.content && (

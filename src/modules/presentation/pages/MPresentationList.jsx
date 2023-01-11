@@ -86,50 +86,56 @@ function MPresentationList() {
                                             <h2>{presentation?.name}</h2>
                                         </div>
 
-                                        <div onClick={handleDropdownClick}>
-                                            <Dropdown
-                                                arrowIcon={false}
-                                                inline={true}
-                                                placement="right"
-                                                label={<EllipsisVerticalIcon className="h-7 w-7" />}
-                                            >
-                                                <div
-                                                    className="cursor-pointer"
-                                                    onClick={handlePresentationClick(
-                                                        'storage',
-                                                        presentation.id
-                                                    )}
+                                        {presentation?.owner_id === localUser.id && (
+                                            <div onClick={handleDropdownClick}>
+                                                <Dropdown
+                                                    arrowIcon={false}
+                                                    inline={true}
+                                                    placement="right"
+                                                    label={
+                                                        <EllipsisVerticalIcon className="h-7 w-7" />
+                                                    }
                                                 >
-                                                    <Dropdown.Item className="cursor-pointer text-[#1A94FF]">
-                                                        <CircleStackIcon className="mr-2 h-4 w-4 cursor-pointer text-[#1A94FF]" />
-                                                        <span>Present with storage</span>
-                                                    </Dropdown.Item>
-                                                </div>
-                                                <div
-                                                    className="cursor-pointer"
-                                                    onClick={handlePresentationClick(
-                                                        'session',
-                                                        presentation.id
-                                                    )}
-                                                >
-                                                    <Dropdown.Item className="cursor-pointer text-[#1A94FF]">
-                                                        <BoltIcon className="mr-2 h-4 w-4 cursor-pointer text-red-600" />
-                                                        <span>Present in session</span>
-                                                    </Dropdown.Item>
-                                                </div>
-                                                {localUser?.id === presentation?.owner_id && (
-                                                    <Dropdown.Item
-                                                        className="cursor-pointer text-red-600"
-                                                        onClick={() =>
-                                                            handleDelPresentation(presentation?.id)
-                                                        }
+                                                    <div
+                                                        className="cursor-pointer"
+                                                        onClick={handlePresentationClick(
+                                                            'storage',
+                                                            presentation.id
+                                                        )}
                                                     >
-                                                        <XMarkIcon className="h-6 w-6 cursor-pointer pr-1 text-red-600" />
-                                                        <h3>Delete</h3>
-                                                    </Dropdown.Item>
-                                                )}
-                                            </Dropdown>
-                                        </div>
+                                                        <Dropdown.Item className="cursor-pointer text-[#1A94FF]">
+                                                            <CircleStackIcon className="mr-2 h-4 w-4 cursor-pointer text-[#1A94FF]" />
+                                                            <span>Present with storage</span>
+                                                        </Dropdown.Item>
+                                                    </div>
+                                                    <div
+                                                        className="cursor-pointer"
+                                                        onClick={handlePresentationClick(
+                                                            'session',
+                                                            presentation.id
+                                                        )}
+                                                    >
+                                                        <Dropdown.Item className="cursor-pointer text-[#1A94FF]">
+                                                            <BoltIcon className="mr-2 h-4 w-4 cursor-pointer text-red-600" />
+                                                            <span>Present in session</span>
+                                                        </Dropdown.Item>
+                                                    </div>
+                                                    {localUser?.id === presentation?.owner_id && (
+                                                        <Dropdown.Item
+                                                            className="cursor-pointer text-red-600"
+                                                            onClick={() =>
+                                                                handleDelPresentation(
+                                                                    presentation?.id
+                                                                )
+                                                            }
+                                                        >
+                                                            <XMarkIcon className="h-6 w-6 cursor-pointer pr-1 text-red-600" />
+                                                            <h3>Delete</h3>
+                                                        </Dropdown.Item>
+                                                    )}
+                                                </Dropdown>
+                                            </div>
+                                        )}
                                     </div>
                                     {/* <button to={``}> */}
                                     <div className="text-md mb-2 flex items-center">

@@ -25,7 +25,7 @@ const AlwaysScrollToBottom = () => {
     return <div ref={elementRef} />
 }
 
-const CQuestionModal = ({ isOpen, onClose, presentationId }) => {
+const CQuestionModal = ({ isOpen, onClose, presentationId, myRole }) => {
     //#region data
     // const questionRef = useRef(null)
     const scrollToBottomRef = useRef(null)
@@ -493,29 +493,31 @@ const CQuestionModal = ({ isOpen, onClose, presentationId }) => {
                                                                 <span className="mx-1 text-xs text-blue-600">
                                                                     |
                                                                 </span>
-                                                                <span
-                                                                    className={`text-xs ${
-                                                                        question.is_marked
-                                                                            ? 'text-gray-400'
-                                                                            : `cursor-pointer text-blue-600 hover:underline hover:underline-offset-1 ${
-                                                                                  isMe
-                                                                                      ? 'hidden'
-                                                                                      : 'visible'
-                                                                              }`
-                                                                    }`}
-                                                                    onClick={() =>
-                                                                        !question?.is_marked
-                                                                            ? handleMark(
-                                                                                  i,
-                                                                                  question.id
-                                                                              )
-                                                                            : null
-                                                                    }
-                                                                >
-                                                                    {question.is_marked
-                                                                        ? 'Marked'
-                                                                        : 'Mark'}
-                                                                </span>
+                                                                {myRole !== 3 && (
+                                                                    <span
+                                                                        className={`text-xs ${
+                                                                            question.is_marked
+                                                                                ? 'text-gray-400'
+                                                                                : `cursor-pointer text-blue-600 hover:underline hover:underline-offset-1 ${
+                                                                                      isMe
+                                                                                          ? 'hidden'
+                                                                                          : 'visible'
+                                                                                  }`
+                                                                        }`}
+                                                                        onClick={() =>
+                                                                            !question?.is_marked
+                                                                                ? handleMark(
+                                                                                      i,
+                                                                                      question.id
+                                                                                  )
+                                                                                : null
+                                                                        }
+                                                                    >
+                                                                        {question.is_marked
+                                                                            ? 'Marked'
+                                                                            : 'Mark'}
+                                                                    </span>
+                                                                )}
                                                             </div>
 
                                                             <span
