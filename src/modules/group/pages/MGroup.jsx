@@ -5,13 +5,12 @@ import { createSearchParams, useNavigate, useParams } from 'react-router-dom'
 import { getById } from 'common/queries-fn/groups.query'
 import { getAllByGroupId as getAllPresentationByGroupId } from 'common/queries-fn/presentations.query'
 
-import { presentationSocket, notificationSocket } from 'common/socket'
 import CChatboxModal from 'common/components/CChatbox/CChatboxModal'
 import CLoading from 'common/components/CLoading'
 import CQuestionModal from 'common/components/CQuestion/CQuestionModal'
+import { notificationSocket, presentationSocket } from 'common/socket'
 
-import { getFirst as getFirstSlide } from 'apis/slide.api'
-
+import { PlayIcon } from '@heroicons/react/20/solid'
 import {
     Bars3BottomLeftIcon,
     BoltIcon,
@@ -27,6 +26,7 @@ import {
     ViewfinderCircleIcon,
     XMarkIcon,
 } from '@heroicons/react/24/outline'
+import { removeFromGroup as removePresentationFromGroup } from 'apis/presentation.api'
 import { ROLE, ROLE_ASSIGNMENT } from 'common/constant'
 import { Button, Dropdown, Tooltip } from 'flowbite-react'
 import {
@@ -35,8 +35,6 @@ import {
     MResultsModal,
     MShareModal,
 } from '../components'
-import { PlayIcon } from '@heroicons/react/20/solid'
-import { removeFromGroup as removePresentationFromGroup } from 'apis/presentation.api'
 
 const ITEM_PER_PAGE = 5
 
@@ -49,7 +47,6 @@ function MGroup() {
     const participantsModalRef = useRef()
     const addPresentationModalRef = useRef()
 
-    const [isRemovingPresentation, setIsRemovingPresentation] = useState(false)
     const [isResultModalOpen, setIsResultModalOpen] = useState(false)
     const [isChatboxModalOpen, setIsChatboxModalOpen] = useState(false)
     const [isQuestionModalOpen, setIsQuestionModalOpen] = useState(false)
@@ -124,7 +121,7 @@ function MGroup() {
         })
 
         notificationSocket.on('server-stop-presentation-noti', (data) => {
-            setPresentingMode('')
+            setPresentingMode(data.mode)
             setPresentingPresentation((cur) =>
                 cur.presentationId === parseInt(data.presentationId)
                     ? { content: null, presentationId: null }
@@ -139,6 +136,7 @@ function MGroup() {
             notificationSocket.off('server-present-presentation-noti')
             notificationSocket.off('server-stop-presentation-noti')
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     useEffect(() => {
@@ -215,37 +213,15 @@ function MGroup() {
 
     // console.log('🚀 ~ presentationsData', presentationsData)
     const handleRemovePresentation = (presentationGroupId) => async () => {
-        // setIsRemovingPresentation(true)
-        // await removePresentationFromGroup(presentationGroupId)
-        // setTimeout(() => {
-        //     refetchPresentations()
-        //     setIsRemovingPresentation(false)
-        // }, 200)
-
         try {
-            setIsRemovingPresentation(true)
             const newPresentations = [...presentationsData?.data].filter(
                 (item) => item.id !== presentationGroupId
             )
 
             setPresentations({ ...presentationsData, data: newPresentations })
-            // setTimeout(() => {
-            //     setPresentations({ data: newPresentations })
-            // }, 1000)
 
             await removePresentationFromGroup(presentationGroupId)
-            // setTimeout(() => {
-            //     setPresentations({ data: newPresentations })
-            // }, 1000)
-
-            console.log('🚀 ~ newPresentations', newPresentations)
-
-            setIsRemovingPresentation(false)
-            // setTimeout(() => {
-            //     setIsRemovingPresentation(false)
-            // }, 800)
         } catch (error) {
-            setIsRemovingPresentation(false)
             console.log('🚀 ~ error', error)
         }
     }
@@ -496,7 +472,6 @@ function MGroup() {
                         </>
                     )}
                 </div>
-                {isRemovingPresentation && <CLoading />}
             </div>
 
             <MShareModal ref={shareModalRef} />

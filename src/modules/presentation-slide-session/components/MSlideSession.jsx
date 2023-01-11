@@ -2,7 +2,7 @@ import 'react-toastify/dist/ReactToastify.css'
 
 import { useContext, useEffect, useState } from 'react'
 
-import { ToastContainer, toast } from 'react-toastify'
+import { toast, ToastContainer } from 'react-toastify'
 
 import { presentationSocket, SocketContext } from 'common/socket'
 
@@ -13,8 +13,8 @@ import {
     ChevronRightIcon,
     QuestionMarkCircleIcon,
 } from '@heroicons/react/24/outline'
-import { MChatboxModalSession, MQuestionModalSession } from '.'
 import { useNavigate } from 'react-router-dom'
+import { MChatboxModalSession, MQuestionModalSession } from '.'
 
 function MSlide({
     children,
@@ -89,6 +89,7 @@ function MSlide({
             notificationSocket.off('server-send-question-noti')
             presentationSocket.off('server-forceStop-presentation')
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     useEffect(() => {
@@ -102,12 +103,14 @@ function MSlide({
         if (isChatboxModalOpen === false && notiMessage) {
             notify(notiMessage.content)
         }
+        setNotiMessage(null)
     }, [notiMessage, isChatboxModalOpen])
 
     useEffect(() => {
         if (isQuestionModalOpen === false && notiQuestion) {
             notify(notiQuestion.content)
         }
+        setNotiQuestion(null)
     }, [notiQuestion, isQuestionModalOpen])
 
     const handleSlideChange = (type) => () => {

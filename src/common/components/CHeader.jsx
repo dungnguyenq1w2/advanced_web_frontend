@@ -69,7 +69,8 @@ function CHeader() {
             notificationSocket.off('server-send-question-noti')
             notificationSocket.off('server-present-presentation-noti')
         }
-    }, [notificationSocket, me])
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
 
     useEffect(() => {
         if (data?.data && noti) {
